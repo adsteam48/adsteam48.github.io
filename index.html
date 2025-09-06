@@ -1,1 +1,60 @@
 
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>近日公開</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f0f0f0;
+      padding-top: 100px;
+    }
+    h1 {
+      font-size: 48px;
+      color: #333;
+    }
+    p {
+      font-size: 24px;
+      color: #666;
+    }
+    .countdown {
+      font-size: 36px;
+      color: #e74c3c;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>近日公開！</h1>
+  <p>もう少しでリリースされます。お楽しみに！</p>
+  <div class="countdown" id="countdown"></div>
+
+  <script>
+    // 公開日を設定（例：2025年10月1日）
+    const releaseDate = new Date("2025-10-01T00:00:00").getTime();
+
+    const countdown = document.getElementById("countdown");
+
+    const timer = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = releaseDate - now;
+
+      if (distance <= 0) {
+        clearInterval(timer);
+        countdown.innerHTML = "公開中！";
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      countdown.innerHTML = `${days}日 ${hours}時間 ${minutes}分 ${seconds}秒`;
+    }, 1000);
+  </script>
+</body>
+</html>
