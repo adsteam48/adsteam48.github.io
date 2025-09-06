@@ -130,11 +130,16 @@ class FileServer {
     deleteFolder(folderId){
         const folder = this.folders.find(f=>f.id===folderId);
         if(!folder) return;
-        if(confirm(`フォルダ「${folder.name}」と中身をすべて削除しますか？`)){
+        const key = Math.floor(1000 + Math.random() * 9000);
+        const input = prompt(`フォルダ「${folder.name}」と中身を削除するには以下の数字を入力してください:\n${key}`);
+        if(input && parseInt(input)===key){
             this._deleteFolderRecursive(folderId);
             this.save('folders', this.folders);
             this.save('files', this.files);
             this.render();
+            alert('削除されました');
+        } else {
+            alert('削除キャンセルまたは入力ミス');
         }
     }
 
@@ -143,6 +148,21 @@ class FileServer {
         subfolders.forEach(sf=>this._deleteFolderRecursive(sf.id));
         this.folders = this.folders.filter(f=>f.id!==folderId);
         this.files = this.files.filter(f=>f.parent!==folderId);
+    }
+
+    deleteFile(id){
+        const file = this.files.find(f=>f.id===id);
+        if(!file) return;
+        const key = Math.floor(1000 + Math.random() * 9000);
+        const input = prompt(`ファイル「${file.name}」を削除するには以下の数字を入力してください:\n${key}`);
+        if(input && parseInt(input)===key){
+            this.files = this.files.filter(f => f.id !== id);
+            this.save('files', this.files);
+            this.render();
+            alert('削除されました');
+        } else {
+            alert('削除キャンセルまたは入力ミス');
+        }
     }
 
     render(){
@@ -186,14 +206,6 @@ class FileServer {
         const a=document.createElement('a'); a.href=f.data; a.download=f.name; a.click();
     }
 
-    deleteFile(id){
-        if(confirm('削除しますか？')){
-            this.files=this.files.filter(f=>f.id!==id);
-            this.save('files',this.files);
-            this.render();
-        }
-    }
-
     createTempLink(id){
         const linkId=this.generateId();
         const expiry=Date.now()+(24*60*60*1000);
@@ -222,5 +234,6 @@ class FileServer {
 
 const fileServer=new FileServer();
 </script>
+
 </body>
 </html>
