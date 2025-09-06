@@ -1,239 +1,100 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ファイルサーバー 全対応版</title>
-<style>
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); min-height:100vh; color:#333; padding:20px; }
-.header { text-align:center; margin-bottom:20px; color:white; }
-.files-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(200px,1fr)); gap:20px; }
-.file-card { background:rgba(255,255,255,0.95); border-radius:12px; padding:15px; text-align:center; box-shadow:0 8px 25px rgba(0,0,0,0.15); }
-.file-icon { font-size:3rem; margin-bottom:10px; }
-.file-name { font-weight:bold; margin-bottom:8px; word-break:break-word; }
-.file-actions button { margin:3px; padding:5px 10px; border-radius:5px; cursor:pointer; }
-.upload-area { margin-bottom:20px; }
-.dragover { border:2px dashed #764ba2; background: rgba(102,126,234,0.1); }
-.progress-bar { width:100%; height:4px; background:#f0f0f0; border-radius:2px; margin:10px 0; overflow:hidden; display:none; }
-.progress-fill { height:100%; background: linear-gradient(90deg,#667eea,#764ba2); width:0%; transition: width 0.3s ease; }
-.modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); justify-content:center; align-items:center; }
-.modal.active { display:flex; }
-.modal-content { background:white; border-radius:12px; padding:20px; max-width:500px; width:90%; text-align:center; }
-.temp-link { background: rgba(102,126,234,0.1); border:1px solid #667eea; border-radius:5px; padding:10px; word-break:break-all; margin:10px 0; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADSサイバーセキュリティ専門家</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #1e1e2f;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+        nav {
+            background-color: #2e2e3f;
+            display: flex;
+            justify-content: center;
+            padding: 10px 0;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        main {
+            padding: 30px;
+            max-width: 1000px;
+            margin: auto;
+        }
+        section {
+            margin-bottom: 40px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #1e1e2f;
+        }
+        footer {
+            background-color: #1e1e2f;
+            color: #fff;
+            text-align: center;
+            padding: 15px 0;
+        }
+    </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>📁 ファイルサーバー 全対応版</h1>
-</div>
+<header>
+    <h1>ADSサイバーセキュリティ専門家</h1>
+    <p>学生向けにサイバーセキュリティの悩みや疑問に答えるサイト</p>
+</header>
 
-<div class="upload-area">
-    <button id="createFolderBtn">📂 フォルダ作成</button>
-    <button id="backBtn" style="display:none;">⬅ 戻る</button>
-    <div id="uploadZone" style="border:2px dashed #667eea; border-radius:10px; padding:20px; margin-top:10px; text-align:center; cursor:pointer;">
-        ドラッグ&ドロップまたはクリックでアップロード
-        <input type="file" id="fileInput" multiple style="display:none;">
-    </div>
-    <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
-</div>
+<nav>
+    <a href="#basic">基本知識</a>
+    <a href="#learning">学習アドバイス</a>
+    <a href="#practice">実践的演習</a>
+    <a href="#qa">Q&A</a>
+</nav>
 
-<div class="files-grid" id="filesGrid"></div>
+<main>
+    <section id="basic">
+        <h2>基本知識の解説</h2>
+        <p>セキュリティ用語や攻撃の種類、守る方法をわかりやすく解説。初めて学ぶ学生でも安心です。</p>
+    </section>
 
-<!-- 一時リンクモーダル -->
-<div id="tempLinkModal" class="modal">
-    <div class="modal-content">
-        <h3>🔗 一時的なダウンロードリンク</h3>
-        <div id="tempLinkText" class="temp-link"></div>
-        <button id="copyLinkBtn">コピー</button>
-        <button id="closeLinkModal">閉じる</button>
-    </div>
-</div>
+    <section id="learning">
+        <h2>学習アドバイス</h2>
+        <p>初心者向けの学習ルートや教材を紹介。効率的にセキュリティスキルを身につけられます。</p>
+    </section>
 
-<script>
-class FileServer {
-    constructor() {
-        this.files = this.load('files');
-        this.folders = this.load('folders');
-        this.currentFolderId = null;
-        this.folderStack = [];
-        this.tempLinks = new Map();
-        this.init();
-    }
+    <section id="practice">
+        <h2>実践的な演習</h2>
+        <p>法的に安全な範囲で、簡単なハッキング体験や問題集に挑戦。実践で学ぶ楽しさを提供します。</p>
+    </section>
 
-    init() {
-        this.setupEventListeners();
-        this.render();
-        this.checkTempLink();
-    }
+    <section id="qa">
+        <h2>Q&Aコーナー</h2>
+        <p>学生からの質問や悩みに専門家が回答。掲示板やメールフォームで気軽に相談できます。</p>
+    </section>
+</main>
 
-    setupEventListeners() {
-        const uploadZone = document.getElementById('uploadZone');
-        const fileInput = document.getElementById('fileInput');
-        const createFolderBtn = document.getElementById('createFolderBtn');
-        const backBtn = document.getElementById('backBtn');
-        const closeLinkModal = document.getElementById('closeLinkModal');
-        const copyLinkBtn = document.getElementById('copyLinkBtn');
-
-        uploadZone.addEventListener('click',()=>fileInput.click());
-        uploadZone.addEventListener('dragover',e=>{e.preventDefault(); uploadZone.classList.add('dragover');});
-        uploadZone.addEventListener('dragleave',()=>uploadZone.classList.remove('dragover'));
-        uploadZone.addEventListener('drop',e=>{e.preventDefault(); uploadZone.classList.remove('dragover'); this.handleFiles(e.dataTransfer.files);});
-
-        fileInput.addEventListener('change',e=>this.handleFiles(e.target.files));
-
-        createFolderBtn.addEventListener('click',()=>{ const name=prompt('フォルダ名を入力'); if(name) this.createFolder(name); });
-        backBtn.addEventListener('click',()=>this.goBack());
-        closeLinkModal.addEventListener('click',()=>document.getElementById('tempLinkModal').classList.remove('active'));
-        copyLinkBtn.addEventListener('click',()=>{ navigator.clipboard.writeText(document.getElementById('tempLinkText').textContent); alert('コピーしました'); });
-    }
-
-    handleFiles(files){
-        const progressBar = document.getElementById('progressBar');
-        const progressFill = document.getElementById('progressFill');
-        progressBar.style.display='block';
-        const arr = Array.from(files);
-        arr.forEach((file,i)=>{
-            const reader = new FileReader();
-            reader.onload=()=>{
-                this.files.push({id:this.generateId(), name:file.name, type:file.type, size:file.size, data:reader.result, parent:this.currentFolderId});
-                this.save('files',this.files);
-                progressFill.style.width=((i+1)/arr.length*100)+'%';
-                if(i===arr.length-1) setTimeout(()=>progressBar.style.display='none',300);
-                this.render();
-            };
-            reader.readAsDataURL(file);
-        });
-    }
-
-    createFolder(name){
-        const folder={id:this.generateId(), name, type:'folder', parent:this.currentFolderId};
-        this.folders.push(folder);
-        this.save('folders',this.folders);
-        this.render();
-    }
-
-    openFolder(id){
-        this.folderStack.push(this.currentFolderId);
-        this.currentFolderId=id;
-        document.getElementById('backBtn').style.display='inline-block';
-        this.render();
-    }
-
-    goBack(){
-        this.currentFolderId = this.folderStack.pop()||null;
-        if(!this.folderStack.length) document.getElementById('backBtn').style.display='none';
-        this.render();
-    }
-
-    deleteFolder(folderId){
-        const folder = this.folders.find(f=>f.id===folderId);
-        if(!folder) return;
-        const key = Math.floor(1000 + Math.random() * 9000);
-        const input = prompt(`フォルダ「${folder.name}」と中身を削除するには以下の数字を入力してください:\n${key}`);
-        if(input && parseInt(input)===key){
-            this._deleteFolderRecursive(folderId);
-            this.save('folders', this.folders);
-            this.save('files', this.files);
-            this.render();
-            alert('削除されました');
-        } else {
-            alert('削除キャンセルまたは入力ミス');
-        }
-    }
-
-    _deleteFolderRecursive(folderId){
-        const subfolders = this.folders.filter(f=>f.parent===folderId);
-        subfolders.forEach(sf=>this._deleteFolderRecursive(sf.id));
-        this.folders = this.folders.filter(f=>f.id!==folderId);
-        this.files = this.files.filter(f=>f.parent!==folderId);
-    }
-
-    deleteFile(id){
-        const file = this.files.find(f=>f.id===id);
-        if(!file) return;
-        const key = Math.floor(1000 + Math.random() * 9000);
-        const input = prompt(`ファイル「${file.name}」を削除するには以下の数字を入力してください:\n${key}`);
-        if(input && parseInt(input)===key){
-            this.files = this.files.filter(f => f.id !== id);
-            this.save('files', this.files);
-            this.render();
-            alert('削除されました');
-        } else {
-            alert('削除キャンセルまたは入力ミス');
-        }
-    }
-
-    render(){
-        const grid=document.getElementById('filesGrid'); grid.innerHTML='';
-        const folders=this.folders.filter(f=>f.parent===this.currentFolderId);
-        const files=this.files.filter(f=>f.parent===this.currentFolderId);
-
-        folders.forEach(f=>{
-            const card=document.createElement('div'); card.className='file-card';
-            card.innerHTML=`
-                <div class="file-icon">📁</div>
-                <div class="file-name">${f.name}</div>
-                <button onclick="fileServer.openFolder('${f.id}')">開く</button>
-                <button onclick="fileServer.deleteFolder('${f.id}')">🗑️ 削除</button>
-            `;
-            grid.appendChild(card);
-        });
-
-        files.forEach(f=>{
-            const card=document.createElement('div'); card.className='file-card';
-            let media='';
-            if(f.type.startsWith('image/')) media=`<img src="${f.data}" style="max-width:100%;border-radius:5px;">`;
-            else if(f.type.startsWith('video/')) media=`<video controls style="max-width:100%;border-radius:5px;"><source src="${f.data}" type="${f.type}"></video>`;
-            else if(f.type.startsWith('audio/')) media=`<audio controls style="width:100%;"><source src="${f.data}" type="${f.type}"></audio>`;
-            card.innerHTML=`
-                <div class="file-icon">📄</div>
-                <div class="file-name">${f.name}</div>
-                ${media}
-                <div class="file-actions">
-                    <button onclick="fileServer.downloadFile('${f.id}')">💾 ダウンロード</button>
-                    <button onclick="fileServer.deleteFile('${f.id}')">🗑️ 削除</button>
-                    <button onclick="fileServer.createTempLink('${f.id}')">🔗 一時リンク</button>
-                </div>
-            `;
-            grid.appendChild(card);
-        });
-    }
-
-    downloadFile(id){
-        const f=this.files.find(x=>x.id===id); if(!f) return;
-        const a=document.createElement('a'); a.href=f.data; a.download=f.name; a.click();
-    }
-
-    createTempLink(id){
-        const linkId=this.generateId();
-        const expiry=Date.now()+(24*60*60*1000);
-        this.tempLinks.set(linkId,{fileId:id,expiry});
-        document.getElementById('tempLinkText').textContent=`${window.location.href}#temp/${linkId}`;
-        document.getElementById('tempLinkModal').classList.add('active');
-    }
-
-    checkTempLink(){
-        const hash=window.location.hash;
-        if(hash.startsWith('#temp/')){
-            const id=hash.slice(6);
-            const data=this.tempLinks.get(id);
-            if(data && Date.now()<data.expiry){
-                this.downloadFile(data.fileId);
-            } else {
-                alert('リンクが無効または期限切れです');
-            }
-        }
-    }
-
-    save(key,val){ localStorage.setItem(key,JSON.stringify(val)); }
-    load(key){ const d=localStorage.getItem(key); return d?JSON.parse(d):[]; }
-    generateId(){ return Date.now().toString(36)+Math.random().toString(36).substr(2); }
-}
-
-const fileServer=new FileServer();
-</script>
+<footer>
+    <p>&copy; 2025 ADSサイバーセキュリティ専門家</p>
+</footer>
 
 </body>
 </html>
