@@ -3,74 +3,91 @@
 <head>
   <meta charset="UTF-8">
   <title>ADS サイバーセキュリティチーム | 公式サイト</title>
-  <meta name="description" content="ADS サイバーセキュリティチーム公式サイト。サイバーセキュリティに関する啓発活動・情報提供を行っています。">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
 
   <style>
+    /* 基本設定 */
+    html { scroll-behavior: smooth; }
     body {
       font-family: 'Noto Sans JP', sans-serif;
       margin: 0;
       padding: 0;
-      background: #f5f7fa;
-      color: #333;
+      background: #111;
+      color: #eee;
     }
+
+    /* ヘッダー */
     header {
-      background: linear-gradient(135deg, #2c3e50, #34495e);
+      background: linear-gradient(135deg, #1abc9c, #16a085);
       color: #fff;
       text-align: center;
-      padding: 2rem 1rem;
+      padding: 3rem 1rem;
+      animation: fadeIn 2s ease;
     }
-    header h1 {
-      margin: 0;
-      font-size: 2rem;
-    }
-    nav {
-      margin-top: 1rem;
-    }
+    header h1 { margin: 0; font-size: 2.5rem; letter-spacing: 2px; }
+    nav { margin-top: 1rem; }
     nav a {
       color: #fff;
       text-decoration: none;
       margin: 0 1rem;
       font-weight: bold;
+      transition: 0.3s;
     }
-    main {
-      max-width: 900px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-    }
+    nav a:hover { color: #f1c40f; transform: scale(1.1); }
+
+    /* セクション */
+    main { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
     section {
       margin-bottom: 3rem;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: slideUp 1s forwards;
     }
+    section:nth-child(1) { animation-delay: 0.3s; }
+    section:nth-child(2) { animation-delay: 0.6s; }
+    section:nth-child(3) { animation-delay: 0.9s; }
+    section:nth-child(4) { animation-delay: 1.2s; }
     section h2 {
-      font-size: 1.6rem;
+      font-size: 1.8rem;
       margin-bottom: 1rem;
-      color: #2c3e50;
-      border-left: 6px solid #3498db;
+      color: #1abc9c;
+      border-left: 6px solid #16a085;
       padding-left: 0.5rem;
     }
-    section p {
-      line-height: 1.8;
-      margin-bottom: 1rem;
-    }
-    ul {
-      line-height: 1.8;
-    }
-    footer {
-      background: #2c3e50;
+    section p, ul { line-height: 1.8; }
+
+    /* お問い合わせボタン（準備中なので装飾のみ） */
+    .contact-btn {
+      display: inline-block;
+      background: #e74c3c;
       color: #fff;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .contact-btn:hover { transform: scale(1.1); box-shadow: 0 5px 15px rgba(231, 76, 60, 0.5); }
+
+    /* フッター */
+    footer {
+      background: #222;
+      color: #ccc;
       text-align: center;
       padding: 1.5rem 1rem;
       margin-top: 3rem;
     }
-    footer p {
-      margin: 0.3rem 0;
-    }
+
+    /* アニメーション */
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
+
   <header>
     <h1>ADS サイバーセキュリティチーム</h1>
     <nav>
@@ -87,7 +104,6 @@
       <p>
         ADS サイバーセキュリティチームは、インターネットを安心して利用できる社会を目指し、
         サイバーセキュリティに関する啓発活動や相談対応を行っています。
-        個人から企業まで、誰もが安全にデジタル環境を利用できるようサポートいたします。
       </p>
     </section>
 
@@ -105,15 +121,15 @@
       <h2>お知らせ</h2>
       <p>
         現在、公式サイトの公開準備を進めています。<br>
-        公開用のアドレス（URL）は順次こちらのページや公式SNSにてお知らせいたします。
+        公開用のアドレスは順次こちらや公式SNSでお知らせいたします。
       </p>
     </section>
 
     <section id="contact">
       <h2>お問い合わせ</h2>
       <p>
-        現在、お問い合わせ用メールアドレスを準備中です。<br>
-        公開が整い次第、こちらのページでお知らせいたします。
+        お問い合わせ用メールアドレスは準備中です。<br>
+        公開次第こちらでお知らせします。
       </p>
     </section>
   </main>
@@ -122,5 +138,6 @@
     <p>&copy; 2025 ADS Cybersecurity Team</p>
     <p>本サイトは GitHub Pages によって公開されています。</p>
   </footer>
+
 </body>
 </html>
