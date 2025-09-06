@@ -17,6 +17,10 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif
 .dragover { border:2px dashed #764ba2; background: rgba(102,126,234,0.1); }
 .progress-bar { width:100%; height:4px; background:#f0f0f0; border-radius:2px; margin:10px 0; overflow:hidden; display:none; }
 .progress-fill { height:100%; background: linear-gradient(90deg,#667eea,#764ba2); width:0%; transition: width 0.3s ease; }
+.modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); justify-content:center; align-items:center; }
+.modal.active { display:flex; }
+.modal-content { background:white; border-radius:12px; padding:20px; max-width:500px; width:90%; text-align:center; }
+.temp-link { background: rgba(102,126,234,0.1); border:1px solid #667eea; border-radius:5px; padding:10px; word-break:break-all; margin:10px 0; }
 </style>
 </head>
 <body>
@@ -38,10 +42,10 @@ body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif
 <div class="files-grid" id="filesGrid"></div>
 
 <!-- 一時リンクモーダル -->
-<div id="tempLinkModal" style="display:none; position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);justify-content:center;align-items:center;">
-    <div style="background:white;border-radius:12px;padding:20px;max-width:500px;width:90%;text-align:center;">
+<div id="tempLinkModal" class="modal">
+    <div class="modal-content">
         <h3>🔗 一時的なダウンロードリンク</h3>
-        <div id="tempLinkText" style="background: rgba(102, 126, 234, 0.1); border:1px solid #667eea; border-radius:5px; padding:10px; word-break:break-all; margin:10px 0;"></div>
+        <div id="tempLinkText" class="temp-link"></div>
         <button id="copyLinkBtn">コピー</button>
         <button id="closeLinkModal">閉じる</button>
     </div>
@@ -58,53 +62,42 @@ class FileServer {
         this.init();
     }
 
-    init(){
+    init() {
         this.setupEventListeners();
         this.render();
         this.checkTempLink();
     }
 
-    setupEventListeners(){
-        const uploadZone=document.getElementById('uploadZone');
-        const fileInput=document.getElementById('fileInput');
-        const createFolderBtn=document.getElementById('createFolderBtn');
-        const backBtn=document.getElementById('backBtn');
-        const closeLinkModal=document.getElementById('closeLinkModal');
-        const copyLinkBtn=document.getElementById('copyLinkBtn');
+    setupEventListeners() {
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+        const createFolderBtn = document.getElementById('createFolderBtn');
+        const backBtn = document.getElementById('backBtn');
+        const closeLinkModal = document.getElementById('closeLinkModal');
+        const copyLinkBtn = document.getElementById('copyLinkBtn');
 
         uploadZone.addEventListener('click',()=>fileInput.click());
-        uploadZone.addEventListener('dragover',e=>{e.preventDefault();uploadZone.classList.add('dragover');});
+        uploadZone.addEventListener('dragover',e=>{e.preventDefault(); uploadZone.classList.add('dragover');});
         uploadZone.addEventListener('dragleave',()=>uploadZone.classList.remove('dragover'));
-        uploadZone.addEventListener('drop',e=>{e.preventDefault();uploadZone.classList.remove('dragover'); this.handleFiles(e.dataTransfer.files);});
+        uploadZone.addEventListener('drop',e=>{e.preventDefault(); uploadZone.classList.remove('dragover'); this.handleFiles(e.dataTransfer.files);});
 
         fileInput.addEventListener('change',e=>this.handleFiles(e.target.files));
 
-        createFolderBtn.addEventListener('click',()=>{
-            const name=prompt('フォルダ名を入力'); if(name)this.createFolder(name);
-        });
-
+        createFolderBtn.addEventListener('click',()=>{ const name=prompt('フォルダ名を入力'); if(name) this.createFolder(name); });
         backBtn.addEventListener('click',()=>this.goBack());
-
-        closeLinkModal.addEventListener('click',()=>document.getElementById('tempLinkModal').style.display='none');
-        copyLinkBtn.addEventListener('click',()=>{navigator.clipboard.writeText(document.getElementById('tempLinkText').textContent); alert('コピーしました');});
+        closeLinkModal.addEventListener('click',()=>document.getElementById('tempLinkModal').classList.remove('active'));
+        copyLinkBtn.addEventListener('click',()=>{ navigator.clipboard.writeText(document.getElementById('tempLinkText').textContent); alert('コピーしました'); });
     }
 
     handleFiles(files){
-        const progressBar=document.getElementById('progressBar');
-        const progressFill=document.getElementById('progressFill');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
         progressBar.style.display='block';
-        const arr=Array.from(files);
+        const arr = Array.from(files);
         arr.forEach((file,i)=>{
-            const reader=new FileReader();
+            const reader = new FileReader();
             reader.onload=()=>{
-                this.files.push({
-                    id:this.generateId(),
-                    name:file.name,
-                    type:file.type,
-                    size:file.size,
-                    data:reader.result,
-                    parent:this.currentFolderId
-                });
+                this.files.push({id:this.generateId(), name:file.name, type:file.type, size:file.size, data:reader.result, parent:this.currentFolderId});
                 this.save('files',this.files);
                 progressFill.style.width=((i+1)/arr.length*100)+'%';
                 if(i===arr.length-1) setTimeout(()=>progressBar.style.display='none',300);
@@ -129,9 +122,27 @@ class FileServer {
     }
 
     goBack(){
-        this.currentFolderId=this.folderStack.pop()||null;
+        this.currentFolderId = this.folderStack.pop()||null;
         if(!this.folderStack.length) document.getElementById('backBtn').style.display='none';
         this.render();
+    }
+
+    deleteFolder(folderId){
+        const folder = this.folders.find(f=>f.id===folderId);
+        if(!folder) return;
+        if(confirm(`フォルダ「${folder.name}」と中身をすべて削除しますか？`)){
+            this._deleteFolderRecursive(folderId);
+            this.save('folders', this.folders);
+            this.save('files', this.files);
+            this.render();
+        }
+    }
+
+    _deleteFolderRecursive(folderId){
+        const subfolders = this.folders.filter(f=>f.parent===folderId);
+        subfolders.forEach(sf=>this._deleteFolderRecursive(sf.id));
+        this.folders = this.folders.filter(f=>f.id!==folderId);
+        this.files = this.files.filter(f=>f.parent!==folderId);
     }
 
     render(){
@@ -141,7 +152,12 @@ class FileServer {
 
         folders.forEach(f=>{
             const card=document.createElement('div'); card.className='file-card';
-            card.innerHTML=`<div class="file-icon">📁</div><div class="file-name">${f.name}</div><button onclick="fileServer.openFolder('${f.id}')">開く</button>`;
+            card.innerHTML=`
+                <div class="file-icon">📁</div>
+                <div class="file-name">${f.name}</div>
+                <button onclick="fileServer.openFolder('${f.id}')">開く</button>
+                <button onclick="fileServer.deleteFolder('${f.id}')">🗑️ 削除</button>
+            `;
             grid.appendChild(card);
         });
 
@@ -151,13 +167,22 @@ class FileServer {
             if(f.type.startsWith('image/')) media=`<img src="${f.data}" style="max-width:100%;border-radius:5px;">`;
             else if(f.type.startsWith('video/')) media=`<video controls style="max-width:100%;border-radius:5px;"><source src="${f.data}" type="${f.type}"></video>`;
             else if(f.type.startsWith('audio/')) media=`<audio controls style="width:100%;"><source src="${f.data}" type="${f.type}"></audio>`;
-            card.innerHTML=`<div class="file-icon">📄</div><div class="file-name">${f.name}</div>${media}<div><button onclick="fileServer.downloadFile('${f.id}')">💾 ダウンロード</button><button onclick="fileServer.deleteFile('${f.id}')">🗑️ 削除</button><button onclick="fileServer.createTempLink('${f.id}')">🔗 一時リンク</button></div>`;
+            card.innerHTML=`
+                <div class="file-icon">📄</div>
+                <div class="file-name">${f.name}</div>
+                ${media}
+                <div class="file-actions">
+                    <button onclick="fileServer.downloadFile('${f.id}')">💾 ダウンロード</button>
+                    <button onclick="fileServer.deleteFile('${f.id}')">🗑️ 削除</button>
+                    <button onclick="fileServer.createTempLink('${f.id}')">🔗 一時リンク</button>
+                </div>
+            `;
             grid.appendChild(card);
         });
     }
 
     downloadFile(id){
-        const f=this.files.find(x=>x.id===id); if(!f)return;
+        const f=this.files.find(x=>x.id===id); if(!f) return;
         const a=document.createElement('a'); a.href=f.data; a.download=f.name; a.click();
     }
 
@@ -174,7 +199,7 @@ class FileServer {
         const expiry=Date.now()+(24*60*60*1000);
         this.tempLinks.set(linkId,{fileId:id,expiry});
         document.getElementById('tempLinkText').textContent=`${window.location.href}#temp/${linkId}`;
-        document.getElementById('tempLinkModal').style.display='flex';
+        document.getElementById('tempLinkModal').classList.add('active');
     }
 
     checkTempLink(){
@@ -197,6 +222,5 @@ class FileServer {
 
 const fileServer=new FileServer();
 </script>
-
 </body>
 </html>
