@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>停止中</title>
+  <title>謝罪文</title>
   <style>
     body {
       font-family: "Yu Gothic", "Hiragino Kaku Gothic Pro", Meiryo, sans-serif;
@@ -28,8 +28,9 @@
   </style>
 </head>
 <body>
+  <!-- 謝罪文 -->
   <div id="content" class="hidden">
-    <h1>本日起きた騒動について</h1>
+    <h1>謝罪文</h1>
 
     <p>本日の件につきまして、自分の口から認め、謝罪いたします。</p>
 
@@ -44,14 +45,15 @@
     <p>今回の一連の行動により、ご迷惑をおかけしたすべての皆様に深く反省するとともに、今後は責任ある行動を心がけ、二度と同じ過ちを繰り返さないことをここに誓います。今回の件に関して、改めて心よりお詫び申し上げます。</p>
   </div>
 
+  <!-- 閉鎖中メッセージ -->
   <div id="closed" class="hidden">
-    <h1>表示期間外です</h1>
-    <p>この謝罪文の表示期間は終了しました。</p>
+    <h1>サイトは閉鎖しています</h1>
+    <p>今回の騒動の影響により、当サイトは閉鎖しております。ご理解のほどよろしくお願いいたします。</p>
   </div>
 
   <script>
     const today = new Date();
-    const endDate = new Date('2025-09-08T23:59:59'); // 表示終了日時
+    const endDate = new Date('2025-09-08T23:59:59'); // 表示終了日
 
     if (today <= endDate) {
       document.getElementById('content').classList.remove('hidden');
