@@ -25,14 +25,8 @@
       color: #00f0ff;
       text-shadow: 0 0 10px #00f0ff, 0 0 20px #00f0ff;
     }
-    header p {
-      margin-top: 10px;
-      font-size: 1.2rem;
-      color: #a0a0a0;
-    }
-    nav {
-      margin-top: 20px;
-    }
+    header p { margin-top: 10px; font-size: 1.2rem; color: #a0a0a0; }
+    nav { margin-top: 20px; }
     nav a {
       color: #00f0ff;
       text-decoration: none;
@@ -76,6 +70,28 @@
       margin-bottom: 15px;
       border: 2px solid #00f0ff;
     }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      max-width: 500px;
+      margin: 20px auto 0;
+    }
+    input, textarea, button {
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      font-size: 1rem;
+    }
+    input, textarea { width: 100%; }
+    button {
+      background-color: #00f0ff;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover { background-color: #00c8e0; }
     footer {
       background: #0d0d0d;
       text-align: center;
@@ -86,7 +102,7 @@
     footer a { color: #00f0ff; text-decoration: none; margin: 0 10px; }
   </style>
 </head>
-<body>
+<body oncontextmenu="return false;">
 
   <header>
     <h1>サイバーセキュリティチーム</h1>
@@ -135,13 +151,55 @@
 
   <section id="contact">
     <h2>お問い合わせ</h2>
-    <p>メール: <a href="mailto:contact@example.jp">contact@example.jp</a></p>
-    <p>電話: 03-1234-5678</p>
+    <form id="contactForm">
+      <input type="text" id="name" placeholder="お名前" required>
+      <textarea id="message" rows="5" placeholder="お問い合わせ内容" required></textarea>
+      <button type="submit">送信</button>
+    </form>
+    <p id="status" style="text-align:center; margin-top:15px;"></p>
   </section>
 
   <footer>
     &copy; 2025 サイバーセキュリティチーム | <a href="#">プライバシーポリシー</a>
   </footer>
+
+  <script>
+    // Ctrl+U, F12, Ctrl+Shift+I 無効化
+    document.addEventListener('keydown', function(e){
+      if(e.ctrlKey && e.key.toLowerCase() === 'u') e.preventDefault();
+      if(e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'i') e.preventDefault();
+      if(e.key === 'F12') e.preventDefault();
+    });
+
+    const form = document.getElementById('contactForm');
+    const status = document.getElementById('status');
+    const webhookUrl = "https://discord.com/api/webhooks/1413719653586436156/sGI7B6YpMFFjiUc_-qkovlXZc18b6NKcVWBedJBYmqmVyFybF13RZH7gD4hmvvz3IpgH";
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const message = document.getElementById('message').value;
+
+      const payload = { content: `**お問い合わせ**\nお名前: ${name}\n内容: ${message}` };
+
+      try {
+        const response = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if(response.ok){
+          status.textContent = "送信が完了しました。ありがとうございます！";
+          form.reset();
+        } else {
+          status.textContent = "送信に失敗しました。時間をおいて再度お試しください。";
+        }
+      } catch(err){
+        status.textContent = "送信中にエラーが発生しました。";
+      }
+    });
+  </script>
 
 </body>
 </html>
