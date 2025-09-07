@@ -1,150 +1,61 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ブレインロット情報提供掲示板（閲覧専用）</title>
-  <style>
-    /* 背景設定 */
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 20px;
-      background-image: url("https://cdn-0001.qstv.on.epicgames.com/rqcdxnfBFKagwUNRFQ/image/landscape_comp.jpeg");
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      color: #333;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ドメイン未使用</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
 
-    h1, h2 {
-      text-align: center;
-      color: #fff;
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
-    }
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
 
-    .timestamp {
-      font-size: 0.8em;
-      color: #555;
-      margin-top: 5px;
-    }
+        h1 {
+            font-size: 36px;
+            color: #ff4c4c;
+            margin-bottom: 20px;
+        }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background: rgba(255,255,255,0.9);
-      border-radius: 6px;
-      overflow: hidden;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
+        p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
 
-    th, td {
-      border: 1px solid #ccc;
-      padding: 6px;
-      text-align: center;
-    }
+        a {
+            display: inline-block;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007BFF;
+            padding: 10px 20px;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+        }
 
-    th {
-      background-color: rgba(224,224,224,0.9);
-    }
-
-    .disabled-form {
-      background: rgba(255,255,255,0.9);
-      text-align: center;
-      color: #555;
-      padding: 15px;
-      border-radius: 6px;
-      margin-bottom: 20px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-
-    .disclaimer {
-      background: rgba(255, 243, 205, 0.9);
-      border-left: 6px solid #ffeeba;
-      color: #856404;
-      font-size: 0.9em;
-      padding: 10px;
-      margin-bottom: 20px;
-      border-radius: 6px;
-    }
-
-    /* 新しいコードの強調 */
-    .new-code {
-      background-color: rgba(255, 220, 180, 0.9);
-      font-weight: bold;
-    }
-
-    /* 検索ボックス */
-    #searchBox {
-      width: 100%;
-      padding: 8px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-      margin-bottom: 10px;
-    }
-  </style>
+        a:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-  <h1>ブレインロット情報提供掲示板（閲覧専用）</h1>
-
-  <!-- 免責事項 -->
-  <div class="disclaimer">
-    当サイトの情報には最新の注意を払っておりますが、誤りや古い情報が含まれる場合があります。あくまで参考としてご利用ください。
-  </div>
-
-  <!-- 投稿フォーム（無効化） -->
-  <div class="disabled-form">
-    投稿機能は無効化されています。閲覧のみ可能です。
-  </div>
-
-  <!-- 検索ボックス -->
-  <input type="text" id="searchBox" placeholder="コード番号や効果内容で検索">
-
-  <!-- コード一覧 -->
-  <h2>STEAL THE BRAINROTコード一覧</h2>
-  <table id="codeTable">
-    <thead>
-      <tr>
-        <th>コード番号</th>
-        <th>効果内容</th>
-        <th>追加日</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td>1825</td><td>Brainrot God Luckyrotの出現</td><td>2025/09/07</td></tr>
-      <tr><td>2388</td><td>Brainrot Godの出現</td><td>2025/09/07</td></tr>
-      <tr><td>5486</td><td>Brainrot Godの出現</td><td>2025/09/07</td></tr>
-      <tr><td>1912</td><td>Brainrot Godの出現</td><td>2025/09/07</td></tr>
-      <tr><td>1507</td><td>Brainrot Godの出現</td><td>2025/09/07</td></tr>
-      <tr><td>5289</td><td>ランダムなZombie Brainrot ×3の出現</td><td>2025/09/07</td></tr>
-      <tr><td>3000</td><td>サーバー全体のLuckを10分間2倍にする</td><td>2025/09/07</td></tr>
-      <tr><td>0108</td><td>サーバー全体のLuckを10分間2倍にする</td><td>2025/09/07</td></tr>
-      <tr><td>3005</td><td>アップグレーダーマシンの強化</td><td>2025/09/07</td></tr>
-      <tr><td>7346</td><td>Brainrot Godの出現</td><td>2025/09/07</td></tr>
-      <tr class="new-code"><td>3632</td><td>マシンにシークレット追加</td><td>2025/09/07</td></tr>
-      <tr class="new-code"><td>9547</td><td>マシンのクールタイムなし</td><td>2025/09/07</td></tr>
-    </tbody>
-  </table>
-
-  <script>
-    const searchBox = document.getElementById('searchBox');
-    const table = document.getElementById('codeTable');
-    const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
-
-    searchBox.addEventListener('input', function() {
-      const filter = searchBox.value.toLowerCase();
-      for (let i = 0; i < rows.length; i++) {
-        const cells = rows[i].getElementsByTagName('td');
-        let text = '';
-        for (let j = 0; j < cells.length; j++) {
-          text += cells[j].textContent.toLowerCase();
-        }
-        rows[i].style.display = text.includes(filter) ? '' : 'none';
-      }
-    });
-  </script>
+    <div class="container">
+        <h1>ドメインは使用されていません</h1>
+        <p>このドメインは現在有効ではありません。<br>後ほどアクセスできるようになります。</p>
+        <a href="mailto:info@example.com">お問い合わせ</a>
+    </div>
 </body>
 </html>
