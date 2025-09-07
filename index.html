@@ -70,6 +70,21 @@
       margin-bottom: 20px;
       border-radius: 6px;
     }
+
+    /* 新しいコードの強調 */
+    .new-code {
+      background-color: rgba(255, 220, 180, 0.9);
+      font-weight: bold;
+    }
+
+    /* 検索ボックス */
+    #searchBox {
+      width: 100%;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
@@ -85,9 +100,12 @@
     投稿機能は無効化されています。閲覧のみ可能です。
   </div>
 
+  <!-- 検索ボックス -->
+  <input type="text" id="searchBox" placeholder="コード番号や効果内容で検索">
+
   <!-- コード一覧 -->
   <h2>STEAL THE BRAINROTコード一覧</h2>
-  <table>
+  <table id="codeTable">
     <thead>
       <tr>
         <th>コード番号</th>
@@ -106,9 +124,27 @@
       <tr><td>0108</td><td>サーバー全体のLuckを10分間2倍にする</td><td>2025/09/07</td></tr>
       <tr><td>3005</td><td>アップグレーダーマシンの強化</td><td>2025/09/07</td></tr>
       <tr><td>7346</td><td>Brainrot Godの出現</td><td>2025/09/07</td></tr>
-      <tr><td>3632</td><td>マシンにシークレット追加</td><td>2025/09/07</td></tr>
-      <tr><td>9547</td><td>マシンのクールタイムなし</td><td>2025/09/07</td></tr>
+      <tr class="new-code"><td>3632</td><td>マシンにシークレット追加</td><td>2025/09/07</td></tr>
+      <tr class="new-code"><td>9547</td><td>マシンのクールタイムなし</td><td>2025/09/07</td></tr>
     </tbody>
   </table>
+
+  <script>
+    const searchBox = document.getElementById('searchBox');
+    const table = document.getElementById('codeTable');
+    const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+    searchBox.addEventListener('input', function() {
+      const filter = searchBox.value.toLowerCase();
+      for (let i = 0; i < rows.length; i++) {
+        const cells = rows[i].getElementsByTagName('td');
+        let text = '';
+        for (let j = 0; j < cells.length; j++) {
+          text += cells[j].textContent.toLowerCase();
+        }
+        rows[i].style.display = text.includes(filter) ? '' : 'none';
+      }
+    });
+  </script>
 </body>
 </html>
