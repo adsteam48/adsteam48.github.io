@@ -1,107 +1,102 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>闇バイト疑似体験ゲーム</title>
-<style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ブレインロット情報提供掲示板（閲覧専用）</title>
+  <style>
     body {
-        font-family: 'Courier New', monospace;
-        background-color: #0d0d0d;
-        color: #e0e0e0;
-        text-align: center;
-        padding: 50px;
+      font-family: Arial, sans-serif;
+      max-width: 1000px;
+      margin: 20px auto;
+      padding: 10px;
+      background-color: #f5f5f5;
     }
-    h1 {
-        color: #ff4c4c;
+    h1, h2 {
+      text-align: center;
+      color: #333;
     }
-    button {
-        margin: 10px;
-        padding: 10px 20px;
-        font-size: 16px;
-        cursor: pointer;
-        background-color: #222;
-        color: #fff;
-        border: 1px solid #555;
-        transition: 0.3s;
+    .post {
+      background: #fff;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
-    button:hover {
-        background-color: #ff4c4c;
-        border-color: #ff4c4c;
+    .post h3 {
+      margin: 0 0 5px 0;
     }
-    .hidden {
-        display: none;
+    .timestamp {
+      font-size: 0.8em;
+      color: #888;
+      margin-top: 5px;
     }
-    #timer {
-        font-weight: bold;
-        margin-top: 20px;
-        color: #ffa500;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
-</style>
+    th, td {
+      border: 1px solid #ccc;
+      padding: 6px;
+      text-align: center;
+    }
+    th {
+      background-color: #e0e0e0;
+    }
+    .disabled-form {
+      background: #ddd;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      color: #555;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-<h1>闇バイト疑似体験ゲーム</h1>
-<p>あなたは裏社会でアルバイトを始めました。選択肢によって報酬とリスクが変わります。慎重に選んでください。</p>
+  <h1>ブレインロット情報提供掲示板（閲覧専用）</h1>
 
-<div id="choices">
-    <button onclick="choose('荷物運搬')">怪しい荷物の運搬</button>
-    <button onclick="choose('夜の警備')">夜の警備の手伝い</button>
-    <button onclick="choose('販売手伝い')">怪しい販売の手伝い</button>
-</div>
+  <!-- 投稿フォーム（無効化） -->
+  <div class="disabled-form">
+    投稿機能は無効化されています。閲覧のみ可能です。
+  </div>
 
-<div id="result" class="hidden">
-    <h2>結果</h2>
-    <p id="resultText"></p>
-    <p id="timer"></p>
-    <button onclick="restart()">もう一度挑戦</button>
-</div>
+  <!-- 情報掲示例 -->
+  <div class="post">
+    <h3>新シークレットコード</h3>
+    <p>1825：Brainrot God Luckyrotの出現</p>
+    <div class="timestamp">2025/09/07 10:00</div>
+  </div>
+  <div class="post">
+    <h3>既存コード例</h3>
+    <p>2388：Brainrot Godの出現</p>
+    <div class="timestamp">2025/09/07 10:05</div>
+  </div>
 
-<script>
-function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function choose(option) {
-    document.getElementById('choices').classList.add('hidden');
-    document.getElementById('result').classList.remove('hidden');
-    
-    let reward = getRandomInt(1000, 5000);
-    let risk = getRandomInt(1, 100); // リスク判定
-    
-    let text = '';
-    if(option === '荷物運搬') {
-        text = `荷物を運搬しました。報酬: ${reward}円。`;
-        text += risk > 80 ? "警察に見つかりそうになった！危険！" : "特に問題なく完了しました。";
-    } else if(option === '夜の警備') {
-        text = `夜の警備を手伝いました。報酬: ${reward}円。`;
-        text += risk > 90 ? "怪しい人物に遭遇した！警戒が必要！" : "無事に勤務を終えました。";
-    } else if(option === '販売手伝い') {
-        text = `販売手伝いをしました。報酬: ${reward}円。`;
-        text += risk > 70 ? "違法リスクが高い！すぐに辞めるべき！" : "うまくやり過ごしましたが緊張しました。";
-    }
-    
-    document.getElementById('resultText').innerText = text;
-
-    // タイマー演出（リアル感）
-    let timeLeft = 5;
-    let timer = document.getElementById('timer');
-    timer.innerText = `次の行動まで ${timeLeft}秒待機中...`;
-    let interval = setInterval(() => {
-        timeLeft--;
-        timer.innerText = `次の行動まで ${timeLeft}秒待機中...`;
-        if(timeLeft <= 0) {
-            clearInterval(interval);
-            timer.innerText = "行動可能です！もう一度挑戦できます。";
-        }
-    }, 1000);
-}
-
-function restart() {
-    document.getElementById('choices').classList.remove('hidden');
-    document.getElementById('result').classList.add('hidden');
-    document.getElementById('timer').innerText = '';
-}
-</script>
+  <!-- コード一覧 -->
+  <h2>STEAL THE BRAINROTコード一覧</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>コード番号</th>
+        <th>効果内容</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>1825</td><td>Brainrot God Luckyrotの出現</td></tr>
+      <tr><td>2388</td><td>Brainrot Godの出現</td></tr>
+      <tr><td>5486</td><td>Brainrot Godの出現</td></tr>
+      <tr><td>1912</td><td>Brainrot Godの出現</td></tr>
+      <tr><td>1507</td><td>Brainrot Godの出現</td></tr>
+      <tr><td>5289</td><td>ランダムなZombie Brainrot ×3の出現</td></tr>
+      <tr><td>3000</td><td>サーバー全体のLuckを10分間2倍にする</td></tr>
+      <tr><td>0108</td><td>サーバー全体のLuckを10分間2倍にする</td></tr>
+      <tr><td>3005</td><td>アップグレーダーマシンの強化</td></tr>
+      <tr><td>7346</td><td>Brainrot Godの出現</td></tr>
+    </tbody>
+  </table>
 </body>
 </html>
