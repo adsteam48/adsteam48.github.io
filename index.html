@@ -1,1 +1,107 @@
 
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>闇バイト疑似体験ゲーム</title>
+<style>
+    body {
+        font-family: 'Courier New', monospace;
+        background-color: #0d0d0d;
+        color: #e0e0e0;
+        text-align: center;
+        padding: 50px;
+    }
+    h1 {
+        color: #ff4c4c;
+    }
+    button {
+        margin: 10px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: #222;
+        color: #fff;
+        border: 1px solid #555;
+        transition: 0.3s;
+    }
+    button:hover {
+        background-color: #ff4c4c;
+        border-color: #ff4c4c;
+    }
+    .hidden {
+        display: none;
+    }
+    #timer {
+        font-weight: bold;
+        margin-top: 20px;
+        color: #ffa500;
+    }
+</style>
+</head>
+<body>
+<h1>闇バイト疑似体験ゲーム</h1>
+<p>あなたは裏社会でアルバイトを始めました。選択肢によって報酬とリスクが変わります。慎重に選んでください。</p>
+
+<div id="choices">
+    <button onclick="choose('荷物運搬')">怪しい荷物の運搬</button>
+    <button onclick="choose('夜の警備')">夜の警備の手伝い</button>
+    <button onclick="choose('販売手伝い')">怪しい販売の手伝い</button>
+</div>
+
+<div id="result" class="hidden">
+    <h2>結果</h2>
+    <p id="resultText"></p>
+    <p id="timer"></p>
+    <button onclick="restart()">もう一度挑戦</button>
+</div>
+
+<script>
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function choose(option) {
+    document.getElementById('choices').classList.add('hidden');
+    document.getElementById('result').classList.remove('hidden');
+    
+    let reward = getRandomInt(1000, 5000);
+    let risk = getRandomInt(1, 100); // リスク判定
+    
+    let text = '';
+    if(option === '荷物運搬') {
+        text = `荷物を運搬しました。報酬: ${reward}円。`;
+        text += risk > 80 ? "警察に見つかりそうになった！危険！" : "特に問題なく完了しました。";
+    } else if(option === '夜の警備') {
+        text = `夜の警備を手伝いました。報酬: ${reward}円。`;
+        text += risk > 90 ? "怪しい人物に遭遇した！警戒が必要！" : "無事に勤務を終えました。";
+    } else if(option === '販売手伝い') {
+        text = `販売手伝いをしました。報酬: ${reward}円。`;
+        text += risk > 70 ? "違法リスクが高い！すぐに辞めるべき！" : "うまくやり過ごしましたが緊張しました。";
+    }
+    
+    document.getElementById('resultText').innerText = text;
+
+    // タイマー演出（リアル感）
+    let timeLeft = 5;
+    let timer = document.getElementById('timer');
+    timer.innerText = `次の行動まで ${timeLeft}秒待機中...`;
+    let interval = setInterval(() => {
+        timeLeft--;
+        timer.innerText = `次の行動まで ${timeLeft}秒待機中...`;
+        if(timeLeft <= 0) {
+            clearInterval(interval);
+            timer.innerText = "行動可能です！もう一度挑戦できます。";
+        }
+    }, 1000);
+}
+
+function restart() {
+    document.getElementById('choices').classList.remove('hidden');
+    document.getElementById('result').classList.add('hidden');
+    document.getElementById('timer').innerText = '';
+}
+</script>
+</body>
+</html>
