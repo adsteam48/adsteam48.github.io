@@ -25,18 +25,6 @@
       text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
     }
 
-    .post, table, .disabled-form, .disclaimer {
-      background: rgba(255, 255, 255, 0.9);
-      padding: 10px;
-      border-radius: 6px;
-      margin-bottom: 10px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-
-    .post h3 {
-      margin: 0 0 5px 0;
-    }
-
     .timestamp {
       font-size: 0.8em;
       color: #555;
@@ -46,6 +34,11 @@
     table {
       width: 100%;
       border-collapse: collapse;
+      margin-top: 20px;
+      background: rgba(255,255,255,0.9);
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
 
     th, td {
@@ -59,14 +52,23 @@
     }
 
     .disabled-form {
+      background: rgba(255,255,255,0.9);
       text-align: center;
       color: #555;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
 
     .disclaimer {
+      background: rgba(255, 243, 205, 0.9);
       border-left: 6px solid #ffeeba;
       color: #856404;
       font-size: 0.9em;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 6px;
     }
   </style>
 </head>
@@ -81,19 +83,6 @@
   <!-- 投稿フォーム（無効化） -->
   <div class="disabled-form">
     投稿機能は無効化されています。閲覧のみ可能です。
-  </div>
-
-  <!-- 情報掲示例 -->
-  <div class="post">
-    <h3>新シークレットコード</h3>
-    <p>1825：Brainrot God Luckyrotの出現</p>
-    <div class="timestamp">追加日: 2025/09/07</div>
-  </div>
-  <div class="post">
-    <h3>新コード追加</h3>
-    <p>3632：マシンにシークレット追加</p>
-    <p>9547：マシンのクールタイムなし</p>
-    <div class="timestamp">追加日: 2025/09/07</div>
   </div>
 
   <!-- コード一覧 -->
