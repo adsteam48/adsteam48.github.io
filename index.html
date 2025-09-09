@@ -7,7 +7,7 @@
   <style>
     :root{--bg:#0f1724;--card:#0b1220;--accent:#f9a8d4;color-scheme:dark}
     *{box-sizing:border-box}
-    body{font-family:system-ui,-apple-system,\"Hiragino Kaku Gothic ProN\",Meiryo,sans-serif;
+    body{font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;
          margin:0;background:linear-gradient(180deg,#071027 0%,#071833 100%);
          color:#f1f5f9;line-height:1.6}
     .container{max-width:700px;margin:40px auto;padding:24px;text-align:center}
@@ -16,6 +16,11 @@
           padding:20px;border-radius:16px;box-shadow:0 6px 18px rgba(2,6,23,0.6);margin-bottom:20px}
     .time{font-weight:bold;color:#f9a8d4}
     #countdown{font-size:1.4rem;font-weight:bold;color:#f9a8d4;margin-top:10px}
+    .btn{display:inline-block;margin-top:15px;padding:12px 24px;
+         background:#f9a8d4;color:#0f1724;font-weight:bold;border-radius:12px;
+         text-decoration:none;box-shadow:0 4px 12px rgba(0,0,0,0.4);
+         transition:background 0.3s ease}
+    .btn:hover{background:#f472b6}
     footer{margin-top:32px;font-size:0.9rem;color:#a8c7e6}
     a{color:#f9a8d4;text-decoration:none}
     a:hover{text-decoration:underline}
@@ -30,6 +35,9 @@
       <p>本日 <span class="time">23:00〜23:20</span><br>
          <a href="https://tver.jp/" target="_blank">TVer</a> にてリアタイ配信！</p>
       <div id="countdown">カウントダウン中...</div>
+      <div id="startBtn" style="display:none;">
+        <a href="https://tver.jp/" target="_blank" class="btn">▶ TVerを開く</a>
+      </div>
     </div>
 
     <footer>
@@ -45,7 +53,8 @@
       let diff = target - now;
 
       if (diff <= 0) {
-        document.getElementById(\"countdown\").textContent = \"▶ 配信が始まりました！\";
+        document.getElementById("countdown").textContent = "▶ 配信が始まりました！";
+        document.getElementById("startBtn").style.display = "block";
         return;
       }
 
@@ -53,7 +62,7 @@
       const m = Math.floor((diff % (1000*60*60)) / (1000*60));
       const s = Math.floor((diff % (1000*60)) / 1000);
 
-      document.getElementById(\"countdown\").textContent =
+      document.getElementById("countdown").textContent =
         `開始まで ${h}時間 ${m}分 ${s}秒`;
 
       setTimeout(updateCountdown, 1000);
