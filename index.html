@@ -1,153 +1,81 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>最新アップデート＆コード情報一覧</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-        }
-        h1 {
-            text-align: center;
-            color: #222;
-        }
-        .game-section {
-            background-color: #fff;
-            padding: 20px;
-            margin: 20px auto;
-            border-radius: 12px;
-            max-width: 800px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
-        }
-        h2 {
-            color: #007acc;
-        }
-        ul {
-            padding-left: 20px;
-        }
-        li {
-            margin-bottom: 8px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        th, td {
-            border: 1px solid #ccc;
-            padding: 6px 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #007acc;
-            color: #fff;
-        }
-        td {
-            background-color: #f9f9f9;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>全国鉄道 運行情報まとめ</title>
+  <style>
+    body {
+      font-family: "Hiragino Kaku Gothic ProN", "メイリオ", sans-serif;
+      background: #f9f9f9;
+      color: #333;
+      line-height: 1.8;
+      padding: 20px;
+    }
+    h1 {
+      color: #005bac;
+      text-align: center;
+    }
+    .section {
+      background: #fff;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    a {
+      color: #0066cc;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      margin: 6px 0;
+    }
+  </style>
 </head>
 <body>
+  <h1>🚉 全国鉄道 運行情報まとめ</h1>
 
-    <h1>最新アップデート＆コード情報一覧（2025年9月15日現在）</h1>
+  <div class="section">
+    <h2>主要運行情報サイト</h2>
+    <ul>
+      <li><a href="https://transit.yahoo.co.jp/diainfo" target="_blank">Yahoo! 路線情報・運行情報</a></li>
+      <li><a href="https://www.tetsudo.com/traffic/" target="_blank">鉄道コム 運行情報</a></li>
+      <li><a href="https://www.jorudan.co.jp/unk/" target="_blank">ジョルダン 運行情報</a></li>
+      <li><a href="https://ekitan.com/transit/train-status" target="_blank">駅探 運行状況</a></li>
+    </ul>
+  </div>
 
-    <!-- ブレインロット -->
-    <div class="game-section" id="brainrot">
-        <h2>ブレインロット（Brainrot Evolution）</h2>
-        <h3>最新アップデート</h3>
-        <ul>
-            <li>2025/09/13: Extinct Event実装</li>
-            <li>2025/09/13: 新キャラクター10体追加</li>
-            <li>2025/09/13: 新儀式「Chicleteiras」導入</li>
-        </ul>
-        <h3>最新コード一覧</h3>
-        <table>
-            <tr><th>コード名</th><th>効果内容</th></tr>
-            <tr><td>Goaaat</td><td>4x Yoni Crates</td></tr>
-            <tr><td>YONICODE7</td><td>4x Yoni Crates</td></tr>
-            <tr><td>LOLOCODE41</td><td>1x Lolo Crate</td></tr>
-            <tr><td>POTIONCODE9</td><td>2x EXP Potions</td></tr>
-            <tr><td>Guardian</td><td>2x EXP Potions</td></tr>
-            <tr><td>PlzSubi2</td><td>3x EXP Potions</td></tr>
-            <tr><td>SEWER</td><td>3x EXP Potions</td></tr>
-            <tr><td>MEDUS</td><td>2x EXP Potions</td></tr>
-            <tr><td>Eternal</td><td>2x EXP Potions</td></tr>
-            <tr><td>HOTSPOT</td><td>3x EXP Potions</td></tr>
-            <tr><td>CODE897</td><td>4x Mega EXP Potions</td></tr>
-            <tr><td>FixedBoss31</td><td>1x EXP Potion</td></tr>
-            <tr><td>Lukeblox2</td><td>1x Mega EXP Potion</td></tr>
-            <tr><td>TUNGTUNGx15</td><td>2x Vault Crates</td></tr>
-            <tr><td>PIXSUMMEREVENT1</td><td>2x Vault Crates</td></tr>
-            <tr><td>DUNGEON</td><td>3x EXP Potions</td></tr>
-            <tr><td>SummerPart2</td><td>3x EXP Potions</td></tr>
-            <tr><td>Glorbo</td><td>4x EXP Potions</td></tr>
-            <tr><td>Summer2025</td><td>3x Summer Tickets</td></tr>
-            <tr><td>Udin Din Dun</td><td>3x EXP Potions</td></tr>
-            <tr><td>INDEX</td><td>3x EXP Potions</td></tr>
-            <tr><td>BrainCore</td><td>3x EXP Potions</td></tr>
-            <tr><td>VOIDPART2</td><td>1x Void Ticket</td></tr>
-            <tr><td>JoinFix5</td><td>30x Void Tickets</td></tr>
-            <tr><td>LOLO1</td><td>1x Lolo Crate</td></tr>
-            <tr><td>MATTEOOO</td><td>3x EXP Potions</td></tr>
-            <tr><td>Tralalero</td><td>3x EXP Potions</td></tr>
-            <tr><td>EASTER</td><td>1x EXP Potion</td></tr>
-            <tr><td>i2perfect1</td><td>2x EXP Potions</td></tr>
-            <tr><td>release</td><td>1x Wins Potion</td></tr>
-        </table>
-    </div>
+  <div class="section">
+    <h2>JR各社</h2>
+    <ul>
+      <li><a href="https://traininfo.jreast.co.jp/train_info/" target="_blank">JR東日本 運行情報</a></li>
+      <li><a href="https://traininfo.jr-central.co.jp/shinkansen/sp/ja/index.html" target="_blank">JR東海 新幹線運行情報</a></li>
+      <li><a href="https://trafficinfo.westjr.co.jp/" target="_blank">JR西日本 運行情報</a></li>
+      <li><a href="https://www.jr-shikoku.co.jp/info/" target="_blank">JR四国 運行情報</a></li>
+      <li><a href="https://www.jrkyushu.co.jp/trains/info/" target="_blank">JR九州 運行情報</a></li>
+    </ul>
+  </div>
 
-    <!-- フォートナイト -->
-    <div class="game-section" id="fortnite">
-        <h2>フォートナイト（Fortnite: Steal the Brainrot）</h2>
-        <h3>最新アップデート</h3>
-        <ul>
-            <li>2025/09/10: v37.20アップデート実施</li>
-            <li>2025/09/10: Dino Megazordスキン登場</li>
-            <li>2025/09/10: 新武器「ヴェールド プレシジョンサブマシンガン」追加</li>
-            <li>2025/09/10: バグと呼ばれるNPCモンスター登場</li>
-        </ul>
-        <h3>最新コード一覧</h3>
-        <table>
-            <tr><th>コード</th><th>効果内容</th></tr>
-            <tr><td>1825</td><td>Brainrot God Luckyrotを出現</td></tr>
-            <tr><td>2388</td><td>Brainrot Godを出現</td></tr>
-            <tr><td>5486</td><td>Brainrot Godを出現</td></tr>
-            <tr><td>1912</td><td>Brainrot Godを出現</td></tr>
-            <tr><td>1507</td><td>Brainrot Godを出現</td></tr>
-            <tr><td>3000</td><td>サーバーのLuckを10分間2倍に</td></tr>
-            <tr><td>0108</td><td>サーバーのLuckを10分間2倍に</td></tr>
-            <tr><td>5289</td><td>ランダムなZombie Brainrotを3体出現</td></tr>
-            <tr><td>7346</td><td>Brainrot Godを出現</td></tr>
-        </table>
-    </div>
+  <div class="section">
+    <h2>私鉄</h2>
+    <ul>
+      <li><a href="https://top.meitetsu.co.jp/em/" target="_blank">名鉄（名古屋鉄道）運行情報</a></li>
+      <li><a href="https://www.hankyu.co.jp/railinfo/" target="_blank">阪急電鉄 運行情報</a></li>
+      <li><a href="https://www.keikyu.co.jp/report/" target="_blank">京急電鉄 運行情報</a></li>
+      <li><a href="https://www.tokyu.co.jp/unten/untenlist/" target="_blank">東急電鉄 運行情報</a></li>
+      <li><a href="https://www.keio.co.jp/unkou/" target="_blank">京王線 運行情報</a></li>
+    </ul>
+  </div>
 
-    <!-- ロブロックス -->
-    <div class="game-section" id="roblox">
-        <h2>ロブロックス（Roblox）</h2>
-        <h3>最新アップデート</h3>
-        <ul>
-            <li>2025/09/12: 「The Takeover」イベント開催中</li>
-            <li>2025/09/12: 新キャラクター「Kai Cenat」スキン登場</li>
-        </ul>
-        <h3>最新コード一覧</h3>
-        <ul>
-            <li>TWEETROBLOX</li>
-            <li>SPIDERCOLA</li>
-            <li>SMYTHSHEADPHONES2020</li>
-            <li>TARGETFOX2020</li>
-            <li>ROBLOXEDU2021</li>
-            <li>FREEACCESSORY2021</li>
-            <li>ROBLOX2021</li>
-            <li>BLOXYS2021</li>
-            <li>ROBLOXROCKS</li>
-            <li>ROBLOXFAN2021</li>
-        </ul>
-    </div>
-
+  <p style="text-align:center; font-size: 14px; color: #666;">
+    ※情報は各公式サイトでご確認ください。<br>
+    © 2025 運行情報まとめ
+  </p>
 </body>
 </html>
