@@ -1,144 +1,69 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>最新アップデート＆コード情報一覧</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-        }
-        h1 {
-            text-align: center;
-            color: #222;
-        }
-        .game-section {
-            background-color: #fff;
-            padding: 20px;
-            margin: 20px auto;
-            border-radius: 12px;
-            max-width: 900px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
-        }
-        h2 {
-            color: #007acc;
-        }
-        ul {
-            padding-left: 20px;
-        }
-        li {
-            margin-bottom: 8px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 14px;
-        }
-        th, td {
-            border: 1px solid #ccc;
-            padding: 6px 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #007acc;
-            color: #fff;
-        }
-        td {
-            background-color: #f9f9f9;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Cloud Server</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; }
+  h1 { color: #2c3e50; }
+  form { margin-bottom: 20px; }
+  input[type="file"], input[type="text"], select { margin: 5px 0; }
+  ul { list-style-type: none; padding: 0; }
+  li { margin: 5px 0; }
+  a { color: #2980b9; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .messages { color: green; }
+</style>
 </head>
 <body>
+<h1>Welcome, {{ username }}</h1>
 
-    <h1>最新アップデート＆コード情報一覧（2025年9月15日現在）</h1>
+<!-- フォルダ作成 -->
+<form action="/create_folder" method="post">
+  <input type="text" name="folder_name" placeholder="New Folder" required>
+  <input type="submit" value="Create Folder">
+</form>
 
-    <!-- ブレインロット -->
-    <div class="game-section" id="brainrot">
-        <h2>ブレインロット（Brainrot Evolution）</h2>
-        <h3>最新アップデート</h3>
-        <ul>
-            <li>2025/09/13: Extinct Event 実装</li>
-            <li>2025/09/13: 新キャラクター10体追加</li>
-            <li>2025/09/13: 新儀式「Chicleteiras」導入</li>
-        </ul>
-        <h3>最新コード一覧</h3>
-        <table>
-            <tr><th>コード</th><th>効果内容</th></tr>
-            <tr><td>Goaaat</td><td>2x Mega EXP ポーション</td></tr>
-            <tr><td>YONICODE7</td><td>2x Mega EXP ポーション</td></tr>
-            <tr><td>LOLOCODE41</td><td>1x Lolo Crate</td></tr>
-            <tr><td>POTIONCODE9</td><td>2x EXP ポーション</td></tr>
-            <tr><td>Guardian</td><td>EXP ポーション</td></tr>
-            <tr><td>PlzSubi2</td><td>EXP ポーション</td></tr>
-            <tr><td>ToToToTo</td><td>EXP ポーション</td></tr>
-            <tr><td>FIXBUG891</td><td>EXP ポーション</td></tr>
-            <tr><td>SEWER</td><td>EXP ポーション</td></tr>
-            <tr><td>MEDUS</td><td>EXP ポーション</td></tr>
-            <tr><td>Eternal</td><td>EXP ポーション</td></tr>
-            <tr><td>HOTSPOT</td><td>EXP ポーション</td></tr>
-            <tr><td>CODE897</td><td>4x Mega EXP ポーション</td></tr>
-            <tr><td>FixedBoss31</td><td>EXP ポーション</td></tr>
-            <tr><td>Abyss</td><td>EXP ポーション</td></tr>
-            <tr><td>Lukeblox2</td><td>Mega EXP ポーション</td></tr>
-            <tr><td>TUNGTUNGx15</td><td>Vault Crates</td></tr>
-            <tr><td>PIXSUMMEREVENT1</td><td>Vault Crates</td></tr>
-            <tr><td>DUNGEON</td><td>EXP ポーション</td></tr>
-            <tr><td>TUNGTUNG13</td><td>Vault Crates</td></tr>
-            <tr><td>TUNG247</td><td>Lolo Crates</td></tr>
-            <tr><td>SummerPart2</td><td>EXP ポーション</td></tr>
-            <tr><td>Glorbo</td><td>EXP ポーション</td></tr>
-            <tr><td>Summer2025</td><td>イベントチケット</td></tr>
-            <tr><td>FIXED82</td><td>Lolo Crate</td></tr>
-            <tr><td>Udin Din Dun</td><td>EXP ポーション</td></tr>
-            <tr><td>INDEX</td><td>EXP ポーション</td></tr>
-            <tr><td>BrainCore</td><td>EXP ポーション</td></tr>
-            <tr><td>VOIDPART2</td><td>Void Ticket</td></tr>
-            <tr><td>VOIDEVENT</td><td>Void Ticket</td></tr>
-            <tr><td>JoinFix5</td><td>大量の Void Tickets</td></tr>
-            <tr><td>LOLO1</td><td>Lolo Crate</td></tr>
-            <tr><td>MATTEOOO</td><td>EXP ポーション</td></tr>
-            <tr><td>FIXED27</td><td>Lolo Crate</td></tr>
-            <tr><td>Ambalabu</td><td>EXP ポーション</td></tr>
-            <tr><td>Tralalero</td><td>EXP ポーション</td></tr>
-            <tr><td>EASTER</td><td>EXP ポーション</td></tr>
-            <tr><td>i2perfect1</td><td>EXP ポーション</td></tr>
-            <tr><td>lolgame1</td><td>EXP ポーション</td></tr>
-            <tr><td>release</td><td>Wins Potion</td></tr>
-        </table>
-    </div>
+<!-- ファイルアップロード -->
+<form method="post" enctype="multipart/form-data">
+  <input type="file" name="file" required>
+  <select name="target_folder">
+    <option value="">Root</option>
+    {% for folder in folders %}
+      <option value="{{ folder }}">{{ folder }}</option>
+    {% endfor %}
+  </select>
+  <input type="submit" value="Upload">
+</form>
 
-    <!-- フォートナイト -->
-    <div class="game-section" id="fortnite">
-        <h2>フォートナイト（Fortnite）</h2>
-        <h3>最新アップデート</h3>
-        <ul>
-            <li>2025/09/10: v37.20 アップデート実施</li>
-            <li>2025/09/10: Dino Megazord スキン登場</li>
-            <li>2025/09/10: 新武器「ヴェールド プレシジョンサブマシンガン」追加</li>
-            <li>2025/09/10: NPC モンスター「Bug」登場</li>
-        </ul>
-        <h3>最新コード一覧</h3>
-        <p>※ 現在、有効な公式コードは確認できません。</p>
-    </div>
+<!-- フォルダ・ファイル一覧 -->
+<h2>Files & Folders</h2>
+<ul>
+  {% for folder in folders %}
+    <li>📁 {{ folder }} 
+      <a href="/delete_folder/{{ folder }}">[Delete]</a>
+    </li>
+  {% endfor %}
 
-    <!-- ロブロックス -->
-    <div class="game-section" id="roblox">
-        <h2>ロブロックス（Roblox）</h2>
-        <h3>最新アップデート</h3>
-        <ul>
-            <li>2025/09/12: 「The Takeover」イベント開催中</li>
-            <li>2025/09/12: 新キャラクター「Kai Cenat」スキン登場</li>
-        </ul>
-        <h3>公式プロモーションコード一覧</h3>
-        <ul>
-            <li>TWEETROBLOX</li>
-            <li>SPIDERCOLA</li>
-        </ul>
-    </div>
+  {% for file in files %}
+    <li>📄 <a href="/files/{{ file }}" download>{{ file }}</a> 
+        <a href="/delete/{{ file }}">[Delete]</a>
+    </li>
+  {% endfor %}
+</ul>
 
+<a href="/logout">Logout</a>
+
+<!-- メッセージ表示 -->
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class="messages">
+      {% for msg in messages %}
+        <li>{{ msg }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
 </body>
 </html>
