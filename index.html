@@ -1,69 +1,77 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Cloud Server</title>
-<style>
-  body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; }
-  h1 { color: #2c3e50; }
-  form { margin-bottom: 20px; }
-  input[type="file"], input[type="text"], select { margin: 5px 0; }
-  ul { list-style-type: none; padding: 0; }
-  li { margin: 5px 0; }
-  a { color: #2980b9; text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  .messages { color: green; }
-</style>
+  <meta charset="UTF-8">
+  <title>日曜4時カウントダウン通知</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding-top: 50px;
+    }
+    #countdown {
+      font-size: 2em;
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
-<h1>Welcome, {{ username }}</h1>
+  <h1>次の日曜4:00までのカウントダウン</h1>
+  <div id="countdown">計算中...</div>
 
-<!-- フォルダ作成 -->
-<form action="/create_folder" method="post">
-  <input type="text" name="folder_name" placeholder="New Folder" required>
-  <input type="submit" value="Create Folder">
-</form>
+  <script>
+    // 通知許可リクエスト
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
 
-<!-- ファイルアップロード -->
-<form method="post" enctype="multipart/form-data">
-  <input type="file" name="file" required>
-  <select name="target_folder">
-    <option value="">Root</option>
-    {% for folder in folders %}
-      <option value="{{ folder }}">{{ folder }}</option>
-    {% endfor %}
-  </select>
-  <input type="submit" value="Upload">
-</form>
+    function notifyUser() {
+      if (Notification.permission === "granted") {
+        new Notification("⏰ 日曜日の朝4時になりました！");
+      } else {
+        alert("⏰ 日曜日の朝4時になりました！");
+      }
+    }
 
-<!-- フォルダ・ファイル一覧 -->
-<h2>Files & Folders</h2>
-<ul>
-  {% for folder in folders %}
-    <li>📁 {{ folder }} 
-      <a href="/delete_folder/{{ folder }}">[Delete]</a>
-    </li>
-  {% endfor %}
+    function getNextSunday4AM() {
+      const now = new Date();
+      const result = new Date(now);
 
-  {% for file in files %}
-    <li>📄 <a href="/files/{{ file }}" download>{{ file }}</a> 
-        <a href="/delete/{{ file }}">[Delete]</a>
-    </li>
-  {% endfor %}
-</ul>
+      // 次の日曜4:00に設定
+      result.setDate(now.getDate() + ((7 - now.getDay()) % 7)); // 次の日曜の日付
+      result.setHours(4, 0, 0, 0);
 
-<a href="/logout">Logout</a>
+      // 今日が日曜で、すでに4:00を過ぎていたら翌週にする
+      if (now > result) {
+        result.setDate(result.getDate() + 7);
+      }
+      return result;
+    }
 
-<!-- メッセージ表示 -->
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <ul class="messages">
-      {% for msg in messages %}
-        <li>{{ msg }}</li>
-      {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
+    function updateCountdown() {
+      const now = new Date();
+      const target = getNextSunday4AM();
+      const diff = target - now;
+
+      if (diff <= 0) {
+        notifyUser();
+        document.getElementById("countdown").textContent = "今がその時です！";
+        clearInterval(timer);
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      document.getElementById("countdown").textContent =
+        `${days}日 ${hours}時間 ${minutes}分 ${seconds}秒`;
+    }
+
+    // 1秒ごとに更新
+    const timer = setInterval(updateCountdown, 1000);
+    updateCountdown();
+  </script>
 </body>
 </html>
