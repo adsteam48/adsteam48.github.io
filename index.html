@@ -1,53 +1,54 @@
-<!DOCTYPE html>
+
+
+<!doctype html>
 <html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <title>カウントダウン</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      background: #111;
-      color: #fff;
-      padding-top: 100px;
-    }
-    h1 {
-      font-size: 2em;
-      margin-bottom: 20px;
-    }
-    #countdown {
-      font-size: 3em;
-      font-weight: bold;
-    }
-  </style>
-</head>
-<body>
-  <h1>⏰ 9月27日（土）4:00までカウントダウン！</h1>
-  <div id="countdown">計算中...</div>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/webp" href="https://static.readdy.ai/image/ada874b11fd1802500c87aca304df31e/60c2b7d74768f06320ffdb2dff0ab9d8.webp" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI秘書サービス - 4日間無料体験</title>
+    <meta name="description" content="最新のAI技術を使った秘書サービス。お一人様1つまで、初回4日間すべての機能を無料でお試しいただけます。" />
+    <meta name="keywords" content="AI秘書, 人工知能, 秘書サービス, 無料体験, ビジネスサポート" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://ai-secretary.com/" />
+    <meta property="og:title" content="AI秘書サービス - 4日間無料体験" />
+    <meta property="og:description" content="最新のAI技術を使った秘書サービス。お一人様1つまで、初回4日間すべての機能を無料でお試しいただけます。" />
+    <meta property="og:image" content="https://readdy.ai/api/search-image?query=Professional%20AI%20assistant%20secretary%20robot%20helping%20business%20person%20with%20documents%20and%20scheduling%20in%20modern%20office%20environment%20with%20blue%20and%20white%20color%20scheme%20clean%20minimalist%20design&width=1200&height=630&seq=og-image&orientation=landscape" />
 
-  <script>
-    function updateCountdown() {
-      // 締め切り日時を設定（ローカル時間）
-      const target = new Date("2025-09-27T04:00:00+09:00"); 
-      const now = new Date();
-      const diff = target - now;
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://ai-secretary.com/" />
+    <meta property="twitter:title" content="AI秘書サービス - 4日間無料体験" />
+    <meta property="twitter:description" content="最新のAI技術を使った秘書サービス。お一人様1つまで、初回4日間すべての機能を無料でお試しいただけます。" />
+    <meta property="twitter:image" content="https://readdy.ai/api/search-image?query=Professional%20AI%20assistant%20secretary%20robot%20helping%20business%20person%20with%20documents%20and%20scheduling%20in%20modern%20office%20environment%20with%20blue%20and%20white%20color%20scheme%20clean%20minimalist%20design&width=1200&height=630&seq=twitter-image&orientation=landscape" />
 
-      if (diff <= 0) {
-        document.getElementById("countdown").textContent = "みんな起きる時間だ！🌅";
-        clearInterval(timer);
-        return;
-      }
-
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-      document.getElementById("countdown").textContent =
-        `${hours}時間 ${minutes}分 ${seconds}秒`;
-    }
-
-    updateCountdown(); // 初期表示
-    const timer = setInterval(updateCountdown, 1000);
-  </script>
-</body>
+    <!-- Remix Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
+          <script type="module" crossorigin src="/preview/0628689f-05cb-4224-a5a3-59c25cea0520/2743150/assets/index-CDBcl_U9.js"></script>
+          <link rel="stylesheet" crossorigin href="/preview/0628689f-05cb-4224-a5a3-59c25cea0520/2743150/assets/index-C0TdbXuI.css">
+        </head>
+  <body>
+    <div id="root"></div>
+    <script 
+      src="https://readdy.ai/api/public/assistant/widget?projectId=67690f91b90b5bb0b7bc6074"
+      mode="hybrid"
+      voice-show-transcript="true"
+      theme="light"
+      size="compact"
+      accent-color="#14B8A6"
+      button-base-color="#000000"
+      button-accent-color="#FFFFFF"
+      defer
+    ></script>
+  </body>
 </html>
