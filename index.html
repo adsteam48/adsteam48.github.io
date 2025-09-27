@@ -7,34 +7,27 @@
     body {
       font-family: sans-serif;
       text-align: center;
+      margin-top: 100px;
       background: #111;
-      color: #fff;
-      padding-top: 100px;
-    }
-    h1 {
-      font-size: 2em;
-      margin-bottom: 20px;
+      color: #0f0;
     }
     #countdown {
       font-size: 3em;
-      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <h1>⏰ 9月27日（土）4:00までカウントダウン！</h1>
-  <div id="countdown">計算中...</div>
+  <h1>⏳ 9月28日 4:00までカウントダウン</h1>
+  <div id="countdown"></div>
 
   <script>
     function updateCountdown() {
-      // 締め切り日時を設定（ローカル時間）
-      const target = new Date("2025-09-27T04:00:00+09:00"); 
+      const target = new Date("2025-09-28T04:00:00+09:00"); // JST で 9/28 4:00
       const now = new Date();
       const diff = target - now;
 
       if (diff <= 0) {
-        document.getElementById("countdown").textContent = "みんな起きる時間だ！🌅";
-        clearInterval(timer);
+        document.getElementById("countdown").innerHTML = "✅ 時間になりました！";
         return;
       }
 
@@ -42,12 +35,12 @@
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-      document.getElementById("countdown").textContent =
+      document.getElementById("countdown").innerHTML =
         `${hours}時間 ${minutes}分 ${seconds}秒`;
     }
 
-    updateCountdown(); // 初期表示
-    const timer = setInterval(updateCountdown, 1000);
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
   </script>
 </body>
 </html>
