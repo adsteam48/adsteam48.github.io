@@ -27,25 +27,27 @@
       top: 0;
       left: 0;
     }
+    h1, h2 {
+      text-align: center;
+    }
     h1 {
       font-size: 2em;
-      text-align: center;
       margin: 20px;
     }
-    #countdown {
+    h2 {
+      font-size: 1.5em;
+      margin-top: 40px;
+      margin-bottom: 10px;
+    }
+    #countdown, #secretCountdown {
       font-size: 3em;
       font-weight: bold;
       letter-spacing: 2px;
-      margin-bottom: 40px;
+      margin-bottom: 20px;
     }
     section#events {
       width: 90%;
       max-width: 600px;
-    }
-    #events h2 {
-      font-size: 1.5em;
-      margin-bottom: 10px;
-      text-align: center;
     }
     #events ul {
       list-style-type: none;
@@ -74,34 +76,25 @@
 <body>
   <div class="warning">⚠️ ブレインロット運営のトラブルによりイベントは延期されました</div>
 
-  <h1>イベントは <br> 9月29日 5:00 JST 開催予定</h1>
+  <h1>次回イベント開催までのカウントダウン</h1>
   <div id="countdown">計算中...</div>
+
+  <h2>シークレット確定イベントまでのカウントダウン</h2>
+  <div id="secretCountdown">計算中...</div>
 
   <section id="events">
     <h2>未対応中及び延期のイベント一覧</h2>
     <ul>
       <li>
-        <strong>水イベント</strong><br>
-        本日（9/28）5:00予定 → 主の都合により延期<br>
-        新日時：9/29 5:00 JST
+        <strong>シークレット確定イベント</strong><br>
+        本来日時：2025/9/28 4:00 JST（予定より1時間早まりました）<br>
+        再開日時：2025/9/29 5:00 JST
         <div class="comment">
-          運営コメント：<br>
-          皆さん、申し訳ありませんが、本日のイベントは明日午後3時（EST）に延期となります。<br>
-          私たちのバージョンが時間内に承認されなかったため、マップ上でコンテンツはまだ利用できません。<br>
-          新しいバージョンをアップロード中で、当初予定されていた内容は明日に実施されます。<br>
-          ご迷惑をおかけして申し訳ありません。明日は「インサネ ADMIN ABUSE（※運営の力技イベント）」で取り返すことをお約束します！
+          運営コメント：告知済みの日時で開催されます。変更があれば追って通知されます。
         </div>
       </li>
-      <li>
-      <li>
-<li>
-  <strong>シークレット確定イベント</strong><br>
-  本来日時：2025/9/28 4:00 JST（予定より1時間早まりました）<br>
-  再開日時：2025/9/29 5:00 JST
-  <div class="comment">
-    運営コメント：告知済みの日時で開催されます。変更があれば追って通知されます。
-  </div>
-</li>
+    </ul>
+  </section>
 
   <footer>
     このサイトはブレインロットの情報共有閲覧のみです（公式ではありません）。<br>
@@ -109,29 +102,43 @@
   </footer>
 
   <script>
-    // 目標日時（JST）
+    // 通常イベントカウントダウン（9/29 5:00 JST）
     const targetDate = new Date("2025-09-29T05:00:00+09:00");
-
     function updateCountdown() {
       const now = new Date();
       const diff = targetDate - now;
-
       if (diff <= 0) {
         document.getElementById("countdown").textContent = "⏰ イベント開始！";
         clearInterval(timer);
         return;
       }
-
       const hours = Math.floor(diff / (1000 * 60 * 60));
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
       document.getElementById("countdown").textContent =
         `${hours}時間 ${minutes}分 ${seconds}秒`;
     }
-
-    updateCountdown(); // 初期表示
+    updateCountdown();
     const timer = setInterval(updateCountdown, 1000);
+
+    // シークレット確定イベントカウントダウン（9/29 4:00 JST）
+    const secretDate = new Date("2025-09-29T04:00:00+09:00");
+    function updateSecretCountdown() {
+      const now = new Date();
+      const diff = secretDate - now;
+      if (diff <= 0) {
+        document.getElementById("secretCountdown").textContent = "⏰ シークレットイベント開始！";
+        clearInterval(secretTimer);
+        return;
+      }
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      document.getElementById("secretCountdown").textContent =
+        `${hours}時間 ${minutes}分 ${seconds}秒`;
+    }
+    updateSecretCountdown();
+    const secretTimer = setInterval(updateSecretCountdown, 1000);
   </script>
 </body>
 </html>
