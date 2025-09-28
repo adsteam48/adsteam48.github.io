@@ -110,11 +110,8 @@
   </footer>
 
   <script>
-    // 現在から残り 5時間39分10秒 のカウントダウン
-    const now = new Date();
-    const diffMs = (5 * 60 * 60 + 39 * 60 + 10) * 1000; // 5時間39分10秒
-    const targetDate = new Date(now.getTime() + diffMs);
-
+    // 通常イベントカウントダウン（9/29 5:00 JST）
+    const targetDate = new Date("2025-09-29T05:00:00+09:00");
     function updateCountdown() {
       const now = new Date();
       const diff = targetDate - now;
@@ -132,8 +129,8 @@
     updateCountdown();
     const timer = setInterval(updateCountdown, 1000);
 
-    // シークレット確定イベントカウントダウン（9/29 4:16 JST）
-    const secretDate = new Date("2025-09-29T04:16:00+09:00");
+    // シークレット確定イベントカウントダウン（9/29 4:30 JST）
+    const secretDate = new Date("2025-09-29T04:30:00+09:00");
     function updateSecretCountdown() {
       const now = new Date();
       const diff = secretDate - now;
