@@ -2,18 +2,18 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>カウントダウン</title>
+  <title>カウントダウン＆延期イベント一覧</title>
   <style>
     body {
       font-family: "Segoe UI", sans-serif;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      height: 100vh;
+      margin: 0;
       background: #111;
       color: #fff;
-      flex-direction: column;
-      margin: 0;
+      min-height: 100vh;
+      padding-top: 80px;
     }
     .warning {
       width: 100%;
@@ -29,13 +29,45 @@
     }
     h1 {
       font-size: 2em;
-      margin: 100px 20px 20px;
       text-align: center;
+      margin: 20px;
     }
     #countdown {
       font-size: 3em;
       font-weight: bold;
       letter-spacing: 2px;
+      margin-bottom: 40px;
+    }
+    section#events {
+      width: 90%;
+      max-width: 600px;
+    }
+    #events h2 {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    #events ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    #events li {
+      background: #222;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+    }
+    .comment {
+      margin-top: 5px;
+      font-size: 0.9em;
+      color: #aaa;
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 0.9em;
+      color: #aaa;
+      text-align: center;
+      padding-bottom: 20px;
     }
   </style>
 </head>
@@ -44,6 +76,29 @@
 
   <h1>イベントは <br> 9月29日 5:00 JST 開催予定</h1>
   <div id="countdown">計算中...</div>
+
+  <section id="events">
+    <h2>未対応中及び延期のイベント一覧</h2>
+    <ul>
+      <li>
+        <strong>水イベント</strong><br>
+        本日（9/28）5:00予定 → 主の都合により延期<br>
+        新日時：9/29 5:00 JST
+        <div class="comment">
+          運営コメント：<br>
+          皆さん、申し訳ありませんが、本日のイベントは明日午後3時（EST）に延期となります。<br>
+          私たちのバージョンが時間内に承認されなかったため、マップ上でコンテンツはまだ利用できません。<br>
+          新しいバージョンをアップロード中で、当初予定されていた内容は明日に実施されます。<br>
+          ご迷惑をおかけして申し訳ありません。明日は「インサネ ADMIN ABUSE（※運営の力技イベント）」で取り返すことをお約束します！
+        </div>
+      </li>
+      <!-- ほかの延期イベントもここに追加可能 -->
+    </ul>
+  </section>
+
+  <footer>
+    このサイトはブレインロットの情報共有閲覧のみです（公式ではありません）
+  </footer>
 
   <script>
     // 目標日時（JST）
