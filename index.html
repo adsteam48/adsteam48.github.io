@@ -43,6 +43,12 @@
       font-size: 3em;
       font-weight: bold;
       letter-spacing: 2px;
+      margin-bottom: 5px;
+    }
+    .note {
+      font-size: 0.8em;
+      color: #aaa;
+      text-align: center;
       margin-bottom: 20px;
     }
     section#events {
@@ -78,9 +84,11 @@
 
   <h1>次回イベント開催までのカウントダウン</h1>
   <div id="countdown">計算中...</div>
+  <div class="note">※カウントダウンはゲーム内の状況や予想をもとに設定しています。公式発表ではありません。</div>
 
   <h2>シークレット確定イベントまでのカウントダウン</h2>
   <div id="secretCountdown">計算中...</div>
+  <div class="note">※カウントダウンはゲーム内の状況や予想をもとに設定しています。公式発表ではありません。</div>
 
   <section id="events">
     <h2>未対応中及び延期のイベント一覧</h2>
@@ -121,8 +129,8 @@
     updateCountdown();
     const timer = setInterval(updateCountdown, 1000);
 
-    // シークレット確定イベントカウントダウン（9/29 4:00 JST）
-    const secretDate = new Date("2025-09-29T04:00:00+09:00");
+    // シークレット確定イベントカウントダウン（9/29 4:16 JST）
+    const secretDate = new Date("2025-09-29T04:16:00+09:00");
     function updateSecretCountdown() {
       const now = new Date();
       const diff = secretDate - now;
