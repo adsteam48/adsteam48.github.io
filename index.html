@@ -13,10 +13,24 @@
       background: #111;
       color: #fff;
       flex-direction: column;
+      margin: 0;
+    }
+    .warning {
+      width: 100%;
+      background: #b00020;
+      color: #fff;
+      text-align: center;
+      padding: 15px;
+      font-weight: bold;
+      font-size: 1.2em;
+      position: fixed;
+      top: 0;
+      left: 0;
     }
     h1 {
       font-size: 2em;
-      margin-bottom: 20px;
+      margin: 100px 20px 20px;
+      text-align: center;
     }
     #countdown {
       font-size: 3em;
@@ -26,19 +40,21 @@
   </style>
 </head>
 <body>
-  <h1>⏳ 9月28日 5:00 までのカウントダウン</h1>
+  <div class="warning">⚠️ ブレインロット運営のトラブルによりイベントは延期されました</div>
+
+  <h1>イベントは <br> 9月29日 5:00 JST 開催予定</h1>
   <div id="countdown">計算中...</div>
 
   <script>
     // 目標日時（JST）
-    const targetDate = new Date("2025-09-28T05:00:00+09:00");
+    const targetDate = new Date("2025-09-29T05:00:00+09:00");
 
     function updateCountdown() {
       const now = new Date();
       const diff = targetDate - now;
 
       if (diff <= 0) {
-        document.getElementById("countdown").textContent = "⏰ 時間になりました！";
+        document.getElementById("countdown").textContent = "⏰ イベント開始！";
         clearInterval(timer);
         return;
       }
