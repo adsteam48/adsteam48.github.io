@@ -1,1 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TogetherBot 公式サイト</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/dist/tailwind.min.css" rel="stylesheet">
+<style>
+body { background-color: #1e1e2f; color: #f0f0f0; }
+.command { background-color: #2b2b3f; padding: 0.75rem 1rem; border-radius: 0.5rem; margin-bottom: 0.5rem; font-family: monospace; }
+h2 { border-bottom: 2px solid #4f46e5; display: inline-block; padding-bottom: 0.25rem; }
+.btn-animate:hover { transform: scale(1.05); transition: transform 0.2s; }
+</style>
+</head>
+<body class="font-sans">
 
+<!-- ヒーロー -->
+<section class="text-center py-24 bg-indigo-700">
+  <h1 class="text-6xl font-bold mb-4">TogetherBot</h1>
+  <p class="text-2xl mb-6">あなたのDiscordサーバーを一つにするBot</p>
+  <div class="flex justify-center gap-4">
+    <a href="https://discord.com/oauth2/authorize?client_id=YOUR_BOT_ID&scope=bot" class="btn-animate px-6 py-3 bg-white text-indigo-700 font-bold rounded hover:bg-gray-200">Botを招待</a>
+    <a href="#features" class="btn-animate px-6 py-3 bg-gray-800 text-white font-bold rounded hover:bg-gray-700">機能を見る</a>
+  </div>
+</section>
+
+<!-- 機能紹介 -->
+<section id="features" class="py-20 container mx-auto">
+  <h2 class="text-4xl font-bold mb-12 text-center">主な機能</h2>
+  <div class="grid md:grid-cols-3 gap-8">
+    <div class="bg-gray-800 p-6 rounded text-center hover:bg-gray-700 transition">
+      <h3 class="text-2xl font-bold mb-2">音楽再生</h3>
+      <p>コマンド一つで音楽を再生、プレイリストも管理可能。</p>
+    </div>
+    <div class="bg-gray-800 p-6 rounded text-center hover:bg-gray-700 transition">
+      <h3 class="text-2xl font-bold mb-2">管理コマンド</h3>
+      <p>メンバー管理やモデレーション機能でサーバー運営が簡単に。</p>
+    </div>
+    <div class="bg-gray-800 p-6 rounded text-center hover:bg-gray-700 transition">
+      <h3 class="text-2xl font-bold mb-2">ゲーム機能</h3>
+      <p>サーバー内で遊べる楽しいミニゲームやランキング機能。</p>
+    </div>
+  </div>
+</section>
+
+<!-- スクリーンショット -->
+<section class="py-20 bg-gray-800 text-center">
+  <h2 class="text-4xl font-bold mb-12">スクリーンショット / デモ</h2>
+  <img src="screenshot1.png" alt="TogetherBot デモ" class="mx-auto mb-6 rounded shadow-lg">
+  <img src="screenshot2.png" alt="TogetherBot デモ" class="mx-auto rounded shadow-lg">
+</section>
+
+<!-- 導入方法 -->
+<section class="py-20 container mx-auto text-center">
+  <h2 class="text-4xl font-bold mb-6">導入方法</h2>
+  <p class="mb-6">以下のボタンからサーバーに招待して、すぐに使い始められます。</p>
+  <a href="https://discord.com/oauth2/authorize?client_id=YOUR_BOT_ID&scope=bot" class="btn-animate px-6 py-3 bg-indigo-600 text-white font-bold rounded hover:bg-indigo-500">サーバーに招待</a>
+</section>
+
+<!-- ヘルプ（コマンド一覧） -->
+<section id="help" class="py-20 container mx-auto">
+  <h2 class="text-4xl font-bold mb-12 text-center">📚 TogetherBot ヘルプ</h2>
+  
+  <!-- 全員が使えるコマンド -->
+  <h3 class="text-2xl font-semibold mb-4">👤 全員が使えるコマンド</h3>
+  <div class="grid md:grid-cols-2 gap-4 mb-8">
+    <div class="command">/help - ヘルプ</div>
+    <div class="command">/botinfo - ボット詳細情報</div>
+    <div class="command">/userinfo - ユーザー情報</div>
+    <div class="command">/serverinfo - サーバー情報</div>
+    <div class="command">/avatar - アバター表示</div>
+    <div class="command">/dice - サイコロ</div>
+    <div class="command">/coinflip - コイントス</div>
+    <div class="command">/fortune - 今日の運勢</div>
+  </div>
+
+  <!-- 管理者コマンド -->
+  <h3 class="text-2xl font-semibold mb-4">🛡️ 管理者コマンド</h3>
+
+  <!-- 認証 -->
+  <h4 class="text-xl font-semibold mb-2">認証</h4>
+  <div class="grid md:grid-cols-2 gap-4 mb-4">
+    <div class="command">/verify [ロール] - 認証パネル作成</div>
+    <div class="command">/auth_setlog [チャンネル] - ログ設定</div>
+    <div class="command">/setstatus [message/clear] - ステータス設定</div>
+  </div>
+
+  <!-- モデレーション -->
+  <h4 class="text-xl font-semibold mb-2">モデレーション</h4>
+  <div class="grid md:grid-cols-2 gap-4 mb-4">
+    <div class="command">/kick [メンバー] [理由] - キック</div>
+    <div class="command">/ban [メンバー] [理由] - BAN</div>
+    <div class="command">/timeout [メンバー] [分] [理由] - タイムアウト</div>
+    <div class="command">/clear [数] - サーバーのメッセージ削除</div>
+    <div class="command">/cleardm [ユーザー] [数] - DMのボットメッセージ削除</div>
+  </div>
+
+  <!-- ロール管理 -->
+  <h4 class="text-xl font-semibold mb-2">ロール管理</h4>
+  <div class="grid md:grid-cols-2 gap-4">
+    <div class="command">/addrole [メンバー] [ロール] - ロール付与</div>
+    <div class="command">/removerole [メンバー] [ロール] - ロール削除</div>
+  </div>
+</section>
+
+<footer class="bg-gray-900 text-center py-6 text-gray-400">
+  <p>&copy; 2025 TogetherBot | 24時間稼働中</p>
+  <div class="mt-2 flex justify-center gap-4">
+    <a href="https://twitter.com/TogetherBot" class="hover:text-white">Twitter</a>
+  </div>
+</footer>
+
+</body>
+</html>
