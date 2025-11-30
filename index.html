@@ -1,1 +1,100 @@
 
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>運行情報 - 架空チームNR鉄道</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            background: #f2f2f2;
+        }
+        header {
+            background: #1a73e8;
+            color: white;
+            padding: 15px 20px;
+            font-size: 1.4em;
+        }
+        .container {
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h2 {
+            margin-top: 0;
+        }
+        .status-delayed {
+            color: #d32f2f;
+            font-weight: bold;
+        }
+        .status-info {
+            color: #f57c00;
+            font-weight: bold;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            color: #666;
+            font-size: 0.9em;
+        }
+        a.button {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 15px;
+            background: #1a73e8;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        a.button:hover {
+            opacity: 0.85;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    運行情報 - 架空チームNR鉄道
+</header>
+
+<div class="container">
+
+    <div class="card">
+        <h2>中央市線 遅延情報</h2>
+        <p class="status-delayed">急行列車および各駅停車に遅延が発生しています。</p>
+        <p>原因調査および列車調整を行っております。ご迷惑をおかけいたします。</p>
+    </div>
+
+    <div class="card">
+        <h2>特急「ひのとり」臨時停車</h2>
+        <p class="status-info">12月31日まで、特急「ひのとり」は臨時で名古屋駅に停車します。</p>
+        <p>期間中はご注意ください。</p>
+    </div>
+
+    <div class="card">
+        <h2>全路線運行状況</h2>
+        <ul>
+            <li>NR中央空港線：通常運転</li>
+            <li>NRターミナル連絡空港線：通常運転</li>
+            <li>NR中央本線：通常運転</li>
+            <li>NR中央市線：遅延発生中</li>
+        </ul>
+    </div>
+
+    <a class="button" href="index.html">トップページに戻る</a>
+
+</div>
+
+<footer>
+    © 架空チームNR鉄道
+</footer>
+
+</body>
+</html>
