@@ -1,526 +1,97 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NR鉄道 - 公式サイト | Minecraft架空鉄道</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<title>NR鉄道 運行情報</title>
+<style>
+    body {
+        font-family: "Yu Gothic", sans-serif;
+        background: #f5f7fa;
+        padding: 20px;
+        margin: 0;
+    }
 
-        body {
-            font-family: 'Segoe UI', 'メイリオ', Meiryo, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
-            line-height: 1.6;
-        }
+    .header {
+        font-size: 26px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        text-align: center;
+        color: #2b2b2b;
+    }
 
-        .header {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
-            padding: 2rem 0;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
+    .alert-banner {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        box-shadow: 0 8px 32px rgba(255,71,87,0.4);
+    }
 
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    .alert-title {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
 
-        .logo {
-            font-size: 2.5rem;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
+    .section {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
 
-        .logo-icon {
-            width: 50px;
-            height: 50px;
-            background: white;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-
-        .nav {
-            display: flex;
-            gap: 2rem;
-        }
-
-        .nav a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-        }
-
-        .nav a:hover {
-            background: rgba(255,255,255,0.2);
-            transform: translateY(-2px);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 2rem;
-        }
-
-        .alert-banner {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-            color: white;
-            padding: 1.5rem;
-            border-radius: 15px;
-            margin-bottom: 2rem;
-            box-shadow: 0 8px 32px rgba(255,107,107,0.4);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-        }
-
-        .alert-title {
-            font-size: 1.8rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .card {
-            background: white;
-            border-radius: 20px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            transition: transform 0.3s;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-        }
-
-        .card-title {
-            font-size: 1.8rem;
-            color: #1e3c72;
-            margin-bottom: 1.5rem;
-            border-left: 5px solid #667eea;
-            padding-left: 1rem;
-            font-weight: bold;
-        }
-
-        .status-list {
-            list-style: none;
-        }
-
-        .status-item {
-            display: flex;
-            align-items: center;
-            padding: 1rem;
-            border-radius: 10px;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
-            border-left: 4px solid #ff6b6b;
-        }
-
-        .status-icon {
-            width: 30px;
-            height: 30px;
-            background: #ff6b6b;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 1rem;
-            font-weight: bold;
-        }
-
-        .line-name {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #c92a2a;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .info-card {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 2rem;
-            border-radius: 15px;
-            border: 2px solid #dee2e6;
-        }
-
-        .info-card h3 {
-            color: #1e3c72;
-            margin-bottom: 1rem;
-            font-size: 1.4rem;
-        }
-
-        .server-info {
-            background: linear-gradient(135deg, #20c997 0%, #0ca678 100%);
-            color: white;
-            padding: 2rem;
-            border-radius: 20px;
-            margin-top: 2rem;
-            box-shadow: 0 10px 40px rgba(32,201,151,0.3);
-        }
-
-        .server-info h2 {
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-
-        .server-details {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .server-detail {
-            background: rgba(255,255,255,0.2);
-            padding: 1rem;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .server-label {
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-
-        .server-value {
-            font-family: 'Courier New', monospace;
-            font-size: 1.2rem;
-            background: rgba(0,0,0,0.2);
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-        }
-
-        .copy-btn {
-            background: white;
-            color: #20c997;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-
-        .copy-btn:hover {
-            background: #f8f9fa;
-            transform: scale(1.05);
-        }
-
-        .recruitment {
-            background: linear-gradient(135deg, #ffd93d 0%, #ffc107 100%);
-            color: #333;
-            padding: 2rem;
-            border-radius: 20px;
-            text-align: center;
-            margin-top: 2rem;
-            box-shadow: 0 10px 40px rgba(255,193,7,0.4);
-        }
-
-        .recruitment h2 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-        }
-
-        .recruitment-btn {
-            background: white;
-            color: #ffc107;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 10px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 1rem;
-            transition: all 0.3s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .recruitment-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-        }
-
-        .timeline {
-            position: relative;
-            padding: 2rem 0;
-        }
-
-        .timeline-item {
-            display: flex;
-            gap: 2rem;
-            margin-bottom: 2rem;
-            position: relative;
-        }
-
-        .timeline-date {
-            width: 150px;
-            font-weight: bold;
-            color: #667eea;
-        }
-
-        .timeline-content {
-            flex: 1;
-            background: #f8f9fa;
-            padding: 1.5rem;
-            border-radius: 10px;
-            border-left: 4px solid #667eea;
-        }
-
-        .footer {
-            background: #1e3c72;
-            color: white;
-            text-align: center;
-            padding: 2rem;
-            margin-top: 4rem;
-        }
-
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .nav {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .server-detail {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-        }
-    </style>
+    ul {
+        margin-top: 10px;
+        padding-left: 20px;
+    }
+</style>
 </head>
 <body>
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">
-                <div class="logo-icon">🚄</div>
-                <span>NR鉄道</span>
-            </div>
-            <nav class="nav">
-                <a href="#status">運行状況</a>
-                <a href="#info">リニューアル情報</a>
-                <a href="#server">サーバー情報</a>
-                <a href="#recruit">開発者募集</a>
-            </nav>
-        </div>
-    </header>
 
-    <div class="container">
-        <div class="alert-banner">
-            <div class="alert-title">
-                ⚠️ 重要なお知らせ - 大規模リニューアル実施中
-            </div>
-            <p>現在、NR鉄道ではより良い鉄道ワールドを提供するため、大規模リニューアル作業を実施しています。</p>
-            <p>一部路線で長期運転見合わせが発生しておりますことをお詫び申し上げます。</p>
-        </div>
+<div class="header">NR鉄道 公式運行情報</div>
 
-        <div id="status" class="card">
-            <h2 class="card-title">🚫 運転見合わせ路線</h2>
-            <p style="margin-bottom: 1.5rem; color: #666;">以下の路線は現在運転を見合わせています。安全が確認され次第、順次運転を再開いたします。</p>
-            <ul class="status-list">
-                <li class="status-item">
-                    <div class="status-icon">✕</div>
-                    <span class="line-name">中央本線</span>
-                </li>
-                <li class="status-item">
-                    <div class="status-icon">✕</div>
-                    <span class="line-name">中央空港線</span>
-                </li>
-                <li class="status-item">
-                    <div class="status-icon">✕</div>
-                    <span class="line-name">ターミナル連絡空港線</span>
-                </li>
-                <li class="status-item">
-                    <div class="status-icon">✕</div>
-                    <span class="line-name">中央市線</span>
-                </li>
-                <li class="status-item">
-                    <div class="status-icon">✕</div>
-                    <span class="line-name">中央線</span>
-                </li>
-            </ul>
-        </div>
+<div class="alert-banner">
+    <div class="alert-title">重要なお知らせ</div>
+    <p>現在、より良い鉄道ワールドを作るため、全線リニューアル作業を実施しています。</p>
+    <p>この影響により、NR鉄道のすべての既存データを削除し、フラット状態から再構築を行っています。</p>
+    <p>Addonなどのファイルデータは保持されています。</p>
+</div>
 
-        <div id="info" class="card">
-            <h2 class="card-title">🔧 リニューアル情報</h2>
-            <div class="info-grid">
-                <div class="info-card">
-                    <h3>📋 作業内容</h3>
-                    <p>すべてのデータを一度削除し、フラット状態から鉄道ワールドを再構築しています。</p>
-                    <p style="margin-top: 1rem;">より快適で安全な鉄道体験を提供するための全面改修です。</p>
-                </div>
-                <div class="info-card">
-                    <h3>💾 データ保管状況</h3>
-                    <p>Addon等の重要なデータはすべて安全に保管済みです。</p>
-                    <p style="margin-top: 1rem;">今後の路線整備に活用されます。</p>
-                </div>
-                <div class="info-card">
-                    <h3>🎯 リニューアルの目標</h3>
-                    <p>・より美しい駅舎デザイン</p>
-                    <p>・スムーズな運行システム</p>
-                    <p>・充実した路線網</p>
-                    <p>・リアルな鉄道体験</p>
-                </div>
-            </div>
+<div class="alert-banner" style="margin-top: 1rem; background: linear-gradient(135deg, #ffa94d 0%, #ff922b 100%); box-shadow: 0 8px 32px rgba(255,159,67,0.4);">
+    <div class="alert-title">🎄 クリスマス会 中止のお知らせ</div>
+    <p>予定していたクリスマス会は、現在実施中のリニューアル作業の影響により中止となりました。</p>
+    <p>楽しみにしていた皆様には申し訳ありませんが、ご理解のほどよろしくお願いいたします。</p>
+</div>
 
-            <div class="timeline">
-                <h3 style="margin-bottom: 2rem; font-size: 1.5rem; color: #1e3c72;">⏱️ 進捗タイムライン</h3>
-                <div class="timeline-item">
-                    <div class="timeline-date">現在</div>
-                    <div class="timeline-content">
-                        <strong>第1フェーズ: データ整理・基盤構築</strong>
-                        <p>フラット化完了、設計図作成中</p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-date">進行中</div>
-                    <div class="timeline-content">
-                        <strong>第2フェーズ: 主要路線再建</strong>
-                        <p>中央本線を優先的に再構築予定</p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-date">予定</div>
-                    <div class="timeline-content">
-                        <strong>第3フェーズ: 全路線開業</strong>
-                        <p>安全確認後、順次運転再開</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+<div class="section">
+    <h2>運行情報</h2>
+    <p>以下の路線は、工事およびリニューアル作業の影響で長期運転見合わせとなっています。</p>
 
-        <div id="server" class="server-info">
-            <h2>🖥️ サーバー情報</h2>
-            <p style="text-align: center; margin-bottom: 2rem;">NR鉄道ワールドへのアクセス方法</p>
-            <div class="server-details">
-                <div class="server-detail">
-                    <span class="server-label">サーバーアドレス:</span>
-                    <span class="server-value" id="address">usertetsudou.aternos.me</span>
-                    <button class="copy-btn" onclick="copyAddress()">コピー</button>
-                </div>
-                <div class="server-detail">
-                    <span class="server-label">ポート番号:</span>
-                    <span class="server-value" id="port">44186</span>
-                    <button class="copy-btn" onclick="copyPort()">コピー</button>
-                </div>
-            </div>
-            <p style="margin-top: 2rem; text-align: center; font-size: 0.9rem; opacity: 0.9;">
-                ※ Minecraft Bedrock Edition対応<br>
-                ※ サーバーの起動状況によりアクセスできない場合があります
-            </p>
-        </div>
+    <ul>
+        <li>中央本線</li>
+        <li>中央空港線</li>
+        <li>ターミナル連絡空港線</li>
+        <li>中央市線</li>
+        <li>中央線</li>
+    </ul>
 
-        <div id="recruit" class="recruitment">
-            <h2>👥 開発者募集中！</h2>
-            <p style="font-size: 1.2rem; margin: 1rem 0;">NR鉄道のリニューアルプロジェクトに参加しませんか？</p>
-            <p>建築、レッドストーン回路、Addonプログラミングなど、あなたのスキルを活かせます！</p>
-            <button class="recruitment-btn" onclick="joinServer()">📝 参加申し込み（サーバーへ接続）</button>
-            
-            <div style="margin-top: 2rem; background: rgba(255,255,255,0.9); padding: 2rem; border-radius: 15px; text-align: left;">
-                <h3 style="color: #1e3c72; margin-bottom: 1rem;">募集職種</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                    <div style="background: white; padding: 1rem; border-radius: 10px;">
-                        <strong>🏗️ 建築担当</strong>
-                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">駅舎・車両基地の設計</p>
-                    </div>
-                    <div style="background: white; padding: 1rem; border-radius: 10px;">
-                        <strong>⚡ 回路技術者</strong>
-                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">自動運転システム構築</p>
-                    </div>
-                    <div style="background: white; padding: 1rem; border-radius: 10px;">
-                        <strong>💻 Addon開発者</strong>
-                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">車両・システムAddon制作</p>
-                    </div>
-                    <div style="background: white; padding: 1rem; border-radius: 10px;">
-                        <strong>🎨 デザイナー</strong>
-                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">看板・装飾デザイン</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <p>安全が確認され次第、順次運転を再開いたします。</p>
+</div>
 
-    <footer class="footer">
-        <p>&copy; 2024 NR鉄道 - Minecraft架空鉄道プロジェクト</p>
-        <p style="margin-top: 0.5rem; font-size: 0.9rem;">すべての鉄道路線は安全第一で運営されています</p>
-        <p style="margin-top: 1rem; font-size: 0.8rem; opacity: 0.7;">
-            このサイトはMinecraft内の架空鉄道プロジェクトです｜Mojang公式ではありません
-        </p>
-    </footer>
+<div class="section">
+    <h2>開発者募集</h2>
+    <p>NR鉄道リニューアルに参加してくれる開発者を募集しています。</p>
 
-    <script>
-        function copyAddress() {
-            const address = document.getElementById('address').textContent;
-            navigator.clipboard.writeText(address).then(() => {
-                alert('サーバーアドレスをコピーしました:\n' + address);
-            });
-        }
+    <p>サーバー情報：</p>
+    <ul>
+        <li>アドレス: usertetsudou.aternos.me</li>
+        <li>ポート: 44186</li>
+    </ul>
 
-        function copyPort() {
-            const port = document.getElementById('port').textContent;
-            navigator.clipboard.writeText(port).then(() => {
-                alert('ポート番号をコピーしました:\n' + port);
-            });
-        }
+    <p>参加後、「開発参加希望」とお伝えください。</p>
+</div>
 
-        function joinServer() {
-            alert('Minecraftを起動して以下の情報でサーバーに接続してください:\n\nアドレス: usertetsudou.aternos.me\nポート: 44186');
-        }
-
-        // スムーススクロール
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-    </script>
 </body>
 </html>
