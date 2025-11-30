@@ -1,100 +1,87 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>運行情報 - 架空チームNR鉄道</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            margin: 0;
-            background: #f2f2f2;
-        }
-        header {
-            background: #1a73e8;
-            color: white;
-            padding: 15px 20px;
-            font-size: 1.4em;
-        }
-        .container {
-            padding: 20px;
-        }
-        .card {
-            background: white;
-            padding: 20px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        h2 {
-            margin-top: 0;
-        }
-        .status-delayed {
-            color: #d32f2f;
-            font-weight: bold;
-        }
-        .status-info {
-            color: #f57c00;
-            font-weight: bold;
-        }
-        footer {
-            text-align: center;
-            padding: 10px;
-            color: #666;
-            font-size: 0.9em;
-        }
-        a.button {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 10px 15px;
-            background: #1a73e8;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-        a.button:hover {
-            opacity: 0.85;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>NR鉄道 運行情報</title>
+<style>
+body {
+    font-family: sans-serif;
+    background: #f2f2f2;
+    margin: 0;
+    padding: 0;
+}
+header {
+    background: #2b4b8c;
+    color: #fff;
+    padding: 20px;
+    font-size: 24px;
+}
+.container {
+    padding: 20px;
+}
+.section {
+    background: #fff;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    border-left: 6px solid #2b4b8c;
+}
+.section h2 {
+    margin: 0 0 10px;
+    font-size: 20px;
+}
+.list {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+.codebox {
+    background: #eee;
+    padding: 10px;
+    border-radius: 4px;
+}
+</style>
 </head>
+
 <body>
 
-<header>
-    運行情報 - 架空チームNR鉄道
-</header>
+<header>NR鉄道 運行情報</header>
 
 <div class="container">
 
-    <div class="card">
-        <h2>中央市線 遅延情報</h2>
-        <p class="status-delayed">急行列車および各駅停車に遅延が発生しています。</p>
-        <p>原因調査および列車調整を行っております。ご迷惑をおかけいたします。</p>
-    </div>
-
-    <div class="card">
-        <h2>特急「ひのとり」臨時停車</h2>
-        <p class="status-info">12月31日まで、特急「ひのとり」は臨時で名古屋駅に停車します。</p>
-        <p>期間中はご注意ください。</p>
-    </div>
-
-    <div class="card">
-        <h2>全路線運行状況</h2>
-        <ul>
-            <li>NR中央空港線：通常運転</li>
-            <li>NRターミナル連絡空港線：通常運転</li>
-            <li>NR中央本線：通常運転</li>
-            <li>NR中央市線：遅延発生中</li>
+    <div class="section">
+        <h2>長期運転見合わせのお知らせ</h2>
+        <p>工事およびリニューアル作業の影響により、以下の路線で長期運転見合わせが発生しています。</p>
+        <ul class="list">
+            <li>中央本線</li>
+            <li>中央空港線</li>
+            <li>ターミナル連絡空港線</li>
+            <li>中央市線</li>
+            <li>中央線</li>
         </ul>
+        <p>作業が完了し安全確認が取れ次第、順次運転を再開いたします。</p>
     </div>
 
-    <a class="button" href="index.html">トップページに戻る</a>
+    <div class="section">
+        <h2>全線リニューアルおよびデータ削除のお知らせ</h2>
+        <p>
+            NR鉄道ではより良い鉄道ワールドを構築するため、
+            <strong>全線のリニューアル作業</strong>を実施しています。<br>
+            これに伴い既存データを削除し、
+            <strong>フラット状態から再スタート</strong>いたしました。
+        </p>
+        <p>Addon類は安全に保管してあり、今後の整備に活用されます。</p>
+    </div>
+
+    <div class="section">
+        <h2>開発者募集のお知らせ</h2>
+        <p>NR鉄道リニューアルに向け、開発メンバーを募集しています。</p>
+        <div class="codebox">
+            <p>サーバーアドレス: usertetsudou.aternos.me<br>
+            ポート: 44186</p>
+        </div>
+        <p>ログイン後、担当者に「開発参加希望」とお伝えください。</p>
+    </div>
 
 </div>
-
-<footer>
-    © 架空チームNR鉄道
-</footer>
 
 </body>
 </html>
