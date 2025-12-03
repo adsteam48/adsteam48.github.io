@@ -1,127 +1,73 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NR鉄道 運行情報</title>
-
-<style>
-    body {
-        font-family: "Yu Gothic", sans-serif;
-        background: #f5f7fa;
-        margin: 0;
-        padding: 15px;
-    }
-
-    .header {
-        font-size: 22px;
-        font-weight: bold;
-        text-align: center;
-        margin-bottom: 20px;
-        color: #2b2b2b;
-    }
-
-    .alert-banner {
-        background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
-        color: white;
-        padding: 15px;
-        border-radius: 10px;
-        margin-bottom: 15px;
-        box-shadow: 0 5px 20px rgba(255,71,87,0.35);
-        font-size: 14px;
-        line-height: 1.6;
-    }
-
-    .alert-title {
-        font-size: 16px;
-        font-weight: bold;
-        margin-bottom: 8px;
-    }
-
-    .section {
-        background: white;
-        padding: 15px;
-        border-radius: 10px;
-        margin-bottom: 15px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        font-size: 14px;
-        line-height: 1.7;
-    }
-
-    h2 {
-        font-size: 16px;
-        margin-top: 0;
-        margin-bottom: 10px;
-        color: #333;
-    }
-
-    ul {
-        padding-left: 18px;
-        margin-top: 5px;
-    }
-
-    ul li {
-        margin-bottom: 4px;
-    }
-
-    /* スマホより少し大きい画面向け(タブレット) */
-    @media (min-width: 600px) {
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TogetherBot公式お知らせ</title>
+    <style>
         body {
-            padding: 25px;
+            font-family: "Yu Gothic", "Hiragino Kaku Gothic Pro", sans-serif;
+            background-color: #f4f6f8;
+            color: #333;
+            margin: 0;
+            padding: 0;
         }
-        .header {
-            font-size: 26px;
+        header {
+            background-color: #1e3a8a;
+            color: #fff;
+            padding: 25px 20px;
+            text-align: center;
         }
-        .alert-banner, .section {
-            font-size: 15px;
+        header h1 {
+            margin: 0;
+            font-size: 1.8em;
+        }
+        main {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+        }
+        main h2 {
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            color: #1e3a8a;
+        }
+        main p {
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+        .period {
+            font-weight: bold;
+            color: #c0392b;
+        }
+        footer {
+            text-align: center;
             padding: 20px;
+            background-color: #e2e8f0;
+            font-size: 0.9em;
+            color: #555;
         }
-        .alert-title, h2 {
-            font-size: 18px;
-        }
-    }
-</style>
+    </style>
 </head>
-
 <body>
-
-<div class="header">NR鉄道 公式運行情報</div>
-
-<div class="alert-banner">
-    <div class="alert-title">重要なお知らせ</div>
-    現在、より良い鉄道ワールドを作るため全線リニューアル作業を実施しています。<br>
-    既存データは削除し、フラット状態から再構築を行っています。Addon等のファイルは保持されています。
-</div>
-
-<div class="alert-banner" style="background: linear-gradient(135deg, #ffa94d 0%, #ff922b 100%); box-shadow: 0 5px 20px rgba(255,159,67,0.35);">
-    <div class="alert-title">🎄 クリスマス会 中止のお知らせ</div>
-    予定していたクリスマス会はリニューアル作業の影響により中止となりました。<br>
-    ご理解のほどよろしくお願いいたします。
-</div>
-
-<div class="section">
-    <h2>運行情報</h2>
-    以下の路線は工事・リニューアルのため長期運転見合わせ中です。
-    <ul>
-        <li>中央本線</li>
-        <li>中央空港線</li>
-        <li>ターミナル連絡空港線</li>
-        <li>中央市線</li>
-        <li>中央線</li>
-    </ul>
-    安全が確認され次第、順次運転を再開します。
-</div>
-
-<div class="section">
-    <h2>開発者募集</h2>
-    NR鉄道リニューアル開発に参加してくれる方を募集しています。<br><br>
-    <strong>サーバー情報：</strong>
-    <ul>
-        <li>アドレス：usertetsudou.aternos.me</li>
-        <li>ポート：44186</li>
-    </ul>
-    参加後「開発参加希望」とお伝えください。
-</div>
-
+    <header>
+        <h1>TogetherBot公式お知らせ</h1>
+        <p>運営：adsteam法人</p>
+    </header>
+    <main>
+        <h2>期間限定クリスマス機能アップデートのお知らせ</h2>
+        <p>平素よりTogetherBotをご利用いただき、誠にありがとうございます。</p>
+        <p>2025年12月10日より、クリスマス仕様の期間限定アップデートを実施いたします。本アップデートは、TogetherBot製作委員会とadsteam法人が連携し、当サーバー専用の限定機能として提供されます。</p>
+        <p>期間中は、クリスマスをテーマにした特別コマンドや演出、季節限定メッセージなど、通常版にはない機能をお楽しみいただけます。サーバー内での交流や日常利用がより華やかになることを目的としています。</p>
+        <p>本機能は期間限定であり、終了後はソースコードを通常版に戻します。期間終了後も安定したサービスを提供できるよう、引き続きメンテナンスを行いますのでご理解のほどよろしくお願いいたします。</p>
+        <p class="period">【実施期間】 2025年12月10日〜2026年1月1日</p>
+        <p>TogetherBotは当サーバー限定で運用されます。今後ともご利用の皆様に快適で楽しい環境を提供できるよう努めてまいります。</p>
+    </main>
+    <footer>
+        &copy; 2025 adsteam法人. All Rights Reserved.
+    </footer>
 </body>
 </html>
