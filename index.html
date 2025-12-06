@@ -112,6 +112,15 @@
         font-weight: bold;
         display: none;
     }
+    .badge {
+        display: inline-block;
+        padding: 4px 12px;
+        background: #4caf50;
+        color: white;
+        border-radius: 12px;
+        font-size: 12px;
+        margin-left: 8px;
+    }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
@@ -120,70 +129,63 @@
 <div class="container">
     <div class="header">
         <h1>🤖 TogetherBot サイトファイル</h1>
-        <p>各ページを個別にダウンロード、または全ページを一括ダウンロードできます</p>
+        <p>全6ページが作成完了！個別または一括でダウンロードできます</p>
     </div>
 
     <div class="file-grid">
         <div class="file-card">
-            <div class="file-icon">📄</div>
-            <div class="file-name">update.html</div>
-            <div class="file-desc">アップデート情報ページ<br>最新の更新内容を掲載</div>
-            <button class="btn" onclick="downloadFile('update')">ダウンロード</button>
-        </div>
-
-        <div class="file-card">
             <div class="file-icon">🏠</div>
-            <div class="file-name">index.html</div>
-            <div class="file-desc">トップページ（準備中）<br>メインのランディングページ</div>
-            <button class="btn" onclick="alert('準備中です')">準備中</button>
+            <div class="file-name">index.html<span class="badge">完成</span></div>
+            <div class="file-desc">トップページ<br>メインのランディングページ</div>
+            <button class="btn" onclick="downloadFile('index')">ダウンロード</button>
         </div>
 
         <div class="file-card">
             <div class="file-icon">⚙️</div>
-            <div class="file-name">features.html</div>
-            <div class="file-desc">機能紹介ページ（準備中）<br>詳細な機能説明</div>
-            <button class="btn" onclick="alert('準備中です')">準備中</button>
+            <div class="file-name">features.html<span class="badge">完成</span></div>
+            <div class="file-desc">機能紹介ページ<br>詳細な機能説明</div>
+            <button class="btn" onclick="downloadFile('features')">ダウンロード</button>
         </div>
 
         <div class="file-card">
             <div class="file-icon">📖</div>
-            <div class="file-name">guide.html</div>
-            <div class="file-desc">導入ガイド（準備中）<br>使い方と設定方法</div>
-            <button class="btn" onclick="alert('準備中です')">準備中</button>
+            <div class="file-name">guide.html<span class="badge">完成</span></div>
+            <div class="file-desc">導入ガイド<br>使い方と設定方法</div>
+            <button class="btn" onclick="downloadFile('guide')">ダウンロード</button>
+        </div>
+
+        <div class="file-card">
+            <div class="file-icon">📄</div>
+            <div class="file-name">update.html<span class="badge">完成</span></div>
+            <div class="file-desc">アップデート情報<br>最新の更新内容</div>
+            <button class="btn" onclick="downloadFile('update')">ダウンロード</button>
         </div>
 
         <div class="file-card">
             <div class="file-icon">❓</div>
-            <div class="file-name">faq.html</div>
-            <div class="file-desc">FAQ・サポート（準備中）<br>よくある質問</div>
-            <button class="btn" onclick="alert('準備中です')">準備中</button>
+            <div class="file-name">faq.html<span class="badge">完成</span></div>
+            <div class="file-desc">FAQ・サポート<br>よくある質問</div>
+            <button class="btn" onclick="downloadFile('faq')">ダウンロード</button>
         </div>
 
         <div class="file-card">
             <div class="file-icon">📧</div>
-            <div class="file-name">contact.html</div>
-            <div class="file-desc">お問い合わせ（準備中）<br>問い合わせフォーム</div>
-            <button class="btn" onclick="alert('準備中です')">準備中</button>
+            <div class="file-name">contact.html<span class="badge">完成</span></div>
+            <div class="file-desc">お問い合わせ<br>問い合わせフォーム</div>
+            <button class="btn" onclick="downloadFile('contact')">ダウンロード</button>
         </div>
     </div>
 
     <div class="download-all">
         <h2>📦 全ファイル一括ダウンロード</h2>
-        <p>作成済みの全ページをZIPファイルでまとめてダウンロード</p>
+        <p>全6ページ + README をZIPファイルでまとめてダウンロード</p>
         <button class="btn btn-primary" onclick="downloadAll()">全ファイルをZIPでダウンロード</button>
         <div id="status" class="status"></div>
     </div>
 </div>
 
 <script>
-const files = {
-    'update': `<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TogetherBot - アップデート情報</title>
-<style>
+const commonStyles = `
     * {
         margin: 0;
         padding: 0;
@@ -235,93 +237,9 @@ const files = {
         border-bottom: 2px solid #667eea;
     }
     .container {
-        max-width: 900px;
+        max-width: 1100px;
         margin: 40px auto;
         padding: 0 15px;
-    }
-    .header-box {
-        background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
-        padding: 40px 30px;
-        border-radius: 16px;
-        text-align: center;
-        margin-bottom: 30px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-        border: 1px solid rgba(255,255,255,0.8);
-    }
-    .header-box h1 {
-        font-size: 32px;
-        color: #333;
-        margin-bottom: 10px;
-    }
-    .date {
-        font-size: 16px;
-        color: #666;
-        display: inline-block;
-        padding: 8px 20px;
-        background: rgba(102, 126, 234, 0.1);
-        border-radius: 20px;
-        margin-top: 10px;
-    }
-    .update-card {
-        background: #ffffff;
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-        margin-bottom: 30px;
-    }
-    .yellow-title {
-        background: linear-gradient(135deg, #f2c200 0%, #ffdb4d 100%);
-        color: #000;
-        padding: 18px 25px;
-        font-size: 20px;
-        font-weight: bold;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    .yellow-title::before {
-        content: "🔔";
-        font-size: 24px;
-    }
-    .card-content {
-        padding: 30px;
-    }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-        border-radius: 8px;
-        overflow: hidden;
-    }
-    th, td {
-        border: 1px solid #e5e5e5;
-        padding: 16px;
-        text-align: left;
-    }
-    th {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        font-weight: 600;
-        width: 25%;
-    }
-    td {
-        background: #fafafa;
-    }
-    tr:hover td {
-        background: #f0f0f0;
-    }
-    .note {
-        margin-top: 25px;
-        padding: 20px;
-        background: linear-gradient(135deg, #fff8d1 0%, #fffae6 100%);
-        border-left: 5px solid #f2c200;
-        border-radius: 8px;
-        line-height: 1.8;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-    }
-    .note::before {
-        content: "💡 ";
-        font-size: 20px;
     }
     footer {
         background: rgba(255, 255, 255, 0.95);
@@ -332,21 +250,379 @@ const files = {
     }
     @media (max-width: 768px) {
         .nav-links {
-            display: none;
-        }
-        .header-box h1 {
-            font-size: 24px;
-        }
-        table {
+            flex-wrap: wrap;
+            gap: 15px;
             font-size: 14px;
         }
-        th, td {
-            padding: 12px;
-        }
-        th {
-            width: 30%;
-        }
     }
+`;
+
+const files = {
+    'index': `<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TogetherBot - Discord向けAI監視Bot</title>
+<style>
+${commonStyles}
+.hero {
+    text-align: center;
+    padding: 80px 20px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,249,255,0.95) 100%);
+    border-radius: 16px;
+    margin-bottom: 40px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+.hero h1 {
+    font-size: 48px;
+    color: #333;
+    margin-bottom: 20px;
+}
+.hero p {
+    font-size: 20px;
+    color: #666;
+    margin-bottom: 30px;
+}
+.cta-btn {
+    display: inline-block;
+    padding: 15px 40px;
+    background: linear-gradient(135deg, #f2c200 0%, #ffdb4d 100%);
+    color: #000;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: transform 0.3s;
+}
+.cta-btn:hover {
+    transform: scale(1.05);
+}
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+}
+.feature-card {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    text-align: center;
+}
+.feature-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+.feature-card h3 {
+    font-size: 22px;
+    color: #333;
+    margin-bottom: 15px;
+}
+.feature-card p {
+    color: #666;
+    line-height: 1.8;
+}
+</style>
+</head>
+<body>
+<nav>
+    <div class="nav-container">
+        <a href="index.html" class="logo">🤖 TogetherBot</a>
+        <ul class="nav-links">
+            <li><a href="index.html" class="active">ホーム</a></li>
+            <li><a href="features.html">機能</a></li>
+            <li><a href="guide.html">導入ガイド</a></li>
+            <li><a href="update.html">アップデート</a></li>
+            <li><a href="faq.html">サポート</a></li>
+            <li><a href="contact.html">お問い合わせ</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="hero">
+        <h1>🤖 TogetherBot</h1>
+        <p>AIでDiscordサーバーを守る、次世代ボイスチャット監視Bot</p>
+        <a href="guide.html" class="cta-btn">今すぐ無料で導入する</a>
+    </div>
+
+    <div class="features">
+        <div class="feature-card">
+            <div class="feature-icon">🎤</div>
+            <h3>ボイスチャット監視</h3>
+            <p>ジェミリAPIによる高精度なAI監視で、不適切な発言をリアルタイムで検知します</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">🛡️</div>
+            <h3>荒らし防止</h3>
+            <p>暴言や不快な発言を自動検知し、サーバーの平和を守ります</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">⚙️</div>
+            <h3>カスタマイズ可能</h3>
+            <p>サーバーのルールに合わせて、検知レベルや対応方法を自由に設定できます</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>ログ分析</h3>
+            <p>AIの判断ログを分析し、継続的に精度を向上させます</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">🆓</div>
+            <h3>完全無料</h3>
+            <p>すべての機能を無料でご利用いただけます</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3>簡単導入</h3>
+            <p>数クリックでDiscordサーバーに追加。面倒な設定は不要です</p>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>&copy; 2025 TogetherBot. All rights reserved.</p>
+</footer>
+</body>
+</html>`,
+
+    'features': `<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TogetherBot - 機能紹介</title>
+<style>
+${commonStyles}
+.page-header {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 16px;
+    margin-bottom: 40px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+.page-header h1 {
+    font-size: 36px;
+    color: #333;
+    margin-bottom: 15px;
+}
+.page-header p {
+    font-size: 18px;
+    color: #666;
+}
+.feature-section {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+.feature-section h2 {
+    font-size: 28px;
+    color: #667eea;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.feature-section p {
+    font-size: 16px;
+    color: #666;
+    line-height: 1.8;
+    margin-bottom: 15px;
+}
+.feature-list {
+    list-style: none;
+    padding-left: 0;
+}
+.feature-list li {
+    padding: 12px 0;
+    padding-left: 30px;
+    position: relative;
+    color: #555;
+}
+.feature-list li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #4caf50;
+    font-weight: bold;
+    font-size: 20px;
+}
+</style>
+</head>
+<body>
+<nav>
+    <div class="nav-container">
+        <a href="index.html" class="logo">🤖 TogetherBot</a>
+        <ul class="nav-links">
+            <li><a href="index.html">ホーム</a></li>
+            <li><a href="features.html" class="active">機能</a></li>
+            <li><a href="guide.html">導入ガイド</a></li>
+            <li><a href="update.html">アップデート</a></li>
+            <li><a href="faq.html">サポート</a></li>
+            <li><a href="contact.html">お問い合わせ</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="page-header">
+        <h1>🎯 TogetherBotの機能</h1>
+        <p>AIによる高度な監視機能で、Discordサーバーの安全性を向上</p>
+    </div>
+
+    <div class="feature-section">
+        <h2>🎤 ボイスチャット監視AI</h2>
+        <p>ジェミリAPIを活用した最新のAI技術により、ボイスチャットでの会話をリアルタイムで監視します。音声認識と自然言語処理を組み合わせて、不適切な発言を高精度で検知します。</p>
+        <ul class="feature-list">
+            <li>リアルタイム音声認識と分析</li>
+            <li>文脈を理解した高精度な判定</li>
+            <li>多言語対応（日本語、英語など）</li>
+            <li>誤検知を最小限に抑える学習機能</li>
+        </ul>
+    </div>
+
+    <div class="feature-section">
+        <h2>🛡️ 暴言・荒らし防止機能</h2>
+        <p>暴言、差別的発言、ハラスメント、スパムなど、さまざまな不適切な行動を自動的に検知し、サーバーの秩序を守ります。</p>
+        <ul class="feature-list">
+            <li>暴言・誹謗中傷の自動検知</li>
+            <li>差別的表現のフィルタリング</li>
+            <li>スパム行為の防止</li>
+            <li>繰り返し違反者の自動対応</li>
+        </ul>
+    </div>
+
+    <div class="feature-section">
+        <h2>⚙️ カスタマイズ設定</h2>
+        <p>サーバーの特性やコミュニティのルールに合わせて、細かく設定をカスタマイズできます。</p>
+        <ul class="feature-list">
+            <li>検知感度の調整（厳格・標準・緩和）</li>
+            <li>対応アクションの選択（警告・ミュート・キック・BAN）</li>
+            <li>除外チャンネルの設定</li>
+            <li>許可ワード・NGワードの登録</li>
+        </ul>
+    </div>
+
+    <div class="feature-section">
+        <h2>📊 ログ分析とレポート</h2>
+        <p>AIの判断ログを収集・分析し、継続的に精度を向上させます。サーバー管理者は詳細なレポートで状況を把握できます。</p>
+        <ul class="feature-list">
+            <li>違反発言の記録と統計</li>
+            <li>AI判定の精度分析</li>
+            <li>時間帯別・ユーザー別の傾向分析</li>
+            <li>定期レポートの自動生成</li>
+        </ul>
+    </div>
+
+    <div class="feature-section">
+        <h2>🔄 自動アップデート</h2>
+        <p>AIの誤作動や新たな脅威が発見された場合、即座にアップデートを実施。常に最新の保護機能を提供します。</p>
+        <ul class="feature-list">
+            <li>自動バージョン管理</li>
+            <li>緊急パッチの即時適用</li>
+            <li>機能追加の通知</li>
+            <li>ダウンタイムなしのアップデート</li>
+        </ul>
+    </div>
+</div>
+
+<footer>
+    <p>&copy; 2025 TogetherBot. All rights reserved.</p>
+</footer>
+</body>
+</html>`,
+
+    'guide': `<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TogetherBot - 導入ガイド</title>
+<style>
+${commonStyles}
+.page-header {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 16px;
+    margin-bottom: 40px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+.page-header h1 {
+    font-size: 36px;
+    color: #333;
+    margin-bottom: 15px;
+}
+.step {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+.step-number {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 50px;
+    font-size: 24px;
+    font-weight: bold;
+    margin-right: 15px;
+}
+.step h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+}
+.step p {
+    font-size: 16px;
+    color: #666;
+    line-height: 1.8;
+    margin-bottom: 15px;
+}
+.step ul {
+    list-style: none;
+    padding-left: 20px;
+}
+.step li {
+    padding: 8px 0;
+    color: #555;
+    position: relative;
+    padding-left: 25px;
+}
+.step li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: #667eea;
+    font-weight: bold;
+}
+.note-box {
+    background: #fff8d1;
+    border-left: 5px solid #f2c200;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+.note-box strong {
+    color: #f2c200;
+}
 </style>
 </head>
 <body>
@@ -356,127 +632,86 @@ const files = {
         <ul class="nav-links">
             <li><a href="index.html">ホーム</a></li>
             <li><a href="features.html">機能</a></li>
-            <li><a href="guide.html">導入ガイド</a></li>
-            <li><a href="update.html" class="active">アップデート</a></li>
+            <li><a href="guide.html" class="active">導入ガイド</a></li>
+            <li><a href="update.html">アップデート</a></li>
             <li><a href="faq.html">サポート</a></li>
             <li><a href="contact.html">お問い合わせ</a></li>
         </ul>
     </div>
 </nav>
+
 <div class="container">
-    <div class="header-box">
-        <h1>TogetherBot アップデート情報</h1>
-        <div class="date">📅 2025年12月6日 現在</div>
+    <div class="page-header">
+        <h1>📖 導入ガイド</h1>
+        <p>TogetherBotを3ステップで簡単導入</p>
     </div>
-    <div class="update-card">
-        <div class="yellow-title">最新アップデート内容</div>
-        <div class="card-content">
-            <table>
-                <tr>
-                    <th>項目</th>
-                    <th>内容</th>
-                </tr>
-                <tr>
-                    <td><strong>新機能</strong></td>
-                    <td>ジェミリAPIによるボイチャ監視AIを導入</td>
-                </tr>
-                <tr>
-                    <td><strong>動作内容</strong></td>
-                    <td>暴言・不快発言の検知、荒らし防止機能の強化</td>
-                </tr>
-                <tr>
-                    <td><strong>AIログ送信</strong></td>
-                    <td>AI使用ログはサーバーへ送信し精度向上に活用</td>
-                </tr>
-                <tr>
-                    <td><strong>対策</strong></td>
-                    <td>AI暴言・誤作動が確認された場合は即時アップデートを実施</td>
-                </tr>
-            </table>
-            <div class="note">
-                今回のアップデートにより、サーバー内の安全性がさらに向上しました。<br>
-                引き続きTogetherBotをよろしくお願いいたします。
-            </div>
+
+    <div class="step">
+        <h2><span class="step-number">1</span>Botをサーバーに招待</h2>
+        <p>以下の手順でTogetherBotをDiscordサーバーに追加します。</p>
+        <ul>
+            <li>TogetherBot公式サイトの「サーバーに追加」ボタンをクリック</li>
+            <li>Discordのログイン画面が表示されたらログイン</li>
+            <li>Botを追加するサーバーを選択</li>
+            <li>必要な権限を確認して「認証」をクリック</li>
+        </ul>
+        <div class="note-box">
+            <strong>💡 必要な権限：</strong>メッセージの読み取り、メッセージの送信、メンバーの管理、ボイスチャンネルへの接続
         </div>
     </div>
+
+    <div class="step">
+        <h2><span class="step-number">2</span>初期設定を行う</h2>
+        <p>Botが追加されたら、サーバーに合わせて設定を調整します。</p>
+        <ul>
+            <li>コマンド <code>/tb setup</code> で設定メニューを開く</li>
+            <li>監視する対象（ボイスチャット、テキストチャット）を選択</li>
+            <li>検知感度を設定（推奨：標準）</li>
+            <li>違反時の対応アクションを選択（警告、ミュート、キックなど）</li>
+            <li>通知先チャンネルを設定</li>
+        </ul>
+        <div class="note-box">
+            <strong>💡 推奨設定：</strong>初めての方は「標準」設定でスタートし、様子を見ながら調整することをお勧めします
+        </div>
+    </div>
+
+    <div class="step">
+        <h2><span class="step-number">3</span>動作確認とカスタマイズ</h2>
+        <p>設定が完了したら、実際に動作を確認します。</p>
+        <ul>
+            <li>テストチャンネルで動作確認を実施</li>
+            <li>誤検知があれば感度を調整</li>
+            <li>除外ワード・NGワードを追加登録</li>
+            <li>管理者向けの通知設定を最適化</li>
+        </ul>
+        <div class="note-box">
+            <strong>💡 便利なコマンド：</strong><br>
+            <code>/tb status</code> - 現在の設定を確認<br>
+            <code>/tb logs</code> - 最近の検知ログを表示<br>
+            <code>/tb help</code> - ヘルプを表示
+        </div>
+    </div>
+
+    <div class="step">
+        <h2>🎉 導入完了！</h2>
+        <p>これでTogetherBotの導入は完了です。AIがサーバーを24時間監視し、安全で快適なコミュニティ作りをサポートします。</p>
+        <p>問題が発生した場合は、<a href="faq.html" style="color: #667eea; text-decoration: underline;">FAQページ</a>または<a href="contact.html" style="color: #667eea; text-decoration: underline;">お問い合わせ</a>からサポートチームにご連絡ください。</p>
+    </div>
 </div>
+
 <footer>
     <p>&copy; 2025 TogetherBot. All rights reserved.</p>
 </footer>
 </body>
-</html>`
-};
+</html>`,
 
-function downloadFile(fileName) {
-    const content = files[fileName];
-    const blob = new Blob([content], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName + '.html';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    
-    showStatus('✅ ' + fileName + '.html をダウンロードしました！');
-}
-
-async function downloadAll() {
-    const zip = new JSZip();
-    
-    // 作成済みファイルを追加
-    for (const [name, content] of Object.entries(files)) {
-        zip.file(name + '.html', content);
-    }
-    
-    // READMEを追加
-    const readme = `TogetherBot 公式サイト ファイル一覧
-
-作成済みファイル:
-- update.html : アップデート情報ページ
-
-準備中のファイル:
-- index.html : トップページ
-- features.html : 機能紹介ページ
-- guide.html : 導入ガイドページ
-- faq.html : FAQ・サポートページ
-- contact.html : お問い合わせページ
-
-使用方法:
-各HTMLファイルをブラウザで開いてご確認ください。
-
-© 2025 TogetherBot
-`;
-    
-    zip.file('README.txt', readme);
-    
-    showStatus('⏳ ZIPファイルを生成中...');
-    
-    // ZIP生成
-    const blob = await zip.generateAsync({ type: 'blob' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'togetherbot-website.zip';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    
-    showStatus('✅ togetherbot-website.zip をダウンロードしました！');
-}
-
-function showStatus(message) {
-    const status = document.getElementById('status');
-    status.textContent = message;
-    status.style.display = 'block';
-    
-    setTimeout(() => {
-        status.style.display = 'none';
-    }, 3000);
-}
-</script>
-
-</body>
-</html>
+    'update': `<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TogetherBot - アップデート情報</title>
+<style>
+${commonStyles}
+.header-box {
+    background: linear-gradient(135deg, #ffffff 0%, #f
