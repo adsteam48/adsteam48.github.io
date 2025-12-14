@@ -1,1 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>詐欺報告・確認メール送信フォーム</title>
+<script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+<script>
+  (function() {
+    emailjs.init("vUI5JALV1NiyAa_Cu"); // 公開キー
+  })();
+
+  function sendEmail(event) {
+    event.preventDefault();
+    const form = event.target;
+
+    emailjs.sendForm('service_kwg7qzm', 'template_hxiq4v9', form)
+      .then(() => {
+        alert("メールが送信されました。ありがとうございます！");
+        form.reset();
+      }, (error) => {
+        alert("送信に失敗しました: " + JSON.stringify(error));
+      });
+  }
+</script>
+<style>
+  body { font-family: Arial; background:#f9f9f9; padding:20px; color:#333; }
+  h1 { text-align:center; color:#007bff; }
+  form { max-width:700px; margin:0 auto; background:#fff; padding:20px; border-radius:8px; border:1px solid #ddd; }
+  label { display:block; margin-top:15px; font-weight:bold; }
+  input, textarea { width:100%; padding:10px; margin-top:5px; border-radius:5px; border:1px solid #ccc; }
+  textarea { resize: vertical; }
+  button { margin-top:20px; padding:10px 20px; background:#007bff; color:white; border:none; border-radius:5px; cursor:pointer; }
+  button:hover { background:#0056b3; }
+</style>
+</head>
+<body>
+
+<h1>詐欺報告・確認メール送信フォーム</h1>
+
+<form onsubmit="sendEmail(event)">
+  <label for="name">あなたの名前</label>
+  <input type="text" id="name" name="name" required>
+
+  <label for="email">あなたのメールアドレス</label>
+  <input type="text" id="email" name="email" required>
+
+  <label for="subject">件名</label>
+  <input type="text" id="subject" name="subject" value="内容確認と詐欺対処ガイドのご案内" required>
+
+  <label for="message">メール内容（確認・連絡アドレス・詐欺対処ガイド）</label>
+  <textarea id="message" name="message" rows="25" required>
+内容のご確認
+
+以下の内容を確認しました。誤字がある場合がありますので、内容をご確認ください。
+
+ご不備がありましたら、連絡された際にご連絡ください。
+
+対応時間
+- 平日：朝 6:00〜8:30 / 昼 14:00〜23:00（冬限定対応）
+- 祝日：13:00〜23:00
+- 休曜：木曜日
+
+連絡アドレスについて
+現在、担当者が決まり次第、新しいメールアドレスを作成いたします。作成後はそちらのメールアドレスをご利用ください。
+
+フォートナイト詐欺師対処ガイド
+
+1. 基本の心構え
+- 詐欺師に直接連絡しない
+- 個人情報（ID・メール・住所など）を渡さない
+- 怪しいリンクや添付ファイルは開かない
+
+2. 証拠の収集
+- やり取りのスクリーンショットを保存
+- 詐欺内容を日時・状況ごとにメモ
+- チャットやメールのログを保管
+
+3. 通報・報告
+ゲーム公式への報告フォームを利用。フォートナイトの場合はEpic Gamesサポートで報告。SNSや掲示板も運営に通報。
+
+4. 友人・コミュニティへの注意喚起
+- 同じ詐欺師が他の人にも手口を使う可能性あり
+- 安全な方法で警告を共有
+
+5. 予防策
+- 知らない人からの交換・取引は避ける
+- ゲーム内トレードは公式システムのみ利用
+- パスワードを複雑にし、二段階認証を有効化
+
+※このメールは自動送信です。返信されても対応できない場合があります。内容は参考用です。自己責任で対応してください。
+  </textarea>
+
+  <button type="submit">メール送信</button>
+</form>
+
+</body>
+</html>
 
