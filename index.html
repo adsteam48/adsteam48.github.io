@@ -14,13 +14,27 @@
     event.preventDefault();
     const form = event.target;
 
+    // 管理者宛メール
     emailjs.sendForm('service_kwg7qzm', 'template_hxiq4v9', form)
       .then(() => {
-        alert("報告メールが送信されました。確認メールも送信されます。");
-        form.reset();
+        console.log("管理者宛メール送信成功");
       }, (error) => {
-        alert("送信に失敗しました: " + JSON.stringify(error));
+        console.error("管理者宛メール送信失敗:", error);
       });
+
+    // 報告者宛確認メール
+    const reporterEmail = form.reporterEmail.value;
+    emailjs.send('service_kwg7qzm', 'template_confirmation', {
+      to_email: reporterEmail,
+      reporterName: form.reporterName.value,
+      scammerId: form.scammerId.value
+    })
+    .then(() => {
+      alert("報告メールと確認メールが送信されました。ありがとうございます！");
+      form.reset();
+    }, (error) => {
+      alert("送信に失敗しました: " + JSON.stringify(error));
+    });
   }
 </script>
 <style>
@@ -42,7 +56,7 @@
   <label for="reporterName">あなたの名前</label>
   <input type="text" id="reporterName" name="reporterName" required>
 
-  <label for="reporterEmail">あなたのメールアドレス（確認用）</label>
+  <label for="reporterEmail">あなたのメールアドレス（確認メール用）</label>
   <input type="email" id="reporterEmail" name="reporterEmail" required>
 
   <label for="scammerId">詐欺師のID（フォートナイトIDなど）</label>
