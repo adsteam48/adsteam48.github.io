@@ -5,10 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>詐欺師報告フォーム（確認メールのみ送信）</title>
 
-<!-- 最新 SDK を読み込み -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
-  // SDK 初期化
   emailjs.init({
     publicKey: "vUI5JALV1NiyAa_Cu"
   });
@@ -17,14 +15,11 @@
     event.preventDefault();
     const form = event.target;
 
+    // 送信パラメータは固定の本文のみ
     const templateParams = {
-      reporter_name: form.reporterName.value,
-      reporter_email: form.reporterEmail.value,
-      scammer_id: form.scammerId.value,
-      details: form.details.value
+      to_email: form.reporterEmail.value
     };
 
-    // 報告者宛確認メールのみ送信
     emailjs.send('service_kwg7qzm', 'template_confirmation', templateParams)
       .then(() => {
         alert("確認メールを送信しました。ありがとうございます！");
