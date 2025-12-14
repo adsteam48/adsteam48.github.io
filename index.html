@@ -14,27 +14,27 @@
     event.preventDefault();
     const form = event.target;
 
+    // EmailJS に送信するパラメータ
+    const templateParams = {
+      reporter_name: form.reporterName.value,
+      reporter_email: form.reporterEmail.value,
+      scammer_id: form.scammerId.value,
+      details: form.details.value
+    };
+
     // 管理者宛メール
-    emailjs.sendForm('service_kwg7qzm', 'template_hxiq4v9', form)
+    emailjs.send('service_kwg7qzm', 'template_hxiq4v9', templateParams)
       .then(() => {
-        console.log("管理者宛メール送信成功");
+        alert("報告メールが送信されました。管理者と確認メールが届きます。");
+        form.reset();
       }, (error) => {
-        console.error("管理者宛メール送信失敗:", error);
+        alert("送信に失敗しました: " + JSON.stringify(error));
       });
 
-    // 報告者宛確認メール
-    const reporterEmail = form.reporterEmail.value;
-    emailjs.send('service_kwg7qzm', 'template_confirmation', {
-      to_email: reporterEmail,
-      reporterName: form.reporterName.value,
-      scammerId: form.scammerId.value
-    })
-    .then(() => {
-      alert("報告メールと確認メールが送信されました。ありがとうございます！");
-      form.reset();
-    }, (error) => {
-      alert("送信に失敗しました: " + JSON.stringify(error));
-    });
+    // 報告者宛確認メール（HTMLメール）
+    emailjs.send('service_kwg7qzm', 'template_confirmation', templateParams)
+      .then(() => console.log("確認メール送信成功"))
+      .catch(err => console.error("確認メール送信失敗", err));
   }
 </script>
 <style>
