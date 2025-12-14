@@ -4,17 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>詐欺師報告フォーム</title>
-<script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+
+<!-- 公式の新しい EmailJS ブラウザ SDK を読み込み -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>  
+
 <script>
-  (function() {
-    emailjs.init("vUI5JALV1NiyAa_Cu"); // 公開キー
-  })();
+  // SDK 初期化
+  emailjs.init({
+    publicKey: "vUI5JALV1NiyAa_Cu" // EmailJS 公開キー
+  });
 
   function sendEmail(event) {
     event.preventDefault();
     const form = event.target;
 
-    // EmailJS に送信するパラメータ
+    // フォームの値をメールテンプレート変数にマッピング
     const templateParams = {
       reporter_name: form.reporterName.value,
       reporter_email: form.reporterEmail.value,
@@ -22,21 +26,25 @@
       details: form.details.value
     };
 
-    // 管理者宛メール
+    // 管理者宛メール送信
     emailjs.send('service_kwg7qzm', 'template_hxiq4v9', templateParams)
-      .then(() => {
-        alert("報告メールが送信されました。管理者と確認メールが届きます。");
-        form.reset();
-      }, (error) => {
-        alert("送信に失敗しました: " + JSON.stringify(error));
-      });
+      .then((response) => {
+        console.log('管理者メール送信成功', response.status, response.text);
 
-    // 報告者宛確認メール（HTMLメール）
-    emailjs.send('service_kwg7qzm', 'template_confirmation', templateParams)
-      .then(() => console.log("確認メール送信成功"))
-      .catch(err => console.error("確認メール送信失敗", err));
+        // 報告者宛の確認メールも同じパラメータで別テンプレ送信
+        return emailjs.send('service_kwg7qzm', 'template_confirmation', templateParams);
+      })
+      .then((response) => {
+        alert("報告と確認メールを送信しました。ありがとうございます！");
+        form.reset();
+      })
+      .catch((error) => {
+        console.error('送信エラー', error);
+        alert("送信に失敗しました。もう一度お試しください。");
+      });
   }
 </script>
+
 <style>
   body { font-family: Arial; background:#f9f9f9; padding:20px; color:#333; }
   h1 { text-align:center; color:#007bff; }
@@ -63,7 +71,7 @@
   <input type="text" id="scammerId" name="scammerId" required>
 
   <label for="details">詐欺内容（できるだけ詳しく）</label>
-  <textarea id="details" name="details" rows="10" placeholder="詐欺の手口、やり取り内容、日時などを詳しく記入してください" required></textarea>
+  <textarea id="details" name="details" rows="10" placeholder="詐欺の手口、日時、状況など" required></textarea>
 
   <button type="submit">報告を送信</button>
 </form>
