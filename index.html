@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>詐欺師報告フォーム</title>
+<title>詐欺師報告フォーム（確認メールのみ送信）</title>
 
 <!-- 最新 SDK を読み込み -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
@@ -24,16 +24,10 @@
       details: form.details.value
     };
 
-    // 管理者宛メール（template_hxiq4v9）
-    emailjs.send('service_kwg7qzm', 'template_hxiq4v9', templateParams)
-      .then((response) => {
-        console.log('管理者メール送信成功', response.status, response.text);
-
-        // 報告者宛確認メール（template_confirmation 作成済みの場合）
-        return emailjs.send('service_kwg7qzm', 'template_confirmation', templateParams);
-      })
+    // 報告者宛確認メールのみ送信
+    emailjs.send('service_kwg7qzm', 'template_confirmation', templateParams)
       .then(() => {
-        alert("報告と確認メールを送信しました。ありがとうございます！");
+        alert("確認メールを送信しました。ありがとうございます！");
         form.reset();
       })
       .catch((error) => {
@@ -71,7 +65,7 @@
   <label for="details">詐欺内容（できるだけ詳しく）</label>
   <textarea id="details" name="details" rows="10" placeholder="詐欺の手口、日時、状況など" required></textarea>
 
-  <button type="submit">報告を送信</button>
+  <button type="submit">確認メールを送信</button>
 </form>
 
 </body>
