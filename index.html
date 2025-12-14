@@ -5,20 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>詐欺師報告フォーム</title>
 
-<!-- 公式の新しい EmailJS ブラウザ SDK を読み込み -->
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>  
-
+<!-- 最新 SDK を読み込み -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
   // SDK 初期化
   emailjs.init({
-    publicKey: "vUI5JALV1NiyAa_Cu" // EmailJS 公開キー
+    publicKey: "vUI5JALV1NiyAa_Cu"
   });
 
   function sendEmail(event) {
     event.preventDefault();
     const form = event.target;
 
-    // フォームの値をメールテンプレート変数にマッピング
     const templateParams = {
       reporter_name: form.reporterName.value,
       reporter_email: form.reporterEmail.value,
@@ -26,21 +24,21 @@
       details: form.details.value
     };
 
-    // 管理者宛メール送信
+    // 管理者宛メール（template_hxiq4v9）
     emailjs.send('service_kwg7qzm', 'template_hxiq4v9', templateParams)
       .then((response) => {
         console.log('管理者メール送信成功', response.status, response.text);
 
-        // 報告者宛の確認メールも同じパラメータで別テンプレ送信
+        // 報告者宛確認メール（template_confirmation 作成済みの場合）
         return emailjs.send('service_kwg7qzm', 'template_confirmation', templateParams);
       })
-      .then((response) => {
+      .then(() => {
         alert("報告と確認メールを送信しました。ありがとうございます！");
         form.reset();
       })
       .catch((error) => {
         console.error('送信エラー', error);
-        alert("送信に失敗しました。もう一度お試しください。");
+        alert("送信に失敗しました。コンソールで詳細を確認してください。");
       });
   }
 </script>
