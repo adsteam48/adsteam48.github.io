@@ -1,1 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2025年 年越し通話 応募フォーム</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    form {
+      background: #020617;
+      padding: 32px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 420px;
+    }
+    h1 { font-size: 1.5rem; margin-bottom: 16px; }
+    label { display: block; margin-bottom: 6px; }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 16px;
+      border-radius: 6px;
+      border: none;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      background: #38bdf8;
+      color: #020617;
+      cursor: pointer;
+    }
+    .note {
+      font-size: 0.85rem;
+      opacity: 0.8;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
 
+<form id="entryForm">
+  <h1>2025年 年越し通話 応募</h1>
+
+  <label>お名前</label>
+  <input type="text" name="user_name" required>
+
+  <label>メールアドレス</label>
+  <input type="email" name="to_email" required>
+
+  <p class="note">
+    ※自動返信メールは迷惑メールフォルダに入る場合があります。<br>
+    メールが届かない場合は、迷惑メールフォルダもご確認ください。
+  </p>
+
+  <button type="submit">応募する</button>
+</form>
+
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+  emailjs.init("vUI5JALV1NiyAa_Cu");
+
+  document.getElementById("entryForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    emailjs.sendForm(
+      "service_kwg7qzm",
+      "template_hxiq4v9",
+      this
+    ).then(() => {
+      alert("応募が完了しました。自動返信メールをご確認ください。");
+      this.reset();
+    }, (error) => {
+      alert("送信に失敗しました。時間をおいて再度お試しください。");
+      console.error(error);
+    });
+  });
+</script>
+
+</body>
+</html>
