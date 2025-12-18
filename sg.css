@@ -1,0 +1,21 @@
+/* Discord 背景画像 */
+.appMount {
+  background: url("https://prospective-azure-umm559vd0p-r8db1u44p2.edgeone.dev/images%20(7).jpeg") no-repeat center center fixed;
+  background-size: cover;
+}
+
+/* 半透明レイヤー（見やすさ調整） */
+.appMount::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* UIを前面に */
+.layers-3iHuyZ {
+  position: relative;
+  z-index: 1;
+}
