@@ -178,6 +178,13 @@
         .voice-channel {
             font-size: 0.9rem;
             opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        #server-name {
+            font-weight: 600;
         }
 
         .voice-details {
@@ -255,12 +262,14 @@
 
                 <div id="activity-section" class="section">
                     <div class="section-title">アクティビティ</div>
-                    <div class="activity-card">
+                    <div class="activity-card" id="voice-card">
                         <div class="voice-header">
                             <div class="voice-icon">🎙️</div>
                             <div class="voice-info">
                                 <div class="voice-status">通話中</div>
-                                <div class="voice-channel">ボイスチャンネル</div>
+                                <div class="voice-channel" id="channel-info">
+                                    <span id="server-name">サーバー名</span> / <span id="channel-name">ボイスチャンネル</span>
+                                </div>
                             </div>
                         </div>
                         <div class="voice-details">
@@ -283,13 +292,84 @@
     </div>
 
     <script>
-        // 通話開始時刻（この例では現在時刻。実際のデータに置き換えてください）
-        const callStartTime = Date.now();
-        let participantCount = 1; // 参加人数
+        // API設定
+        const API_URL = 'http://localhost:3000/api/status'; // APIサーバーのURL
+        const UPDATE_INTERVAL = 5000; // 5秒ごとに更新
+
+        // 通話情報
+        let callData = {
+            startTime: null,
+            serverName: '',
+            channelName: '',
+            participantCount: 0,
+            isServerCall: true
+        };
+
+        // Discord APIからデータを取得
+        async function fetchDiscordStatus() {
+            try {
+                const response = await fetch(API_URL);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const data = result.data;
+                    
+                    // ユーザー情報を更新
+                    document.getElementById('username').textContent = data.username;
+                    document.getElementById('user-tag').textContent = `@${data.username}`;
+                    document.getElementById('header-username').textContent = data.username;
+                    
+                    if (data.avatar) {
+                        document.getElementById('avatar').src = data.avatar;
+                    }
+                    
+                    // ステータスバッジを更新
+                    const badge = document.getElementById('avatar-status-badge');
+                    badge.className = `avatar-status-badge ${data.status}`;
+                    
+                    // ボイス状態を更新
+                    if (data.voiceState) {
+                        showVoiceActivity(data.voiceState);
+                    } else {
+                        hideVoiceActivity();
+                    }
+                }
+            } catch (error) {
+                console.error('❌ ステータスの取得に失敗しました:', error);
+            }
+        }
+
+        // ボイスアクティビティを表示
+        function showVoiceActivity(voiceState) {
+            const activitySection = document.getElementById('activity-section');
+            activitySection.style.display = 'block';
+            
+            // 初回接続時は開始時刻を設定
+            if (!callData.startTime) {
+                callData.startTime = voiceState.joinedAt;
+            }
+            
+            callData.serverName = voiceState.serverName;
+            callData.channelName = voiceState.channelName;
+            callData.participantCount = voiceState.participantCount;
+            
+            document.getElementById('server-name').textContent = callData.serverName;
+            document.getElementById('channel-name').textContent = callData.channelName;
+            document.getElementById('participant-count').textContent = `${callData.participantCount}人`;
+        }
+
+        // ボイスアクティビティを非表示
+        function hideVoiceActivity() {
+            const activitySection = document.getElementById('activity-section');
+            activitySection.style.display = 'none';
+            callData.startTime = null;
+        }
 
         // 経過時間を更新する関数
         function updateDuration() {
-            const elapsed = Math.floor((Date.now() - callStartTime) / 1000);
+            if (!callData.startTime) return;
+            
+            const elapsed = Math.floor((Date.now() - callData.startTime) / 1000);
             const hours = Math.floor(elapsed / 3600);
             const minutes = Math.floor((elapsed % 3600) / 60);
             const seconds = elapsed % 60;
@@ -305,24 +385,19 @@
             document.getElementById('last-update').textContent = timeString;
         }
 
-        // 参加人数を更新する関数
-        function updateParticipantCount(count) {
-            participantCount = count;
-            document.getElementById('participant-count').textContent = `${count}人`;
-        }
-
-        // 初期更新
-        updateDuration();
+        // 初期読み込み
+        fetchDiscordStatus();
         updateLastUpdate();
 
-        // 1秒ごとに更新
+        // 定期更新
         setInterval(() => {
+            fetchDiscordStatus();
             updateDuration();
             updateLastUpdate();
-        }, 1000);
+        }, UPDATE_INTERVAL);
 
-        // 参加人数の例（実際のデータで更新）
-        // updateParticipantCount(3); // 例: 3人に更新
+        // 経過時間は1秒ごとに更新
+        setInterval(updateDuration, 1000);
     </script>
 </body>
 </html>
