@@ -1,1 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Webゲーム自動操作 完全版</title>
+<style>
+body { font-family: sans-serif; padding: 20px; }
+h2 { margin-bottom: 10px; }
+#buttons { margin-top: 20px; }
+.button {
+  display: inline-block;
+  margin: 5px;
+  padding: 10px 20px;
+  background: #ccc;
+  cursor: pointer;
+  border-radius: 5px;
+  user-select: none;
+  transition: background 0.2s;
+}
+.button:hover { background: #bbb; }
+.selected { background: #4CAF50; color: white; }
+#status { margin-top: 15px; font-weight: bold; }
+#gameArea { margin-top: 30px; }
+#gameBtn { padding: 15px 30px; font-size: 18px; }
+</style>
+</head>
+<body>
+
+<h2>Webゲーム自動操作 完全版</h2>
+<p>接続されたコントローラーのボタンを選択し、ゲームボタンを自動で押します</p>
+
+<div id="buttons"></div>
+<p id="status">接続待機中...</p>
+
+<div id="gameArea">
+  <button id="gameBtn">ゲームボタン</button>
+</div>
+
+<script>
+const buttonsContainer = document.getElementById("buttons");
+const status = document.getElementById("status");
+const gameBtn = document.getElementById("gameBtn");
+
+let selectedButton = null;
+
+// コントローラー接続
+window.addEventListener("gamepadconnected", e => {
+    const gp = navigator.getGamepads()[e.gamepad.index];
+    status.textContent = `接続: ${gp.id}`;
+    renderButtons(gp.buttons.length);
+});
+
+// コントローラー切断
+window.addEventListener("gamepaddisconnected", e => {
+    status.textContent = "コントローラーが切断されました";
+    buttonsContainer.innerHTML = "";
+});
+
+// 全ボタン表示
+function renderButtons(count) {
+    buttonsContainer.innerHTML = "";
+    for (let i = 0; i < count; i++) {
+        const btn = document.createElement("div");
+        btn.textContent = `Button ${i}`;
+        btn.className = "button";
+        btn.dataset.index = i;
+        btn.addEventListener("click", () => {
+            if (selectedButton) selectedButton.classList.remove("selected");
+            btn.classList.add("selected");
+            selectedButton = btn;
+            status.textContent = `完了: ボタン ${i} が選択されました`;
+        });
+        buttonsContainer.appendChild(btn);
+    }
+}
+
+// ページロード時に接続済みのコントローラーがあれば描画
+window.addEventListener("load", () => {
+    const gps = navigator.getGamepads();
+    for (let gp of gps) if (gp) renderButtons(gp.buttons.length);
+});
+
+// 自動操作ループ
+function pollGamepad() {
+    const gps = navigator.getGamepads();
+    for (let gp of gps) {
+        if (!gp) continue;
+        if (selectedButton) {
+            const index = parseInt(selectedButton.dataset.index);
+            if (gp.buttons[index].pressed) {
+                // 選択ボタンが押されたらゲームボタンを押す
+                gameBtn.click();
+                status.textContent = `ボタン ${index} 押下 → ゲームボタン自動押下`;
+            }
+        }
+    }
+    requestAnimationFrame(pollGamepad);
+}
+
+pollGamepad();
+
+// ゲームボタンクリック時
+gameBtn.addEventListener("click", () => {
+    alert("ゲームボタンが押されました！");
+});
+</script>
+
+</body>
+</html>
+
 
