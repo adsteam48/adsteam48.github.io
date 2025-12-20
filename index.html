@@ -59,6 +59,7 @@
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
         }
 
         .banner {
@@ -103,6 +104,7 @@
             border-radius: 50%;
             border: 3px solid white;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            background: #747f8d;
         }
 
         .avatar-status-badge.online {
@@ -126,130 +128,16 @@
             font-size: 0.95rem;
         }
 
-        .section {
-            margin-bottom: 25px;
-        }
-
-        .section-title {
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            color: #99aab5;
-            margin-bottom: 12px;
-            letter-spacing: 0.5px;
-        }
-
-        .connection-card {
-            background: #f6f7f8;
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: 0.2s;
-        }
-
-        .connection-card:hover {
-            background: #ebedef;
-            transform: translateX(3px);
-        }
-
-        .connection-card:last-child {
-            margin-bottom: 0;
-        }
-
-        .connection-icon {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            font-size: 1.5rem;
-            flex-shrink: 0;
-        }
-
-        .connection-icon.spotify {
-            background: linear-gradient(135deg, #1DB954 0%, #1ed760 100%);
-        }
-
-        .connection-icon.youtube {
-            background: linear-gradient(135deg, #FF0000 0%, #cc0000 100%);
-        }
-
-        .connection-icon.twitch {
-            background: linear-gradient(135deg, #9146FF 0%, #772ce8 100%);
-        }
-
-        .connection-icon.steam {
-            background: linear-gradient(135deg, #171a21 0%, #1b2838 100%);
-        }
-
-        .connection-icon.twitter {
-            background: linear-gradient(135deg, #1DA1F2 0%, #0d8bd9 100%);
-        }
-
-        .connection-icon.github {
-            background: linear-gradient(135deg, #24292e 0%, #1b1f23 100%);
-        }
-
-        .connection-icon.xbox {
-            background: linear-gradient(135deg, #107C10 0%, #0e6b0e 100%);
-        }
-
-        .connection-icon.playstation {
-            background: linear-gradient(135deg, #003791 0%, #002c73 100%);
-        }
-
-        .connection-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .connection-name {
-            font-weight: 600;
-            color: #2c2f33;
-            margin-bottom: 2px;
-            font-size: 0.95rem;
-        }
-
-        .connection-username {
-            color: #99aab5;
-            font-size: 0.85rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .connection-verified {
-            color: #43b581;
-            font-size: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            margin-top: 2px;
-        }
-
         .footer {
             margin-top: 20px;
             padding-top: 20px;
-            border-top: 1px solid #ebecef;
+            border-top: 1px solid #ebedef;
             text-align: center;
         }
 
         .last-update {
             color: #99aab5;
             font-size: 0.85rem;
-        }
-
-        @media (max-width: 600px) {
-            .header h1 {
-                font-size: 1.5rem;
-            }
-            .card-content {
-                padding: 0 20px 20px;
-            }
         }
     </style>
 </head>
@@ -266,7 +154,7 @@
             <div class="card-content">
                 <div class="avatar-wrapper">
                     <div class="avatar">
-                        <img id="avatar" src="https://cdn.discordapp.com/avatars/1403167996607725629/2b81a361ffe1d89dc1b55cf874237b97.png?size=256" alt="アバター">
+                        <img id="avatar" alt="アバター" src="https://cdn.discordapp.com/avatars/1403167996607725629/2b81a361ffe1d89dc1b55cf874237b97.png?size=256">
                         <div class="avatar-status-badge online" id="avatar-status-badge"></div>
                     </div>
                 </div>
@@ -274,17 +162,11 @@
                 <div class="user-info">
                     <div class="username" id="username">yiyf667</div>
                     <div class="user-tag" id="user-tag">@yiyf667</div>
-                    <div class="display-name" id="display-name" style="display:none;">表示名</div>
-                </div>
-
-                <div id="connections-section" class="section" style="display:none;">
-                    <div class="section-title">🔗 接続アカウント</div>
-                    <div id="connections-container"></div>
                 </div>
 
                 <div class="footer">
                     <div class="last-update">
-                        🕐 最終更新: <span id="last-update">0秒前</span>
+                        🕐 <span id="last-update">0:00:00</span>
                     </div>
                 </div>
             </div>
@@ -292,110 +174,17 @@
     </div>
 
     <script>
-        // API設定
-        const API_URL = 'http://localhost:3000/api/status'; // APIサーバーのURL
-        const UPDATE_INTERVAL = 5000; // 5秒ごとに更新
-
-        // 接続アカウントのアイコンとラベル
-        const CONNECTION_TYPES = {
-            'spotify': { icon: '🎵', label: 'Spotify' },
-            'youtube': { icon: '▶️', label: 'YouTube' },
-            'twitch': { icon: '📺', label: 'Twitch' },
-            'steam': { icon: '🎮', label: 'Steam' },
-            'twitter': { icon: '🐦', label: 'Twitter' },
-            'github': { icon: '💻', label: 'GitHub' },
-            'xbox': { icon: '🎮', label: 'Xbox' },
-            'playstation': { icon: '🎮', label: 'PlayStation' },
-            'battlenet': { icon: '⚔️', label: 'Battle.net' },
-            'reddit': { icon: '🤖', label: 'Reddit' },
-            'facebook': { icon: '📘', label: 'Facebook' }
-        };
-
-        // Discord APIからデータを取得
-        async function fetchDiscordStatus() {
-            try {
-                const response = await fetch(API_URL);
-                const result = await response.json();
-                
-                if (result.success) {
-                    const data = result.data;
-                    
-                    // ユーザー情報を更新
-                    document.getElementById('username').textContent = data.username;
-                    document.getElementById('user-tag').textContent = `@${data.username}`;
-                    document.getElementById('header-username').textContent = data.username;
-                    
-                    if (data.avatar) {
-                        document.getElementById('avatar').src = data.avatar;
-                    }
-                    
-                    // ステータスバッジを更新
-                    const badge = document.getElementById('avatar-status-badge');
-                    badge.className = `avatar-status-badge ${data.status}`;
-                    
-                    // 接続アカウントを表示
-                    if (data.connections && data.connections.length > 0) {
-                        displayConnections(data.connections);
-                    } else {
-                        hideConnections();
-                    }
-                }
-            } catch (error) {
-                console.error('❌ ステータスの取得に失敗しました:', error);
-            }
-        }
-
-        // 接続アカウントを表示
-        function displayConnections(connections) {
-            const section = document.getElementById('connections-section');
-            const container = document.getElementById('connections-container');
-            
-            section.style.display = 'block';
-            container.innerHTML = '';
-            
-            connections.forEach(conn => {
-                const connType = CONNECTION_TYPES[conn.type] || { icon: '🔗', label: conn.type };
-                
-                const card = document.createElement('div');
-                card.className = 'connection-card';
-                
-                card.innerHTML = `
-                    <div class="connection-icon ${conn.type}">
-                        ${connType.icon}
-                    </div>
-                    <div class="connection-info">
-                        <div class="connection-name">${connType.label}</div>
-                        <div class="connection-username">${conn.name}</div>
-                        ${conn.verified ? '<div class="connection-verified">✓ 認証済み</div>' : ''}
-                    </div>
-                `;
-                
-                container.appendChild(card);
-            });
-        }
-
-        // 接続アカウントを非表示
-        function hideConnections() {
-            const section = document.getElementById('connections-section');
-            section.style.display = 'none';
-        }
-
-        // 最終更新時刻を更新する関数
-        function updateLastUpdate() {
+        // 時間更新
+        function updateTime() {
             const now = new Date();
-            const timeString = now.toLocaleTimeString('ja-JP');
-            document.getElementById('last-update').textContent = timeString;
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('last-update').textContent = `${hours}:${minutes}:${seconds}`;
         }
 
-        // 初期読み込み
-        fetchDiscordStatus();
-        updateLastUpdate();
-
-        // 定期更新
-        setInterval(() => {
-            fetchDiscordStatus();
-            updateLastUpdate();
-        }, UPDATE_INTERVAL);
+        updateTime();
+        setInterval(updateTime, 1000);
     </script>
 </body>
 </html>
