@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>Webゲーム自動操作 完全版</title>
+<title>Webゲーム自動操作（画面共有対応）</title>
 <style>
 body { font-family: sans-serif; padding: 20px; }
 h2 { margin-bottom: 10px; }
@@ -20,26 +20,28 @@ h2 { margin-bottom: 10px; }
 .button:hover { background: #bbb; }
 .selected { background: #4CAF50; color: white; }
 #status { margin-top: 15px; font-weight: bold; }
-#gameArea { margin-top: 30px; }
-#gameBtn { padding: 15px 30px; font-size: 18px; }
+#gameArea { margin-top: 30px; border: 1px solid #aaa; padding: 20px; display: inline-block; }
+video { max-width: 100%; border: 1px solid #000; }
 </style>
 </head>
 <body>
 
-<h2>Webゲーム自動操作 完全版</h2>
-<p>接続されたコントローラーのボタンを選択し、ゲームボタンを自動で押します</p>
+<h2>Webゲーム自動操作（画面共有対応）</h2>
+<p>USB/Bluetoothコントローラーを接続し、画面共有でタイミング判定を行います。</p>
 
 <div id="buttons"></div>
 <p id="status">接続待機中...</p>
 
-<div id="gameArea">
-  <button id="gameBtn">ゲームボタン</button>
-</div>
+<h3>画面共有プレビュー</h3>
+<video id="screen" autoplay></video>
+<canvas id="canvas" width="640" height="480" style="display:none"></canvas>
 
 <script>
 const buttonsContainer = document.getElementById("buttons");
 const status = document.getElementById("status");
-const gameBtn = document.getElementById("gameBtn");
+const video = document.getElementById("screen");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
 let selectedButton = null;
 
@@ -56,7 +58,7 @@ window.addEventListener("gamepaddisconnected", e => {
     buttonsContainer.innerHTML = "";
 });
 
-// 全ボタン表示
+// ボタン表示
 function renderButtons(count) {
     buttonsContainer.innerHTML = "";
     for (let i = 0; i < count; i++) {
@@ -74,13 +76,42 @@ function renderButtons(count) {
     }
 }
 
-// ページロード時に接続済みのコントローラーがあれば描画
+// ページロード時に接続済みコントローラーがあれば描画
 window.addEventListener("load", () => {
     const gps = navigator.getGamepads();
     for (let gp of gps) if (gp) renderButtons(gp.buttons.length);
+
+    // 画面共有開始
+    navigator.mediaDevices.getDisplayMedia({ video: true }).then(stream => {
+        video.srcObject = stream;
+        requestAnimationFrame(processFrame);
+    }).catch(err => {
+        status.textContent = "画面共有が許可されませんでした";
+        console.error(err);
+    });
 });
 
-// 自動操作ループ
+// 画面解析＋自動クリック
+function processFrame() {
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+    // 赤色ピクセルを判定（例）
+    let redCount = 0;
+    for (let i = 0; i < frame.data.length; i += 4) {
+        if (frame.data[i] > 200 && frame.data[i+1] < 50 && frame.data[i+2] < 50) redCount++;
+    }
+
+    if (redCount > 1000) {
+        status.textContent = "画面判定: 赤色検出 → 自動クリック可能";
+        // ここに自動クリック処理（Canvas座標やDOMボタン）を追加可能
+        // 例: document.querySelector("#gameBtn")?.click();
+    }
+
+    requestAnimationFrame(processFrame);
+}
+
+// 自動操作ループ（選択ボタン押下で任意アクション）
 function pollGamepad() {
     const gps = navigator.getGamepads();
     for (let gp of gps) {
@@ -88,9 +119,8 @@ function pollGamepad() {
         if (selectedButton) {
             const index = parseInt(selectedButton.dataset.index);
             if (gp.buttons[index].pressed) {
-                // 選択ボタンが押されたらゲームボタンを押す
-                gameBtn.click();
-                status.textContent = `ボタン ${index} 押下 → ゲームボタン自動押下`;
+                status.textContent = `ボタン ${index} 押下 → 自動操作発火`;
+                // Canvas上のクリックやDOMイベントをここで発火
             }
         }
     }
@@ -98,14 +128,7 @@ function pollGamepad() {
 }
 
 pollGamepad();
-
-// ゲームボタンクリック時
-gameBtn.addEventListener("click", () => {
-    alert("ゲームボタンが押されました！");
-});
 </script>
 
 </body>
 </html>
-
-
