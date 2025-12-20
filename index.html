@@ -1,134 +1,516 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>Webゲーム自動操作（画面共有対応）</title>
-<style>
-body { font-family: sans-serif; padding: 20px; }
-h2 { margin-bottom: 10px; }
-#buttons { margin-top: 20px; }
-.button {
-  display: inline-block;
-  margin: 5px;
-  padding: 10px 20px;
-  background: #ccc;
-  cursor: pointer;
-  border-radius: 5px;
-  user-select: none;
-  transition: background 0.2s;
-}
-.button:hover { background: #bbb; }
-.selected { background: #4CAF50; color: white; }
-#status { margin-top: 15px; font-weight: bold; }
-#gameArea { margin-top: 30px; border: 1px solid #aaa; padding: 20px; display: inline-block; }
-video { max-width: 100%; border: 1px solid #000; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ブラウザゲーム自動操作ツール</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px;
+        }
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .status {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .status.connected {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .status.active {
+            background: #fff3cd;
+            color: #856404;
+        }
+        #gamepadInfo {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .gamepad-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #667eea;
+        }
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .gamepad-button {
+            padding: 8px;
+            background: #e9ecef;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.85em;
+            transition: all 0.2s;
+        }
+        .gamepad-button:hover {
+            background: #dee2e6;
+        }
+        .gamepad-button.pressed {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        .gamepad-button.selected {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+        #videoContainer {
+            position: relative;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+        #capturedVideo {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        #analysisCanvas {
+            display: none;
+        }
+        .detection-zones {
+            margin-top: 15px;
+        }
+        .zone-item {
+            background: white;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .zone-controls {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .zone-controls input {
+            padding: 8px;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
+        #logArea {
+            background: #1e1e1e;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+        .log-entry.info { color: #0ff; }
+        .log-entry.success { color: #0f0; }
+        .log-entry.warning { color: #ff0; }
+        .log-entry.error { color: #f00; }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <h1>🎮 ブラウザゲーム自動操作ツール</h1>
+        <p class="subtitle">Gamepad API + Screen Capture + 画像解析による自動操作システム</p>
 
-<h2>Webゲーム自動操作（画面共有対応）</h2>
-<p>USB/Bluetoothコントローラーを接続し、画面共有でタイミング判定を行います。</p>
+        <!-- コントローラー接続セクション -->
+        <div class="section">
+            <h2>📱 コントローラー接続</h2>
+            <p>USBまたはBluetoothコントローラーを接続してください</p>
+            <span class="status disconnected" id="gamepadStatus">未接続</span>
+            <div id="gamepadInfo"></div>
+        </div>
 
-<div id="buttons"></div>
-<p id="status">接続待機中...</p>
+        <!-- 画面キャプチャセクション -->
+        <div class="section">
+            <h2>🖥️ 画面キャプチャ</h2>
+            <p>ゲームが表示されているブラウザタブを共有してください</p>
+            <div class="action-buttons">
+                <button onclick="startCapture()" id="captureBtn">画面共有開始</button>
+                <button onclick="stopCapture()" id="stopCaptureBtn" disabled>共有停止</button>
+            </div>
+            <span class="status disconnected" id="captureStatus">未共有</span>
+            <div id="videoContainer">
+                <video id="capturedVideo" autoplay playsinline></video>
+            </div>
+            <canvas id="analysisCanvas"></canvas>
+        </div>
 
-<h3>画面共有プレビュー</h3>
-<video id="screen" autoplay></video>
-<canvas id="canvas" width="640" height="480" style="display:none"></canvas>
+        <!-- 検出ゾーン設定 -->
+        <div class="section">
+            <h2>🎯 自動操作設定</h2>
+            <p>画面上の特定の色を検出して自動クリックを実行します</p>
+            <div class="detection-zones">
+                <div class="zone-item">
+                    <span><strong>検出ゾーン 1</strong></span>
+                    <button onclick="addDetectionZone()">+ ゾーン追加</button>
+                </div>
+                <div class="zone-controls">
+                    <input type="number" id="zone1X" placeholder="X座標 (%)" value="50" min="0" max="100">
+                    <input type="number" id="zone1Y" placeholder="Y座標 (%)" value="50" min="0" max="100">
+                    <input type="color" id="zone1Color" value="#ff0000" title="検出する色">
+                    <input type="number" id="zone1Threshold" placeholder="色の許容誤差" value="30" min="0" max="255">
+                </div>
+            </div>
+        </div>
 
-<script>
-const buttonsContainer = document.getElementById("buttons");
-const status = document.getElementById("status");
-const video = document.getElementById("screen");
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
+        <!-- 自動操作制御 -->
+        <div class="section">
+            <h2>⚡ 自動操作制御</h2>
+            <p>選択したコントローラーボタンを押すと自動操作が実行されます</p>
+            <div class="action-buttons">
+                <button onclick="toggleAutomation()" id="automationBtn">自動操作: OFF</button>
+                <button onclick="testClick()" id="testClickBtn">テストクリック実行</button>
+            </div>
+            <span class="status disconnected" id="automationStatus">停止中</span>
+        </div>
 
-let selectedButton = null;
+        <!-- ログエリア -->
+        <div class="section">
+            <h2>📋 操作ログ</h2>
+            <div id="logArea"></div>
+        </div>
+    </div>
 
-// コントローラー接続
-window.addEventListener("gamepadconnected", e => {
-    const gp = navigator.getGamepads()[e.gamepad.index];
-    status.textContent = `接続: ${gp.id}`;
-    renderButtons(gp.buttons.length);
-});
+    <script>
+        // ===== グローバル変数 =====
+        let gamepadIndex = null; // 接続されたコントローラーのインデックス
+        let selectedButton = null; // ユーザーが選択したボタン番号
+        let mediaStream = null; // 画面キャプチャのストリーム
+        let videoElement = document.getElementById('capturedVideo');
+        let canvas = document.getElementById('analysisCanvas');
+        let ctx = canvas.getContext('2d');
+        let automationEnabled = false; // 自動操作の有効/無効
+        let animationFrameId = null; // requestAnimationFrameのID
 
-// コントローラー切断
-window.addEventListener("gamepaddisconnected", e => {
-    status.textContent = "コントローラーが切断されました";
-    buttonsContainer.innerHTML = "";
-});
-
-// ボタン表示
-function renderButtons(count) {
-    buttonsContainer.innerHTML = "";
-    for (let i = 0; i < count; i++) {
-        const btn = document.createElement("div");
-        btn.textContent = `Button ${i}`;
-        btn.className = "button";
-        btn.dataset.index = i;
-        btn.addEventListener("click", () => {
-            if (selectedButton) selectedButton.classList.remove("selected");
-            btn.classList.add("selected");
-            selectedButton = btn;
-            status.textContent = `完了: ボタン ${i} が選択されました`;
-        });
-        buttonsContainer.appendChild(btn);
-    }
-}
-
-// ページロード時に接続済みコントローラーがあれば描画
-window.addEventListener("load", () => {
-    const gps = navigator.getGamepads();
-    for (let gp of gps) if (gp) renderButtons(gp.buttons.length);
-
-    // 画面共有開始
-    navigator.mediaDevices.getDisplayMedia({ video: true }).then(stream => {
-        video.srcObject = stream;
-        requestAnimationFrame(processFrame);
-    }).catch(err => {
-        status.textContent = "画面共有が許可されませんでした";
-        console.error(err);
-    });
-});
-
-// 画面解析＋自動クリック
-function processFrame() {
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-    // 赤色ピクセルを判定（例）
-    let redCount = 0;
-    for (let i = 0; i < frame.data.length; i += 4) {
-        if (frame.data[i] > 200 && frame.data[i+1] < 50 && frame.data[i+2] < 50) redCount++;
-    }
-
-    if (redCount > 1000) {
-        status.textContent = "画面判定: 赤色検出 → 自動クリック可能";
-        // ここに自動クリック処理（Canvas座標やDOMボタン）を追加可能
-        // 例: document.querySelector("#gameBtn")?.click();
-    }
-
-    requestAnimationFrame(processFrame);
-}
-
-// 自動操作ループ（選択ボタン押下で任意アクション）
-function pollGamepad() {
-    const gps = navigator.getGamepads();
-    for (let gp of gps) {
-        if (!gp) continue;
-        if (selectedButton) {
-            const index = parseInt(selectedButton.dataset.index);
-            if (gp.buttons[index].pressed) {
-                status.textContent = `ボタン ${index} 押下 → 自動操作発火`;
-                // Canvas上のクリックやDOMイベントをここで発火
+        // ===== ログ出力関数 =====
+        function log(message, type = 'info') {
+            const logArea = document.getElementById('logArea');
+            const timestamp = new Date().toLocaleTimeString('ja-JP');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${timestamp}] ${message}`;
+            logArea.appendChild(entry);
+            logArea.scrollTop = logArea.scrollHeight;
+            
+            // ログが100行を超えたら古いものを削除
+            if (logArea.children.length > 100) {
+                logArea.removeChild(logArea.firstChild);
             }
         }
-    }
-    requestAnimationFrame(pollGamepad);
-}
 
-pollGamepad();
-</script>
+        // ===== Gamepad API: コントローラー検出 =====
+        window.addEventListener('gamepadconnected', (e) => {
+            gamepadIndex = e.gamepad.index;
+            log(`コントローラー接続: ${e.gamepad.id}`, 'success');
+            document.getElementById('gamepadStatus').textContent = '接続済み';
+            document.getElementById('gamepadStatus').className = 'status connected';
+            updateGamepadDisplay();
+        });
 
+        window.addEventListener('gamepaddisconnected', (e) => {
+            log(`コントローラー切断: ${e.gamepad.id}`, 'warning');
+            gamepadIndex = null;
+            selectedButton = null;
+            document.getElementById('gamepadStatus').textContent = '未接続';
+            document.getElementById('gamepadStatus').className = 'status disconnected';
+            document.getElementById('gamepadInfo').innerHTML = '';
+        });
+
+        // ===== コントローラー状態の表示更新 =====
+        function updateGamepadDisplay() {
+            const gamepads = navigator.getGamepads();
+            const gamepadInfoDiv = document.getElementById('gamepadInfo');
+            
+            if (!gamepads || gamepadIndex === null) return;
+            
+            const gamepad = gamepads[gamepadIndex];
+            if (!gamepad) return;
+
+            // 初回のみカードを生成
+            if (gamepadInfoDiv.children.length === 0) {
+                const card = document.createElement('div');
+                card.className = 'gamepad-card';
+                card.innerHTML = `
+                    <strong>${gamepad.id}</strong>
+                    <div class="button-grid" id="buttonGrid"></div>
+                `;
+                gamepadInfoDiv.appendChild(card);
+            }
+
+            const buttonGrid = document.getElementById('buttonGrid');
+            buttonGrid.innerHTML = '';
+
+            // 全ボタンを表示
+            gamepad.buttons.forEach((button, index) => {
+                const btnElement = document.createElement('div');
+                btnElement.className = 'gamepad-button';
+                btnElement.textContent = `BTN ${index}`;
+                
+                // 押されているボタンをハイライト
+                if (button.pressed) {
+                    btnElement.classList.add('pressed');
+                }
+                
+                // 選択されているボタンをハイライト
+                if (selectedButton === index) {
+                    btnElement.classList.add('selected');
+                }
+                
+                // クリックでボタン選択
+                btnElement.onclick = () => selectButton(index);
+                
+                buttonGrid.appendChild(btnElement);
+            });
+
+            // 選択ボタンが押されたら自動操作実行
+            if (automationEnabled && selectedButton !== null && gamepad.buttons[selectedButton].pressed) {
+                executeAutomation();
+            }
+
+            // 次のフレームで再度更新
+            requestAnimationFrame(updateGamepadDisplay);
+        }
+
+        // ===== ボタン選択 =====
+        function selectButton(index) {
+            selectedButton = index;
+            log(`ボタン ${index} を自動操作トリガーに設定`, 'info');
+        }
+
+        // ===== 画面キャプチャ開始 =====
+        async function startCapture() {
+            try {
+                // Screen Capture APIで画面を取得
+                mediaStream = await navigator.mediaDevices.getDisplayMedia({
+                    video: { mediaSource: 'screen' },
+                    audio: false
+                });
+
+                videoElement.srcObject = mediaStream;
+                videoElement.onloadedmetadata = () => {
+                    canvas.width = videoElement.videoWidth;
+                    canvas.height = videoElement.videoHeight;
+                    log(`画面キャプチャ開始: ${canvas.width}x${canvas.height}`, 'success');
+                };
+
+                document.getElementById('captureStatus').textContent = '共有中';
+                document.getElementById('captureStatus').className = 'status connected';
+                document.getElementById('captureBtn').disabled = true;
+                document.getElementById('stopCaptureBtn').disabled = false;
+
+                // 停止時の処理
+                mediaStream.getVideoTracks()[0].onended = () => {
+                    stopCapture();
+                };
+
+            } catch (err) {
+                log(`画面キャプチャエラー: ${err.message}`, 'error');
+            }
+        }
+
+        // ===== 画面キャプチャ停止 =====
+        function stopCapture() {
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
+                videoElement.srcObject = null;
+                log('画面キャプチャ停止', 'warning');
+            }
+            document.getElementById('captureStatus').textContent = '未共有';
+            document.getElementById('captureStatus').className = 'status disconnected';
+            document.getElementById('captureBtn').disabled = false;
+            document.getElementById('stopCaptureBtn').disabled = true;
+        }
+
+        // ===== 画像解析: 特定色の検出 =====
+        function analyzeScreen() {
+            if (!videoElement.srcObject) return null;
+
+            // videoをcanvasに描画
+            ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+            
+            // 検出ゾーンの設定を取得
+            const x = parseInt(document.getElementById('zone1X').value) / 100 * canvas.width;
+            const y = parseInt(document.getElementById('zone1Y').value) / 100 * canvas.height;
+            const targetColor = hexToRgb(document.getElementById('zone1Color').value);
+            const threshold = parseInt(document.getElementById('zone1Threshold').value);
+
+            // 指定座標の色を取得
+            const imageData = ctx.getImageData(x, y, 1, 1);
+            const pixel = imageData.data;
+
+            // 色の差を計算
+            const diff = Math.abs(pixel[0] - targetColor.r) +
+                        Math.abs(pixel[1] - targetColor.g) +
+                        Math.abs(pixel[2] - targetColor.b);
+
+            // 閾値以下なら一致と判定
+            if (diff <= threshold) {
+                return { x, y, matched: true };
+            }
+
+            return { x, y, matched: false };
+        }
+
+        // ===== HEX色をRGBに変換 =====
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+
+        // ===== 自動操作実行 =====
+        function executeAutomation() {
+            const result = analyzeScreen();
+            
+            if (result && result.matched) {
+                // 実際のブラウザゲームのクリック位置を計算
+                // 注意: このツールではキャプチャした画面を解析するだけで、
+                // 実際のクリックはユーザーが手動で行うか、
+                // Chrome拡張機能などを別途利用する必要があります
+                
+                log(`✓ 色検出成功 (${Math.round(result.x)}, ${Math.round(result.y)}) - 自動操作実行`, 'success');
+                
+                // ここに実際のクリック処理を実装
+                // 例: sendClickToGame(result.x, result.y);
+            }
+        }
+
+        // ===== テストクリック =====
+        function testClick() {
+            const result = analyzeScreen();
+            if (result) {
+                log(`テストクリック: 座標(${Math.round(result.x)}, ${Math.round(result.y)}) - 色${result.matched ? '一致' : '不一致'}`, 
+                    result.matched ? 'success' : 'warning');
+            } else {
+                log('画面キャプチャが開始されていません', 'error');
+            }
+        }
+
+        // ===== 自動操作ON/OFF切り替え =====
+        function toggleAutomation() {
+            automationEnabled = !automationEnabled;
+            const btn = document.getElementById('automationBtn');
+            const status = document.getElementById('automationStatus');
+            
+            if (automationEnabled) {
+                btn.textContent = '自動操作: ON';
+                status.textContent = '実行中';
+                status.className = 'status active';
+                log('自動操作を有効化しました', 'success');
+            } else {
+                btn.textContent = '自動操作: OFF';
+                status.textContent = '停止中';
+                status.className = 'status disconnected';
+                log('自動操作を無効化しました', 'warning');
+            }
+        }
+
+        // ===== 検出ゾーン追加 =====
+        function addDetectionZone() {
+            log('複数ゾーン機能は今後実装予定です', 'info');
+        }
+
+        // ===== 初期化 =====
+        log('ブラウザゲーム自動操作ツール起動', 'info');
+        log('コントローラーを接続してください', 'info');
+        
+        // Gamepad APIのポーリング開始
+        setInterval(() => {
+            if (gamepadIndex !== null) {
+                updateGamepadDisplay();
+            }
+        }, 100);
+    </script>
 </body>
 </html>
