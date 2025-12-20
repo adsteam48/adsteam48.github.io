@@ -105,4 +105,4 @@ app.listen(PORT, () => {
 });
 
 // Discordボットにログイン
-client.login('MTQxODM2NTk2MTA0MzQ0Nzg4OQ.GwrRKg.uJtUs4IFBn3oW941qPifj74o-u_apTl3zPfLaA'); // ⚠️ ボットトークンを入力
+client.log
