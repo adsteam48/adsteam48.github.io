@@ -139,80 +139,96 @@
             letter-spacing: 0.5px;
         }
 
-        .activity-card {
-            background: linear-gradient(135deg, #5865f2 0%, #4752c4 100%);
-            padding: 20px;
-            border-radius: 12px;
-            color: white;
-            box-shadow: 0 4px 12px rgba(88, 101, 242, 0.3);
-        }
-
-        .voice-header {
+        .connection-card {
+            background: #f6f7f8;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
+            gap: 12px;
+            transition: 0.2s;
         }
 
-        .voice-icon {
-            width: 50px;
-            height: 50px;
+        .connection-card:hover {
+            background: #ebedef;
+            transform: translateX(3px);
+        }
+
+        .connection-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .connection-icon {
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            font-size: 1.8rem;
+            border-radius: 8px;
+            font-size: 1.5rem;
+            flex-shrink: 0;
         }
 
-        .voice-info {
+        .connection-icon.spotify {
+            background: linear-gradient(135deg, #1DB954 0%, #1ed760 100%);
+        }
+
+        .connection-icon.youtube {
+            background: linear-gradient(135deg, #FF0000 0%, #cc0000 100%);
+        }
+
+        .connection-icon.twitch {
+            background: linear-gradient(135deg, #9146FF 0%, #772ce8 100%);
+        }
+
+        .connection-icon.steam {
+            background: linear-gradient(135deg, #171a21 0%, #1b2838 100%);
+        }
+
+        .connection-icon.twitter {
+            background: linear-gradient(135deg, #1DA1F2 0%, #0d8bd9 100%);
+        }
+
+        .connection-icon.github {
+            background: linear-gradient(135deg, #24292e 0%, #1b1f23 100%);
+        }
+
+        .connection-icon.xbox {
+            background: linear-gradient(135deg, #107C10 0%, #0e6b0e 100%);
+        }
+
+        .connection-icon.playstation {
+            background: linear-gradient(135deg, #003791 0%, #002c73 100%);
+        }
+
+        .connection-info {
             flex: 1;
+            min-width: 0;
         }
 
-        .voice-status {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .voice-channel {
-            font-size: 0.9rem;
-            opacity: 0.9;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        #server-name {
+        .connection-name {
             font-weight: 600;
+            color: #2c2f33;
+            margin-bottom: 2px;
+            font-size: 0.95rem;
         }
 
-        .voice-details {
+        .connection-username {
+            color: #99aab5;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .connection-verified {
+            color: #43b581;
+            font-size: 0.75rem;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding-top: 15px;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .voice-participants {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .participant-icon {
-            font-size: 1.1rem;
-        }
-
-        .participant-count {
-            font-weight: 600;
-        }
-
-        .voice-duration {
-            font-size: 1.3rem;
-            font-weight: 700;
-            font-family: 'Courier New', monospace;
+            gap: 4px;
+            margin-top: 2px;
         }
 
         .footer {
@@ -258,28 +274,12 @@
                 <div class="user-info">
                     <div class="username" id="username">yiyf667</div>
                     <div class="user-tag" id="user-tag">@yiyf667</div>
+                    <div class="display-name" id="display-name" style="display:none;">表示名</div>
                 </div>
 
-                <div id="activity-section" class="section">
-                    <div class="section-title">アクティビティ</div>
-                    <div class="activity-card" id="voice-card">
-                        <div class="voice-header">
-                            <div class="voice-icon">🎙️</div>
-                            <div class="voice-info">
-                                <div class="voice-status">通話中</div>
-                                <div class="voice-channel" id="channel-info">
-                                    <span id="server-name">サーバー名</span> / <span id="channel-name">ボイスチャンネル</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="voice-details">
-                            <div class="voice-participants">
-                                <span class="participant-icon">👥</span>
-                                <span class="participant-count" id="participant-count">1人</span>
-                            </div>
-                            <div class="voice-duration" id="voice-duration">0:00:00</div>
-                        </div>
-                    </div>
+                <div id="connections-section" class="section" style="display:none;">
+                    <div class="section-title">🔗 接続アカウント</div>
+                    <div id="connections-container"></div>
                 </div>
 
                 <div class="footer">
@@ -296,13 +296,19 @@
         const API_URL = 'http://localhost:3000/api/status'; // APIサーバーのURL
         const UPDATE_INTERVAL = 5000; // 5秒ごとに更新
 
-        // 通話情報
-        let callData = {
-            startTime: null,
-            serverName: '',
-            channelName: '',
-            participantCount: 0,
-            isServerCall: true
+        // 接続アカウントのアイコンとラベル
+        const CONNECTION_TYPES = {
+            'spotify': { icon: '🎵', label: 'Spotify' },
+            'youtube': { icon: '▶️', label: 'YouTube' },
+            'twitch': { icon: '📺', label: 'Twitch' },
+            'steam': { icon: '🎮', label: 'Steam' },
+            'twitter': { icon: '🐦', label: 'Twitter' },
+            'github': { icon: '💻', label: 'GitHub' },
+            'xbox': { icon: '🎮', label: 'Xbox' },
+            'playstation': { icon: '🎮', label: 'PlayStation' },
+            'battlenet': { icon: '⚔️', label: 'Battle.net' },
+            'reddit': { icon: '🤖', label: 'Reddit' },
+            'facebook': { icon: '📘', label: 'Facebook' }
         };
 
         // Discord APIからデータを取得
@@ -327,11 +333,11 @@
                     const badge = document.getElementById('avatar-status-badge');
                     badge.className = `avatar-status-badge ${data.status}`;
                     
-                    // ボイス状態を更新
-                    if (data.voiceState) {
-                        showVoiceActivity(data.voiceState);
+                    // 接続アカウントを表示
+                    if (data.connections && data.connections.length > 0) {
+                        displayConnections(data.connections);
                     } else {
-                        hideVoiceActivity();
+                        hideConnections();
                     }
                 }
             } catch (error) {
@@ -339,43 +345,39 @@
             }
         }
 
-        // ボイスアクティビティを表示
-        function showVoiceActivity(voiceState) {
-            const activitySection = document.getElementById('activity-section');
-            activitySection.style.display = 'block';
+        // 接続アカウントを表示
+        function displayConnections(connections) {
+            const section = document.getElementById('connections-section');
+            const container = document.getElementById('connections-container');
             
-            // 初回接続時は開始時刻を設定
-            if (!callData.startTime) {
-                callData.startTime = voiceState.joinedAt;
-            }
+            section.style.display = 'block';
+            container.innerHTML = '';
             
-            callData.serverName = voiceState.serverName;
-            callData.channelName = voiceState.channelName;
-            callData.participantCount = voiceState.participantCount;
-            
-            document.getElementById('server-name').textContent = callData.serverName;
-            document.getElementById('channel-name').textContent = callData.channelName;
-            document.getElementById('participant-count').textContent = `${callData.participantCount}人`;
+            connections.forEach(conn => {
+                const connType = CONNECTION_TYPES[conn.type] || { icon: '🔗', label: conn.type };
+                
+                const card = document.createElement('div');
+                card.className = 'connection-card';
+                
+                card.innerHTML = `
+                    <div class="connection-icon ${conn.type}">
+                        ${connType.icon}
+                    </div>
+                    <div class="connection-info">
+                        <div class="connection-name">${connType.label}</div>
+                        <div class="connection-username">${conn.name}</div>
+                        ${conn.verified ? '<div class="connection-verified">✓ 認証済み</div>' : ''}
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
         }
 
-        // ボイスアクティビティを非表示
-        function hideVoiceActivity() {
-            const activitySection = document.getElementById('activity-section');
-            activitySection.style.display = 'none';
-            callData.startTime = null;
-        }
-
-        // 経過時間を更新する関数
-        function updateDuration() {
-            if (!callData.startTime) return;
-            
-            const elapsed = Math.floor((Date.now() - callData.startTime) / 1000);
-            const hours = Math.floor(elapsed / 3600);
-            const minutes = Math.floor((elapsed % 3600) / 60);
-            const seconds = elapsed % 60;
-
-            const timeString = `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            document.getElementById('voice-duration').textContent = timeString;
+        // 接続アカウントを非表示
+        function hideConnections() {
+            const section = document.getElementById('connections-section');
+            section.style.display = 'none';
         }
 
         // 最終更新時刻を更新する関数
@@ -392,12 +394,8 @@
         // 定期更新
         setInterval(() => {
             fetchDiscordStatus();
-            updateDuration();
             updateLastUpdate();
         }, UPDATE_INTERVAL);
-
-        // 経過時間は1秒ごとに更新
-        setInterval(updateDuration, 1000);
     </script>
 </body>
-                                    </html>
+</html>
