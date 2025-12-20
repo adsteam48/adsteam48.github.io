@@ -3,345 +3,165 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>yiyf667のステータス - Discord</title>
-<style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+<title>yiyf667 のステータス</title>
 
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    padding: 20px;
-}
-
-.container {
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.header {
-    text-align: center;
-    color: white;
-    margin-bottom: 30px;
-}
-
-.header h1 {
-    font-size: 2.5em;
-    margin-bottom: 10px;
-}
-
-.sparkle {
-    animation: sparkle 2s ease-in-out infinite;
-}
-
-@keyframes sparkle {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-}
-
-.subtitle {
-    font-size: 1.1em;
-    opacity: 0.9;
-}
-
-.status-card {
-    background: white;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-}
-
-.banner {
-    height: 120px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.card-content {
-    padding: 20px;
-    position: relative;
-}
-
-.avatar-wrapper {
-    text-align: center;
-    margin-top: -80px;
-    margin-bottom: 20px;
-}
-
-.avatar {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    border: 6px solid white;
-    overflow: hidden;
-    display: inline-block;
-    position: relative;
-}
-
-.avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.status-badge {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: 4px solid white;
-    position: absolute;
-    bottom: 4px;
-    right: 4px;
-}
-
-.status-badge.online { background: #43b581; }
-.status-badge.idle { background: #faa61a; }
-.status-badge.dnd { background: #f04747; }
-.status-badge.offline { background: #747f8d; }
-
-.user-info {
-    text-align: center;
-    margin-bottom: 15px;
-}
-
-.username {
-    font-size: 1.8em;
-    font-weight: bold;
-    color: #2c2f33;
-}
-
-.user-tag {
-    color: #99aab5;
-    font-size: 1.1em;
-}
-
-.status-label {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 10px 20px;
-    border-radius: 30px;
-    font-weight: 600;
-    margin: 15px auto;
-    width: fit-content;
-}
-
-.status-label.online {
-    background: #43b58133;
-    color: #43b581;
-}
-
-.status-label.idle {
-    background: #faa61a33;
-    color: #faa61a;
-}
-
-.status-label.dnd {
-    background: #f0474733;
-    color: #f04747;
-}
-
-.status-label.offline {
-    background: #747f8d33;
-    color: #747f8d;
-}
-
-.status-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: currentColor;
-}
-
-.custom-status {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 15px;
-    background: #f6f6f6;
-    border-radius: 10px;
-    margin: 15px 0;
-}
-
-.emoji {
-    font-size: 1.5em;
-}
-
-.text {
-    color: #2c2f33;
-    font-size: 1em;
-}
-
-.section {
-    margin: 20px 0;
-}
-
-.section-title {
-    font-weight: bold;
-    color: #2c2f33;
-    font-size: 0.9em;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.activity {
-    display: flex;
-    gap: 15px;
-    padding: 15px;
-    background: #f6f6f6;
-    border-radius: 10px;
-    align-items: center;
-}
-
-.activity-icon {
-    font-size: 2em;
-}
-
-.activity-info {
-    flex: 1;
-}
-
-.activity-name {
-    font-weight: bold;
-    color: #2c2f33;
-    font-size: 1.1em;
-    margin-bottom: 4px;
-}
-
-.activity-details, .activity-state {
-    color: #72767d;
-    font-size: 0.9em;
-}
-
-.activity-time {
-    text-align: right;
-}
-
-.elapsed-time {
-    font-size: 1.3em;
-    font-weight: bold;
-    color: #667eea;
-    font-variant-numeric: tabular-nums;
-}
-
-.time-label {
-    font-size: 0.8em;
-    color: #99aab5;
-}
-
-.footer {
-    text-align: center;
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 1px solid #e3e5e8;
-}
-
-.last-update {
-    color: #99aab5;
-    font-size: 0.9em;
-}
-</style>
+<!-- ここに「あなたが最初に貼ったCSS」をそのまま貼る -->
 </head>
 <body>
+
 <div class="container">
     <div class="header">
         <h1><span class="sparkle">✨</span>yiyf667のステータス<span class="sparkle">✨</span></h1>
         <p class="subtitle">リアルタイム更新中</p>
     </div>
-    <div id="content"></div>
-</div>
-<script>
-const DISCORD_USER_ID = "1403167996607725629";
-const REFRESH_INTERVAL = 5000;
-const STATUS_LABELS = {
-    online: "オンライン",
-    idle: "アイドル",
-    dnd: "応答不可",
-    offline: "オフライン"
-};
 
-function formatElapsed(sec) {
-    const h = Math.floor(sec / 3600);
-    const m = Math.floor((sec % 3600) / 60);
-    const s = sec % 60;
-    return h > 0 ? `${h}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`
-                 : `${m}:${String(s).padStart(2,"0")}`;
-}
-
-async function fetchStatus() {
-    try {
-        const res = await fetch(`https://api.lanyard.rest/v1/users/${DISCORD_USER_ID}`);
-        const json = await res.json();
-        render(json.data);
-    } catch (error) {
-        console.error('Error fetching status:', error);
-        document.getElementById("content").innerHTML = `
-            <div class="status-card">
-                <div class="card-content">
-                    <p style="text-align:center;color:#f04747;">データの取得に失敗しました</p>
-                </div>
-            </div>`;
-    }
-}
-
-function render(data) {
-    const now = Math.floor(Date.now()/1000);
-    const activity = data.activities?.find(a => a.timestamps?.start);
-    const elapsed = activity ? now - Math.floor(activity.timestamps.start / 1000) : 0;
-    
-    document.getElementById("content").innerHTML = `
     <div class="status-card">
         <div class="banner"></div>
+
         <div class="card-content">
             <div class="avatar-wrapper">
                 <div class="avatar">
-                    <img src="https://cdn.discordapp.com/avatars/${data.discord_user.id}/${data.discord_user.avatar}.png?size=256">
-                    <div class="status-badge ${data.discord_status}"></div>
+                    <img id="avatar" style="display:none;">
+                    <div class="status-badge offline" id="avatar-status-badge"></div>
                 </div>
             </div>
+
             <div class="user-info">
-                <div class="username">${data.discord_user.global_name ?? data.discord_user.username}</div>
-                <div class="user-tag">@${data.discord_user.username}</div>
+                <div class="username" id="username">yiyf667</div>
+                <div class="user-tag">@yiyf667</div>
             </div>
-            <div class="status-label ${data.discord_status}">
-                <div class="status-dot"></div>
-                ${STATUS_LABELS[data.discord_status]}
+
+            <div id="about-section" class="section" style="display:none;">
+                <div class="section-title">自己紹介</div>
+                <div class="bio" id="about-text"></div>
             </div>
-            ${data.activities?.find(a => a.type === 4) ? `
-            <div class="custom-status">
-                <div class="emoji">${data.activities.find(a => a.type === 4).emoji?.name ?? ""}</div>
-                <div class="text">${data.activities.find(a => a.type === 4).state}</div>
-            </div>` : ""}
-            ${activity ? `
-            <div class="section">
+
+            <div id="activity-section" class="section" style="display:none;">
                 <div class="section-title">アクティビティ</div>
-                <div class="activity">
-                    <div class="activity-icon">🎮</div>
-                    <div class="activity-info">
-                        <div class="activity-name">${activity.name}</div>
-                        <div class="activity-details">${activity.details ?? ""}</div>
-                        <div class="activity-state">${activity.state ?? ""}</div>
-                    </div>
-                    <div class="activity-time">
-                        <div class="elapsed-time">${formatElapsed(elapsed)}</div>
-                        <div class="time-label">経過時間</div>
-                    </div>
-                </div>
-            </div>` : ""}
+                <div id="activities-container"></div>
+            </div>
+
             <div class="footer">
-                <div class="last-update">🕐 ${new Date().toLocaleTimeString("ja-JP")}</div>
+                <div class="last-update">
+                    🕐 <span id="last-update">--:--:--</span>
+                </div>
             </div>
         </div>
-    </div>`;
+    </div>
+</div>
+
+<script>
+/* ===============================
+   設定
+================================ */
+const API_URL = '/api';
+const REFRESH_INTERVAL = 5000;
+const DISCORD_USER_ID = '1403167996607725629';
+
+/* ===============================
+   ユーティリティ
+================================ */
+function formatElapsedTime(seconds) {
+    if (!seconds || seconds < 0) return '0:00';
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = Math.floor(seconds % 60);
+    return h > 0
+        ? `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+        : `${m}:${String(s).padStart(2,'0')}`;
 }
 
+/* ===============================
+   API取得
+================================ */
+async function fetchStatus() {
+    try {
+        const res = await fetch(`${API_URL}/status/id/${DISCORD_USER_ID}`);
+        if (!res.ok) throw new Error('API error');
+        const data = await res.json();
+        updateUI(data);
+        updateLastUpdate();
+    } catch (e) {
+        console.error(e);
+        document.getElementById('username').textContent = '接続エラー';
+    }
+}
+
+/* ===============================
+   UI更新
+================================ */
+function updateUI(data) {
+    // username
+    document.getElementById('username').textContent =
+        data.username || 'yiyf667';
+
+    // avatar
+    if (data.avatar_url) {
+        const avatar = document.getElementById('avatar');
+        avatar.src = data.avatar_url;
+        avatar.style.display = 'block';
+    }
+
+    // status badge（CSS任せ）
+    const badge = document.getElementById('avatar-status-badge');
+    if (badge && data.status) {
+        badge.className = `status-badge ${data.status}`;
+    }
+
+    // about
+    const about = document.getElementById('about-section');
+    if (data.about) {
+        about.style.display = 'block';
+        document.getElementById('about-text').textContent = data.about;
+    } else {
+        about.style.display = 'none';
+    }
+
+    // activities
+    const section = document.getElementById('activity-section');
+    const container = document.getElementById('activities-container');
+    container.innerHTML = '';
+
+    if (data.activities && data.activities.length) {
+        section.style.display = 'block';
+
+        data.activities.forEach(a => {
+            const card = document.createElement('div');
+            card.className = 'activity';
+
+            const elapsed = a.start_timestamp
+                ? formatElapsedTime((Date.now()/1000) - a.start_timestamp)
+                : '0:00';
+
+            card.innerHTML = `
+                <div class="activity-icon">🎮</div>
+                <div class="activity-info">
+                    <div class="activity-name">${a.name}</div>
+                    <div class="activity-details">${a.state || a.details || ''}</div>
+                </div>
+                <div class="activity-time">
+                    <div class="elapsed-time">${elapsed}</div>
+                    <div class="time-label">経過時間</div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    } else {
+        section.style.display = 'none';
+    }
+}
+
+function updateLastUpdate() {
+    document.getElementById('last-update')
+        .textContent = new Date().toLocaleTimeString('ja-JP');
+}
+
+/* ===============================
+   初期化
+================================ */
 fetchStatus();
 setInterval(fetchStatus, REFRESH_INTERVAL);
 </script>
+
 </body>
 </html>
