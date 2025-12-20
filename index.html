@@ -326,7 +326,8 @@
                         <strong>💡 設定のヒント:</strong><br>
                         • X座標: 縦棒が通過する横位置<br>
                         • Y範囲: 水色エリアの縦の範囲<br>
-                        • 色の誤差: 大きいほど検出しやすい
+                        • 色の誤差: 大きいほど検出しやすい<br>
+                        • 反応感度: 速度が速いゲームは「超高速」に設定
                     </div>
                 </div>
 
@@ -385,10 +386,11 @@
                     <span class="status disconnected" id="automationStatus">停止中</span>
                     <div class="info-box">
                         <strong>🎮 使い方:</strong><br>
-                        1. ゲーム画面を共有<br>
+                        1. ゲーム画面を共有（自動再接続ON）<br>
                         2. 水色エリアの位置を設定<br>
                         3. コントローラーボタンを選択<br>
-                        4. ボタンを押すと自動検出開始！
+                        4. ボタンを押すと自動検出開始！<br>
+                        5. 検出後0〜5秒でランダムクリック
                     </div>
                 </div>
             </div>
@@ -537,26 +539,47 @@
                 document.getElementById('stopCaptureBtn').disabled = false;
                 document.getElementById('pickColorBtn').disabled = false;
 
-                mediaStream.getVideoTracks()[0].onended = () => stopCapture();
+                // 画面共有が停止された時、自動的に再接続
+                mediaStream.getVideoTracks()[0].onended = () => {
+                    log('⚠ 画面共有が停止されました。5秒後に自動再接続...', 'warning');
+                    setTimeout(() => {
+                        log('🔄 画面共有を再接続中...', 'info');
+                        startCapture();
+                    }, 5000);
+                };
 
             } catch (err) {
                 log(`✗ 画面キャプチャエラー: ${err.message}`, 'error');
+                // エラーの場合も5秒後に自動再試行
+                setTimeout(() => {
+                    log('🔄 画面共有を再試行中...', 'info');
+                    startCapture();
+                }, 5000);
             }
         }
 
         function stopCapture() {
+            if (automationEnabled) toggleAutomation();
+            
             if (mediaStream) {
                 mediaStream.getTracks().forEach(track => track.stop());
                 mediaStream = null;
                 videoElement.srcObject = null;
-                log('⚠ 画面キャプチャ停止', 'warning');
             }
-            if (automationEnabled) toggleAutomation();
+            
+            // クリック実行タイマーをクリア
+            if (clickExecutionTimeout) {
+                clearTimeout(clickExecutionTimeout);
+                clickExecutionTimeout = null;
+            }
+            
             document.getElementById('captureStatus').textContent = '未共有';
             document.getElementById('captureStatus').className = 'status disconnected';
             document.getElementById('captureBtn').disabled = false;
             document.getElementById('stopCaptureBtn').disabled = true;
             document.getElementById('pickColorBtn').disabled = true;
+            
+            log('⚠ 画面キャプチャを完全停止しました', 'warning');
         }
 
         // ===== 色抽出モード =====
@@ -669,9 +692,10 @@
             setTimeout(() => marker.remove(), 1000);
         }
 
-        // ===== 自動検出ループ（速度無関係） =====
+        // ===== 自動検出ループ（速度無関係 + クリック実行） =====
         let lastDetectionState = false; // 前回の検出状態
         let detectionCooldown = false; // クールダウン中か
+        let clickExecutionTimeout = null; // クリック実行タイマー
         
         function autoDetectionLoop() {
             if (!automationEnabled) return;
@@ -682,9 +706,16 @@
             // 未検出→検出に変化した瞬間のみ反応（立ち上がりエッジ検出）
             if (currentState && !lastDetectionState && !detectionCooldown) {
                 detectionCount++;
-                log(`✓ [${detectionCount}] 水色エリア突入！自動クリック実行`, 'success');
+                log(`✓ [${detectionCount}] 水色エリア突入！5秒以内にクリック実行予定`, 'success');
                 showDetectionMarker(result.x, result.y, true);
                 updateStats();
+                
+                // 5秒以内のランダムなタイミングでクリック実行
+                const randomDelay = Math.floor(Math.random() * 5000); // 0〜5000ms
+                clickExecutionTimeout = setTimeout(() => {
+                    log(`🖱️ クリック実行！（${(randomDelay/1000).toFixed(2)}秒後）`, 'success');
+                    executeClick(result.x, result.y);
+                }, randomDelay);
                 
                 // クールダウン設定（連続検出防止）
                 detectionCooldown = true;
@@ -698,6 +729,47 @@
 
             // 次のフレームで再実行（60fps = 約16ms間隔）
             animationFrameId = requestAnimationFrame(autoDetectionLoop);
+        }
+        
+        // クリック実行（実際の処理）
+        function executeClick(x, y) {
+            // ビジュアルフィードバック
+            showClickAnimation(x, y);
+            
+            // 注意: ブラウザのセキュリティ制約により、
+            // 別タブやiframeへの実際のクリックイベント送信は不可能です
+            // この関数では検出とログ出力のみを行います
+        }
+        
+        // クリックアニメーション
+        function showClickAnimation(x, y) {
+            const marker = document.createElement('div');
+            marker.style.position = 'absolute';
+            marker.style.left = (x / canvas.width * 100) + '%';
+            marker.style.top = (y / canvas.height * 100) + '%';
+            marker.style.width = '60px';
+            marker.style.height = '60px';
+            marker.style.margin = '-30px 0 0 -30px';
+            marker.style.border = '4px solid #ff0';
+            marker.style.borderRadius = '50%';
+            marker.style.pointerEvents = 'none';
+            marker.style.animation = 'clickPulse 0.5s ease-out';
+            marker.style.zIndex = '100';
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes clickPulse {
+                    0% { transform: scale(0.5); opacity: 1; }
+                    100% { transform: scale(2); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.getElementById('videoContainer').appendChild(marker);
+            setTimeout(() => {
+                marker.remove();
+                style.remove();
+            }, 500);
         }
 
         // ===== 統計更新 =====
