@@ -193,6 +193,18 @@ body {
     align-items: stretch;
 }
 
+.activity-card.voice-call-card {
+    background: linear-gradient(135deg, #5865F2 0%, #4752C4 100%);
+    color: white;
+    border-left: 3px solid #5865F2;
+}
+
+.voice-call-card .activity-name,
+.voice-call-card .activity-details,
+.voice-call-card .activity-time {
+    color: white;
+}
+
 .activity-icon-wrapper {
     flex-shrink: 0;
 }
@@ -440,12 +452,23 @@ async function fetchStatus() {
         if (!response.ok) throw new Error('API error');
         const result = await response.json();
         
+        // Lanyard APIのレスポンス形式に対応
         const data = {
             username: result.data.discord_user.username,
             avatar_url: `https://cdn.discordapp.com/avatars/${result.data.discord_user.id}/${result.data.discord_user.avatar}.png?size=256`,
             status: result.data.discord_status,
             about: result.data.kv?.about || null,
-            activities: (result.data.activities || []).map(act => ({
+            active_on_discord_mobile: result.data.active_on_discord_mobile,
+            active_on_discord_desktop: result.data.active_on_discord_desktop,
+            active_on_discord_web: result.data.active_on_discord_web,
+            voice_state: result.data.active_on_discord_mobile || result.data.active_on_discord_desktop || result.data.active_on_discord_web 
+                ? {
+                    channel_name: result.data.activities?.find(a => a.type === 2)?.state || 'ボイスチャンネル',
+                    member_count: 1,
+                    start_timestamp: Date.now() - (result.data.activities?.find(a => a.type === 2)?.timestamps?.start || Date.now())
+                  }
+                : null,
+            activities: (result.data.activities || []).filter(a => a.type !== 2).map(act => ({
                 name: act.name,
                 state: act.state,
                 details: act.details,
@@ -586,6 +609,38 @@ function updateUI(data) {
     } else {
         activitySection.style.display = 'none';
     }
+
+    // 通話中の表示
+    if (data.active_on_discord_mobile || data.active_on_discord_desktop || data.active_on_discord_web) {
+        const voiceState = data.voice_state;
+        if (voiceState) {
+            activitySection.style.display = 'block';
+            
+            const voiceCard = document.createElement('div');
+            voiceCard.className = 'activity-card voice-call-card';
+            
+            const channelName = voiceState.channel_name || 'ボイスチャンネル';
+            const memberCount = voiceState.member_count || 1;
+            const elapsed = voiceState.start_timestamp 
+                ? formatElapsedTime((Date.now() - voiceState.start_timestamp) / 1000)
+                : '0:00';
+            
+            voiceCard.innerHTML = `
+                <div class="activity-icon-wrapper">
+                    <div class="activity-icon">
+                        🎙️
+                    </div>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-name">通話中</div>
+                    <div class="activity-details">${channelName} • ${memberCount}人</div>
+                </div>
+                <div class="activity-time">${elapsed}</div>
+            `;
+            
+            activitiesContainer.appendChild(voiceCard);
+        }
+    }
 }
 
 function updateLastUpdate() {
@@ -632,6 +687,7 @@ function init() {
         document.getElementById('header-username').textContent = requested;
         document.getElementById('user-tag').textContent = `@${requested}`;
     } else {
+        // デフォルトユーザー名
         document.getElementById('username').textContent = 'yiyf667';
         document.getElementById('header-username').textContent = 'yiyf667';
         document.getElementById('user-tag').textContent = '@yiyf667';
