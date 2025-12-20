@@ -1,1 +1,256 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KSR - サービス終了のお知らせ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        header {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px 0;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            opacity: 0.7;
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .section h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .closure-notice {
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.4), rgba(192, 57, 43, 0.4));
+            border: 3px solid rgba(231, 76, 60, 0.8);
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .closure-notice h2 {
+            font-size: 2.5em;
+            text-align: center;
+            color: #fff;
+            margin-bottom: 30px;
+        }
+
+        .closure-notice p {
+            font-size: 1.3em;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .date-box {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .date-box .date {
+            font-size: 2em;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 10px;
+        }
+
+        .thank-you {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+
+        .thank-you h3 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .thank-you p {
+            font-size: 1.1em;
+            line-height: 1.8;
+            text-align: center;
+        }
+
+        .archived-info {
+            background: rgba(52, 152, 219, 0.2);
+            border: 2px solid rgba(52, 152, 219, 0.5);
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+            opacity: 0.6;
+        }
+
+        .team-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .team-card h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #bdc3c7;
+        }
+
+        .team-card .role {
+            color: #95a5a6;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .team-card p {
+            line-height: 1.6;
+            opacity: 0.7;
+        }
+
+        .status.closed {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            background: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🤖 KSR</h1>
+        <p>Discord Bot制作チーム（サービス終了）</p>
+    </header>
+
+    <div class="container">
+        <div class="section closure-notice">
+            <h2>📢 サービス終了のお知らせ</h2>
+            
+            <p style="font-size: 1.5em; font-weight: bold; margin-bottom: 30px;">
+                KSRは2025年12月20日をもちまして<br>
+                終了・閉鎖いたしました
+            </p>
+
+            <div class="date-box">
+                <div class="date">2025.12.20</div>
+                <p style="font-size: 1.1em; opacity: 0.9;">サービス終了日</p>
+            </div>
+
+            <p style="font-size: 1.2em; line-height: 2;">
+                これまでKSRをご利用いただき、<br>
+                また応援してくださった皆様に<br>
+                心より感謝申し上げます。
+            </p>
+
+            <div class="thank-you">
+                <h3>✨ 感謝のメッセージ</h3>
+                <p>
+                    短い期間ではございましたが、<br>
+                    多くの方々にご支援いただき、<br>
+                    チーム一同、大変励みになりました。<br><br>
+                    本当にありがとうございました。
+                </p>
+            </div>
+        </div>
+
+        <div class="section archived-info">
+            <h2>ℹ️ 今後について</h2>
+            <p style="font-size: 1.1em; line-height: 1.8;">
+                • すべてのBotサービスは停止しております<br>
+                • 新規の募集・開発は行っておりません<br>
+                • お問い合わせ対応も終了しております
+            </p>
+        </div>
+
+        <div class="section">
+            <h2>👥 チームメンバー募集（終了）</h2>
+            <div class="team-grid">
+                <div class="team-card">
+                    <h3>フロントエンド開発</h3>
+                    <div class="role">Web Developer</div>
+                    <p>HTML, CSS, JavaScriptを使用したBot管理画面やダッシュボードの開発を担当</p>
+                    <span class="status closed">募集終了</span>
+                </div>
+
+                <div class="team-card">
+                    <h3>バックエンド開発</h3>
+                    <div class="role">Bot Developer</div>
+                    <p>Discord.jsやPythonを使用したBot本体の開発とAPI連携を担当</p>
+                    <span class="status closed">募集終了</span>
+                </div>
+
+                <div class="team-card">
+                    <h3>デザイナー</h3>
+                    <div class="role">UI/UX Designer</div>
+                    <p>ウェブサイトやBot機能のデザイン、ユーザー体験の設計を担当</p>
+                    <span class="status closed">募集終了</span>
+                </div>
+
+                <div class="team-card">
+                    <h3>プロジェクトマネージャー</h3>
+                    <div class="role">PM</div>
+                    <p>プロジェクト全体の進行管理、チーム間の調整を担当</p>
+                    <span class="status closed">募集終了</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
