@@ -1,1 +1,102 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>BRAINROT BOARD</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- React -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+  <!-- Babel -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- lucide-react -->
+  <script src="https://unpkg.com/lucide-react/dist/umd/lucide-react.js"></script>
+</head>
+
+<body class="bg-black">
+  <div id="root"></div>
+
+  <script type="text/babel">
+
+const {
+  MessageCircle, Heart, X, RefreshCw, AlertCircle,
+  Trash2, User, Key, Copy, Check
+} = lucideReact;
+
+function BrainrotBoard() {
+  const [posts, setPosts] = React.useState([]);
+  const [text, setText] = React.useState("");
+  const [user] = React.useState(() => {
+    let u = localStorage.getItem("brainrot_user");
+    if (!u) {
+      u = "User" + Math.floor(Math.random() * 9999);
+      localStorage.setItem("brainrot_user", u);
+    }
+    return u;
+  });
+
+  const addPost = () => {
+    if (!text.trim()) return;
+    const p = {
+      id: Date.now(),
+      text,
+      user,
+      likes: 0
+    };
+    const updated = [p, ...posts];
+    setPosts(updated);
+    localStorage.setItem("brainrot_posts", JSON.stringify(updated));
+    setText("");
+  };
+
+  React.useEffect(() => {
+    const saved = localStorage.getItem("brainrot_posts");
+    if (saved) setPosts(JSON.parse(saved));
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-pink-900 text-white p-6">
+      <h1 className="text-4xl font-black text-center mb-6 animate-pulse">
+        🧠 BRAINROT BOARD 🧠
+      </h1>
+
+      <div className="max-w-xl mx-auto mb-6">
+        <textarea
+          className="w-full p-3 rounded bg-white/20 border border-white/30"
+          placeholder="今なにブレインロットしてる？"
+          value={text}
+          onChange={e => setText(e.target.value)}
+        />
+        <button
+          onClick={addPost}
+          className="mt-2 w-full bg-pink-500 hover:bg-pink-600 rounded py-2 font-bold"
+        >
+          投稿
+        </button>
+      </div>
+
+      <div className="max-w-xl mx-auto space-y-4">
+        {posts.map(p => (
+          <div key={p.id} className="bg-white/10 p-4 rounded-xl">
+            <p className="mb-2">{p.text}</p>
+            <div className="text-sm text-yellow-300">{p.user}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root"))
+  .render(<BrainrotBoard />);
+
+  </script>
+</body>
+</html>
 
