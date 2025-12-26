@@ -1,1 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Epic / Fortnite サーバー状況</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .card {
+      background: #020617;
+      padding: 24px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.4);
+    }
+    h1 {
+      font-size: 18px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    .status {
+      margin: 10px 0;
+      padding: 12px;
+      border-radius: 8px;
+      background: #020617;
+      border: 1px solid #1e293b;
+    }
+    .ok { color: #22c55e; }
+    .warn { color: #facc15; }
+    .down { color: #ef4444; }
+    .time {
+      margin-top: 16px;
+      font-size: 12px;
+      opacity: 0.7;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🎮 Epic / Fortnite サーバー状況</h1>
+    <div id="list">読み込み中...</div>
+    <div class="time" id="time"></div>
+  </div>
+
+  <script>
+    const URL = "https://status.epicgames.com/api/v2/components.json";
+
+    async function loadStatus() {
+      try {
+        const res = await fetch(URL);
+        const data = await res.json();
+
+        const fortnite = data.components.filter(c =>
+          c.name.toLowerCase().includes("fortnite")
+        );
+
+        const list = document.getElementById("list");
+        list.innerHTML = "";
+
+        fortnite.forEach(f => {
+          let cls = "ok";
+          let icon = "🟢";
+
+          if (f.status === "degraded_performance") {
+            cls = "warn";
+            icon = "🟡";
+          } else if (f.status !== "operational") {
+            cls = "down";
+            icon = "🔴";
+          }
+
+          list.innerHTML += `
+            <div class="status ${cls}">
+              ${icon} <strong>${f.name}</strong><br>
+              状態: ${f.status}
+            </div>
+          `;
+        });
+
+        document.getElementById("time").textContent =
+          "最終更新: " + new Date().toLocaleString();
+
+      } catch (e) {
+        document.getElementById("list").textContent =
+          "❌ ステータス取得に失敗しました";
+      }
+    }
+
+    loadStatus();
+    setInterval(loadStatus, 300000); // 5分更新
+  </script>
+</body>
+</html>
 
