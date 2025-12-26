@@ -2,190 +2,104 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>Fortnite サーバー稼働ダッシュボード</title>
+<title>Epic Games 稼働状況一覧</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body {
   font-family: system-ui, sans-serif;
-  background:#0f172a;
-  color:#e5e7eb;
-  padding:20px;
+  background: #0f172a;
+  color: #e5e7eb;
+  padding: 20px;
 }
-h1,h2 { text-align:center; }
-.overall {
-  text-align:center;
-  font-size:18px;
-  font-weight:bold;
-  padding:12px;
-  border-radius:10px;
-  margin:16px 0;
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
 }
-.ok { background:#052e16; color:#22c55e; }
-.down { background:#450a0a; color:#ef4444; }
+.service {
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: #020617;
+}
+.name {
+  font-weight: bold;
+  font-size: 15px;
+}
+.status {
+  margin-top: 6px;
+  font-size: 14px;
+}
 
-table {
-  width:100%;
-  border-collapse:collapse;
-  margin-top:10px;
-  font-size:14px;
-}
-th,td {
-  border-bottom:1px solid #1e293b;
-  padding:8px;
-  text-align:center;
+.ok { color: #22c55e; }
+.warn { color: #facc15; }
+.down { color: #ef4444; }
+.maint { color: #38bdf8; }
+
+.footer {
+  margin-top: 20px;
+  font-size: 12px;
+  opacity: 0.7;
+  text-align: center;
 }
 </style>
 </head>
 <body>
 
-<h1>🎮 Fortnite サーバー稼働状況</h1>
-<div id="overall" class="overall">確認中...</div>
+<h1>🌐 Epic Games 公式 稼働状況一覧</h1>
 
-<h2>📆 期間サマリー（12/01 ～ 01/01）</h2>
-<table>
-<thead>
-<tr><th>項目</th><th>内容</th></tr>
-</thead>
-<tbody id="period"></tbody>
-</table>
+<div id="services">読み込み中...</div>
 
-<h2>📊 月別 稼働率</h2>
-<table>
-<thead>
-<tr><th>月</th><th>稼働率</th><th>稼働日/日数</th></tr>
-</thead>
-<tbody id="monthly"></tbody>
-</table>
-
-<h2>📅 日別 履歴</h2>
-<table>
-<thead>
-<tr><th>日付</th><th>状態</th><th>障害発生時刻</th></tr>
-</thead>
-<tbody id="daily"></tbody>
-</table>
+<div class="footer" id="updated"></div>
 
 <script>
-const STATUS_URL = "https://status.epicgames.com/api/v2/components.json";
-const HISTORY_KEY = "fortnite_daily_history";
-const OUTAGE_KEY = "fortnite_outage_since";
+const URL = "https://status.epicgames.com/api/v2/components.json";
 
-/* ---------- 共通 ---------- */
-function today() {
-  return new Date().toISOString().slice(0,10);
-}
-function msToTime(ms) {
-  const min = Math.floor(ms/60000);
-  return `${Math.floor(min/60)}時間 ${min%60}分`;
-}
-
-/* ---------- 現在ステータス ---------- */
-async function isDownNow() {
-  const res = await fetch(STATUS_URL);
-  const data = await res.json();
-  return data.components
-    .filter(c=>c.name.toLowerCase().includes("fortnite"))
-    .some(f=>f.status!=="operational");
-}
-
-/* ---------- 保存 ---------- */
-function saveDaily(status,outageTime) {
-  const h = JSON.parse(localStorage.getItem(HISTORY_KEY)||"{}");
-  h[today()] = { status, outageTime };
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(h));
-}
-
-/* ---------- 表示 ---------- */
-function renderDaily() {
-  const h = JSON.parse(localStorage.getItem(HISTORY_KEY)||"{}");
-  const tb = document.getElementById("daily");
-  tb.innerHTML="";
-  Object.keys(h).sort().reverse().forEach(d=>{
-    tb.innerHTML+=`
-      <tr>
-        <td>${d}</td>
-        <td>${h[d].status}</td>
-        <td>${h[d].outageTime||"-"}</td>
-      </tr>`;
-  });
-}
-
-function renderMonthly() {
-  const h = JSON.parse(localStorage.getItem(HISTORY_KEY)||"{}");
-  const m = {};
-  Object.keys(h).forEach(d=>{
-    const k=d.slice(0,7);
-    if(!m[k]) m[k]={t:0,u:0};
-    m[k].t++;
-    if(h[d].status==="稼働") m[k].u++;
-  });
-  const tb=document.getElementById("monthly");
-  tb.innerHTML="";
-  Object.keys(m).sort().reverse().forEach(k=>{
-    tb.innerHTML+=`
-      <tr>
-        <td>${k}</td>
-        <td>${((m[k].u/m[k].t)*100).toFixed(1)}%</td>
-        <td>${m[k].u}/${m[k].t}</td>
-      </tr>`;
-  });
-}
-
-/* ---------- 期間サマリー ---------- */
-function renderPeriod() {
-  const h = JSON.parse(localStorage.getItem(HISTORY_KEY)||"{}");
-  const start=new Date("2025-12-01");
-  const end=new Date("2026-01-01");
-
-  let outage=0,recover=0,downMs=0;
-  let cur=null;
-
-  Object.keys(h).sort().forEach(d=>{
-    const day=new Date(d);
-    if(day<start||day>end) return;
-
-    if(h[d].status==="不動" && !cur){
-      outage++;
-      cur=new Date(h[d].outageTime);
-    }
-    if(h[d].status==="稼働" && cur){
-      recover++;
-      downMs+=day-cur;
-      cur=null;
-    }
-  });
-
-  document.getElementById("period").innerHTML=`
-    <tr><td>障害発生回数</td><td>${outage} 回</td></tr>
-    <tr><td>再開回数</td><td>${recover} 回</td></tr>
-    <tr><td>合計ダウンタイム</td><td>${msToTime(downMs)}</td></tr>
-  `;
-}
-
-/* ---------- メイン ---------- */
-async function main(){
-  const down=await isDownNow();
-  const o=document.getElementById("overall");
-
-  if(down){
-    o.textContent="🔴 現在：障害発生中";
-    o.className="overall down";
-    let t=localStorage.getItem(OUTAGE_KEY);
-    if(!t){ t=new Date().toLocaleString(); localStorage.setItem(OUTAGE_KEY,t); }
-    saveDaily("不動",t);
-  }else{
-    o.textContent="🟢 現在：正常稼働中";
-    o.className="overall ok";
-    localStorage.removeItem(OUTAGE_KEY);
-    saveDaily("稼働","-");
+function statusInfo(status) {
+  switch (status) {
+    case "operational":
+      return { icon: "🟢", text: "稼働中", cls: "ok" };
+    case "degraded_performance":
+      return { icon: "🟡", text: "性能低下", cls: "warn" };
+    case "partial_outage":
+      return { icon: "🟠", text: "一部障害", cls: "warn" };
+    case "major_outage":
+      return { icon: "🔴", text: "障害発生中", cls: "down" };
+    case "under_maintenance":
+      return { icon: "🔵", text: "メンテナンス中", cls: "maint" };
+    default:
+      return { icon: "⚪", text: status, cls: "" };
   }
-
-  renderDaily();
-  renderMonthly();
-  renderPeriod();
 }
 
-main();
+async function load() {
+  try {
+    const res = await fetch(URL);
+    const data = await res.json();
+    const list = document.getElementById("services");
+    list.innerHTML = "";
+
+    data.components.forEach(c => {
+      const s = statusInfo(c.status);
+      list.innerHTML += `
+        <div class="service">
+          <div class="name">${s.icon} ${c.name}</div>
+          <div class="status ${s.cls}">状態：${s.text}</div>
+        </div>
+      `;
+    });
+
+    document.getElementById("updated").textContent =
+      "最終更新：" + new Date().toLocaleString();
+
+  } catch (e) {
+    document.getElementById("services").textContent =
+      "❌ ステータス取得に失敗しました";
+  }
+}
+
+load();
+setInterval(load, 300000); // 5分更新
 </script>
 
 </body>
