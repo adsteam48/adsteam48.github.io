@@ -11,9 +11,9 @@
       color: #e5e7eb;
       padding: 20px;
     }
-    h1 {
+    h1, h2 {
       text-align: center;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
     .overall {
       text-align: center;
@@ -47,7 +47,19 @@
 <h1>🎮 Fortnite サーバー稼働状況</h1>
 <div id="overall" class="overall">確認中...</div>
 
-<h2>📅 日別稼働履歴</h2>
+<h2>📊 月別 稼働率</h2>
+<table>
+  <thead>
+    <tr>
+      <th>月</th>
+      <th>稼働率</th>
+      <th>稼働日 / 日数</th>
+    </tr>
+  </thead>
+  <tbody id="monthly"></tbody>
+</table>
+
+<h2>📅 日別 稼働履歴</h2>
 <table>
   <thead>
     <tr>
@@ -68,27 +80,21 @@ function today() {
   return new Date().toISOString().slice(0, 10);
 }
 
-async function loadStatus() {
+async function isDownNow() {
   const res = await fetch(STATUS_URL);
   const data = await res.json();
-
-  const fortnite = data.components.filter(c =>
-    c.name.toLowerCase().includes("fortnite")
-  );
-
-  return fortnite.some(f => f.status !== "operational");
+  return data.components
+    .filter(c => c.name.toLowerCase().includes("fortnite"))
+    .some(f => f.status !== "operational");
 }
 
 function saveDaily(status, outageTime) {
   const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || "{}");
-  history[today()] = {
-    status,
-    outageTime: outageTime || "-"
-  };
+  history[today()] = { status, outageTime };
   localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
 }
 
-function renderHistory() {
+function renderDaily() {
   const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || "{}");
   const tbody = document.getElementById("history");
   tbody.innerHTML = "";
@@ -99,17 +105,48 @@ function renderHistory() {
       <tr>
         <td>${date}</td>
         <td>${h.status}</td>
-        <td>${h.outageTime}</td>
+        <td>${h.outageTime || "-"}</td>
+      </tr>
+    `;
+  });
+}
+
+function renderMonthly() {
+  const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || "{}");
+  const monthly = {};
+
+  Object.keys(history).forEach(date => {
+    const month = date.slice(0, 7); // YYYY-MM
+    if (!monthly[month]) {
+      monthly[month] = { total: 0, up: 0 };
+    }
+    monthly[month].total++;
+    if (history[date].status === "稼働") {
+      monthly[month].up++;
+    }
+  });
+
+  const tbody = document.getElementById("monthly");
+  tbody.innerHTML = "";
+
+  Object.keys(monthly).sort().reverse().forEach(month => {
+    const m = monthly[month];
+    const rate = ((m.up / m.total) * 100).toFixed(1);
+    tbody.innerHTML += `
+      <tr>
+        <td>${month}</td>
+        <td>${rate}%</td>
+        <td>${m.up} / ${m.total}</td>
       </tr>
     `;
   });
 }
 
 async function main() {
-  const isDown = await loadStatus();
+  const down = await isDownNow();
   const overall = document.getElementById("overall");
 
-  if (isDown) {
+  if (down) {
     overall.textContent = "🔴 現在：障害発生中（不動）";
     overall.className = "overall down";
 
@@ -127,7 +164,8 @@ async function main() {
     saveDaily("稼働", "-");
   }
 
-  renderHistory();
+  renderDaily();
+  renderMonthly();
 }
 
 main();
