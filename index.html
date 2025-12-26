@@ -2,104 +2,131 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>Epic Games 稼働状況一覧</title>
+<title>Epic / Fortnite ステータス & アイテムショップ</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body {
-  font-family: system-ui, sans-serif;
-  background: #0f172a;
-  color: #e5e7eb;
-  padding: 20px;
+body{
+  font-family:system-ui,sans-serif;
+  background:#0f172a;
+  color:#e5e7eb;
+  padding:20px;
 }
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
+h1,h2{text-align:center}
+.section{margin:30px 0}
+.card{
+  background:#020617;
+  border:1px solid #1e293b;
+  border-radius:12px;
+  padding:12px;
+  margin-bottom:10px;
 }
-.service {
-  border: 1px solid #1e293b;
-  border-radius: 10px;
-  padding: 12px;
-  margin-bottom: 10px;
-  background: #020617;
-}
-.name {
-  font-weight: bold;
-  font-size: 15px;
-}
-.status {
-  margin-top: 6px;
-  font-size: 14px;
-}
+.ok{color:#22c55e}
+.warn{color:#facc15}
+.down{color:#ef4444}
 
-.ok { color: #22c55e; }
-.warn { color: #facc15; }
-.down { color: #ef4444; }
-.maint { color: #38bdf8; }
-
-.footer {
-  margin-top: 20px;
-  font-size: 12px;
-  opacity: 0.7;
-  text-align: center;
+.shop{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+  gap:12px;
+}
+.item{
+  background:#020617;
+  border:1px solid #1e293b;
+  border-radius:10px;
+  padding:8px;
+  text-align:center;
+}
+.item img{
+  width:100%;
+  border-radius:8px;
+}
+.price{margin-top:6px;font-size:13px}
+.footer{
+  text-align:center;
+  font-size:12px;
+  opacity:.7;
+  margin-top:20px;
 }
 </style>
 </head>
 <body>
 
-<h1>🌐 Epic Games 公式 稼働状況一覧</h1>
+<h1>🎮 Fortnite ダッシュボード</h1>
 
-<div id="services">読み込み中...</div>
+<div class="section">
+<h2>🌐 Epic Games 稼働状況</h2>
+<div id="epic">読み込み中...</div>
+</div>
+
+<div class="section">
+<h2>🛒 本日のアイテムショップ</h2>
+<div id="shop" class="shop">読み込み中...</div>
+</div>
 
 <div class="footer" id="updated"></div>
 
 <script>
-const URL = "https://status.epicgames.com/api/v2/components.json";
+/* ---------- Epic Status ---------- */
+const EPIC_URL="https://status.epicgames.com/api/v2/components.json";
 
-function statusInfo(status) {
-  switch (status) {
-    case "operational":
-      return { icon: "🟢", text: "稼働中", cls: "ok" };
-    case "degraded_performance":
-      return { icon: "🟡", text: "性能低下", cls: "warn" };
-    case "partial_outage":
-      return { icon: "🟠", text: "一部障害", cls: "warn" };
-    case "major_outage":
-      return { icon: "🔴", text: "障害発生中", cls: "down" };
-    case "under_maintenance":
-      return { icon: "🔵", text: "メンテナンス中", cls: "maint" };
-    default:
-      return { icon: "⚪", text: status, cls: "" };
+function epicStatusText(s){
+  if(s==="operational")return["🟢","稼働中","ok"];
+  if(s==="degraded_performance")return["🟡","性能低下","warn"];
+  if(s==="partial_outage")return["🟠","一部障害","warn"];
+  if(s==="major_outage")return["🔴","障害","down"];
+  if(s==="under_maintenance")return["🔵","メンテナンス","warn"];
+  return["⚪",s,""];
+}
+
+async function loadEpic(){
+  const res=await fetch(EPIC_URL);
+  const data=await res.json();
+  const box=document.getElementById("epic");
+  box.innerHTML="";
+  data.components.forEach(c=>{
+    const [i,t,cls]=epicStatusText(c.status);
+    box.innerHTML+=`
+      <div class="card">
+        <b>${i} ${c.name}</b><br>
+        <span class="${cls}">${t}</span>
+      </div>`;
+  });
+}
+
+/* ---------- Item Shop ---------- */
+const SHOP_URL="https://fortnite-api.com/v2/shop/br";
+
+async function loadShop(){
+  const res=await fetch(SHOP_URL);
+  const data=await res.json();
+  const shop=document.getElementById("shop");
+  shop.innerHTML="";
+  data.data.featured.entries.forEach(e=>{
+    const item=e.items[0];
+    shop.innerHTML+=`
+      <div class="item">
+        <img src="${item.images.icon}" alt="">
+        <div>${item.name}</div>
+        <div class="price">💰 ${e.finalPrice} V-Bucks</div>
+      </div>`;
+  });
+}
+
+/* ---------- Init ---------- */
+async function init(){
+  try{
+    await loadEpic();
+    await loadShop();
+    document.getElementById("updated").textContent=
+      "最終更新："+new Date().toLocaleString();
+  }catch{
+    document.body.innerHTML="❌ データ取得に失敗しました";
   }
 }
 
-async function load() {
-  try {
-    const res = await fetch(URL);
-    const data = await res.json();
-    const list = document.getElementById("services");
-    list.innerHTML = "";
-
-    data.components.forEach(c => {
-      const s = statusInfo(c.status);
-      list.innerHTML += `
-        <div class="service">
-          <div class="name">${s.icon} ${c.name}</div>
-          <div class="status ${s.cls}">状態：${s.text}</div>
-        </div>
-      `;
-    });
-
-    document.getElementById("updated").textContent =
-      "最終更新：" + new Date().toLocaleString();
-
-  } catch (e) {
-    document.getElementById("services").textContent =
-      "❌ ステータス取得に失敗しました";
-  }
-}
-
-load();
-setInterval(load, 300000); // 5分更新
+init();
+setInterval(loadEpic,300000);   // Epic 5分
+setInterval(loadShop,1800000);  // Shop 30分
 </script>
 
 </body>
