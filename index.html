@@ -1,1 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Lua プレビューサイト</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    #editor { width: 100%; height: 300px; font-family: monospace; }
+    #output { margin-top: 20px; padding: 15px; background: #f0f0f0; border: 1px solid #ccc; min-height: 100px; white-space: pre-wrap; }
+    button { margin: 10px 0; padding: 10px 20px; font-size: 16px; }
+  </style>
+  <!-- Monaco Editor (VS Codeと同じエディタ) をCDNで読み込み -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+</head>
+<body>
+  <h1>Lua プレビュー</h1>
+  <div>コードを入力して「実行」ボタンを押してください</div>
 
+  <div id="container" style="height:350px;border:1px solid #ccc;"></div>
+  <button onclick="runLua()">▶ 実行</button>
+  <button onclick="clearOutput()">クリア</button>
+
+  <div id="output">出力がここに表示されます...</div>
+
+  <!-- Wasmoon (Lua 5.4 WebAssembly) -->
+  <script type="module">
+    import { LuaFactory } from 'https://cdn.jsdelivr.net/npm/wasmoon@1.0.0/+esm';
+
+    let luaFactory;
+    let lua;
+
+    async function initLua() {
+      if (!luaFactory) {
+        luaFactory = await new LuaFactory();
+        lua = await luaFactory.createEngine();
+      }
+    }
+
+    // Monaco Editor 初期化
+    require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' }});
+    require(['vs/editor/editor.main'], function() {
+      window.editor = monaco.editor.create(document.getElementById('container'), {
+        value: [
+          '-- Hello Lua!',
+          'print("こんにちは、世界！")',
+          '',
+          'for i = 1, 5 do',
+          '  print(i .. "回目")',
+          'end'
+        ].join('\n'),
+        language: 'lua',
+        theme: 'vs-dark',
+        automaticLayout: true
+      });
+    });
+
+    async function runLua() {
+      await initLua();
+
+      const code = window.editor.getValue();
+      const outputDiv = document.getElementById('output');
+      outputDiv.innerHTML = '実行中...';
+
+      try {
+        // printをJavaScriptのconsole.logにリダイレクト
+        lua.global.set('print', (...args) => {
+          outputDiv.innerHTML += args.map(a => a.toString()).join(' ') + '\n';
+        });
+
+        await lua.doString(code);
+        if (outputDiv.innerHTML === '実行中...') {
+          outputDiv.innerHTML = '(出力なし)';
+        }
+      } catch (err) {
+        outputDiv.innerHTML = 'エラー:\n' + err;
+      }
+    }
+
+    function clearOutput() {
+      document.getElementById('output').innerHTML = '';
+    }
+  </script>
+</body>
+</html>
