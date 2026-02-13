@@ -1,1 +1,193 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quantum Access Terminal</title>
 
+<style>
+body{
+    margin:0;
+    background:black;
+    color:#00ff66;
+    font-family:monospace;
+    overflow:hidden;
+}
+
+canvas{
+    position:fixed;
+    top:0;
+    left:0;
+    z-index:0;
+}
+
+.container{
+    position:relative;
+    z-index:1;
+    width:600px;
+    margin:60px auto;
+    padding:30px;
+    border:1px solid #00ff66;
+    box-shadow:0 0 30px #00ff66;
+    background:rgba(0,0,0,0.85);
+}
+
+select, button{
+    background:black;
+    color:#00ff66;
+    border:1px solid #00ff66;
+    padding:8px;
+    margin-top:10px;
+    width:100%;
+    font-family:monospace;
+}
+
+button:hover{
+    background:#002200;
+    cursor:pointer;
+}
+
+#terminal{
+    margin-top:20px;
+    height:180px;
+    overflow:auto;
+    font-size:14px;
+}
+
+#result{
+    margin-top:20px;
+    font-size:20px;
+    letter-spacing:2px;
+}
+
+.flash{
+    animation:flash 0.2s alternate 6;
+}
+
+@keyframes flash{
+    from{background:black;}
+    to{background:#001100;}
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="matrix"></canvas>
+
+<div class="container">
+    <h2>QUANTUM SECURE TERMINAL</h2>
+
+    <select id="plan">
+        <option value="">Select Plan</option>
+        <option value="1M">1 Month</option>
+        <option value="3M">3 Months</option>
+        <option value="ULT">Ultimate</option>
+    </select>
+
+    <button onclick="start()">EXECUTE</button>
+
+    <div id="terminal"></div>
+    <div id="result"></div>
+</div>
+
+<script>
+// ===== Matrix Background =====
+const canvas=document.getElementById("matrix");
+const ctx=canvas.getContext("2d");
+canvas.height=window.innerHeight;
+canvas.width=window.innerWidth;
+
+const letters="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+const fontSize=16;
+const columns=canvas.width/fontSize;
+const drops=[];
+
+for(let x=0;x<columns;x++) drops[x]=1;
+
+function draw(){
+    ctx.fillStyle="rgba(0,0,0,0.05)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle="#00ff66";
+    ctx.font=fontSize+"px monospace";
+
+    for(let i=0;i<drops.length;i++){
+        const text=letters.charAt(Math.floor(Math.random()*letters.length));
+        ctx.fillText(text,i*fontSize,drops[i]*fontSize);
+        if(drops[i]*fontSize>canvas.height && Math.random()>0.975)
+            drops[i]=0;
+        drops[i]++;
+    }
+}
+setInterval(draw,33);
+
+// ===== Terminal Logic =====
+const logs=[
+"Initializing quantum handshake...",
+"Accessing remote node...",
+"Decrypting security layer...",
+"Injecting access token...",
+"Verifying checksum...",
+"Finalizing sequence..."
+];
+
+function typeLine(text,callback){
+    const terminal=document.getElementById("terminal");
+    let i=0;
+    let line="> ";
+    const interval=setInterval(()=>{
+        line+=text[i];
+        terminal.innerHTML+=text[i];
+        i++;
+        if(i>=text.length){
+            clearInterval(interval);
+            terminal.innerHTML+="<br>";
+            if(callback) setTimeout(callback,400);
+        }
+    },30);
+}
+
+function start(){
+    const plan=document.getElementById("plan").value;
+    if(plan===""){ alert("Select a plan"); return; }
+
+    document.getElementById("terminal").innerHTML="";
+    document.getElementById("result").textContent="";
+
+    let i=0;
+    function next(){
+        if(i<logs.length){
+            typeLine(logs[i],()=>{i++; next();});
+        }else{
+            finish(plan);
+        }
+    }
+    next();
+}
+
+function finish(plan){
+    document.body.classList.add("flash");
+
+    const success=Math.random()>0.3; // 70% success
+
+    if(success){
+        const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let sections=[];
+        for(let i=0;i<5;i++){
+            let part="";
+            for(let j=0;j<5;j++){
+                part+=chars[Math.floor(Math.random()*chars.length)];
+            }
+            sections.push(part);
+        }
+        const code=plan+"-"+sections.join("-");
+        document.getElementById("result").textContent="ACCESS GRANTED → "+code;
+        navigator.clipboard.writeText(code);
+    }else{
+        document.getElementById("result").textContent="ACCESS DENIED";
+    }
+}
+</script>
+
+</body>
+</html>
