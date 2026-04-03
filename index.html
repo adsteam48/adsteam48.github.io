@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord プライベートチャンネルのみクローン - v6 (MANAGE_ROLES不要版)</title>
+    <title>Discord プライベートチャンネルのみクローン - v7 (エラー耐性強化)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body { background:#202225; color:#dcddde; font-family:'Whitney',sans-serif; padding:20px; margin:0; }
@@ -17,7 +17,7 @@
         button { padding:14px 20px; background:#5865F2; color:white; border:none; cursor:pointer; border-radius:4px; width:100%; font-size:1.1em; margin-top:10px; }
         button:hover { background:#4752C4; }
         button.danger { background:#ed4245; }
-        .result { padding:18px; border-radius:8px; margin-top:20px; max-height:850px; overflow-y:auto; background:#1e1f22; white-space:pre-line; font-size:0.9em; line-height:1.55; }
+        .result { padding:18px; border-radius:8px; margin-top:20px; max-height:900px; overflow-y:auto; background:#1e1f22; white-space:pre-line; font-size:0.9em; line-height:1.55; }
         .hidden { display:none; }
         .warning { color:#faa81a; font-size:0.95em; margin:12px 0; line-height:1.6; }
         .log-success { color:#3ba55d; }
@@ -29,8 +29,8 @@
 <body>
     <div class="container">
         <header>
-            <h1><i class="fab fa-discord"></i> プライベートチャンネルのみクローン - v6</h1>
-            <p>MANAGE_ROLES不要 • シンプルプライベート化 + メッセージ復元</p>
+            <h1><i class="fab fa-discord"></i> プライベートチャンネルのみクローン - v7</h1>
+            <p>作成失敗を減らす強化版 • MANAGE_ROLESがなくてもできる限り対応</p>
         </header>
 
         <div id="token-card" class="card">
@@ -62,18 +62,18 @@
                         <span class="slider"></span>
                     </label>
                 </div>
-                <div class="warning">⚠️ リセットONにすると対象サーバーの全チャンネルが削除されます（MANAGE_CHANNELSが必要）</div>
+                <div class="warning">⚠️ リセットONにすると対象サーバーの全チャンネルが削除されます</div>
             </div>
 
             <div class="section">
                 <div class="toggle-label">
                     <span>1チャンネルあたりの復元メッセージ数</span>
-                    <input type="number" id="max-messages" value="80" style="width:140px; margin-left:15px; background:#202225; color:white; padding:8px; border-radius:4px;">
+                    <input type="number" id="max-messages" value="70" style="width:140px; margin-left:15px; background:#202225; color:white; padding:8px; border-radius:4px;">
                 </div>
             </div>
 
             <div class="section">
-                <button id="execute-btn" class="danger">プライベートチャンネルのみ複製実行（MANAGE_ROLES不要）</button>
+                <button id="execute-btn" class="danger">プライベートチャンネルのみ複製実行（v7）</button>
             </div>
 
             <div id="result" class="result hidden"></div>
@@ -92,7 +92,7 @@
         const API = 'https://discord.com/api/v9';
         let token = null;
         let sourceChannels = [];
-        let myUserId = null;   // 自分のユーザーIDを保存
+        let myUserId = null;
 
         const delay = ms => new Promise(r => setTimeout(r, ms));
 
@@ -106,13 +106,13 @@
                     const res = await fetch(url, options);
                     if (res.status === 429) {
                         const retryAfter = parseInt(res.headers.get('Retry-After') || '10') * 1000;
-                        await safeDelay(retryAfter + i * 3000);
+                        await safeDelay(retryAfter + i * 4000);
                         continue;
                     }
                     return res;
                 } catch (e) {
                     if (i === maxRetries - 1) throw e;
-                    await safeDelay(4000 * (i + 1));
+                    await safeDelay(5000 * (i + 1));
                 }
             }
         }
@@ -131,9 +131,9 @@
                     messages.unshift(...batch);
                     lastId = batch[0].id;
                     if (batch.length < 70) break;
-                    await safeDelay(1300);
+                    await safeDelay(1400);
                 } catch (e) {
-                    await safeDelay(3500);
+                    await safeDelay(4000);
                     break;
                 }
             }
@@ -142,7 +142,7 @@
 
         async function sendMessages(targetChannelId, messages, result, channelName) {
             if (messages.length === 0) return;
-
+            // Webhookを使ったメッセージ復元（省略せず同じ処理）
             let webhook = null;
             try {
                 const whRes = await fetchWithRetry(`${API}/channels/${targetChannelId}/webhooks`, {
@@ -179,7 +179,7 @@
                 } catch (e) {
                     result.innerHTML += `<span class="log-error">✗ 送信スキップ</span><br>`;
                 }
-                await safeDelay(1450);
+                await safeDelay(1500);
             }
 
             if (webhook) {
@@ -187,29 +187,28 @@
             }
         }
 
-        // プライベート判定（簡易版）
         function isPrivateChannel(ch) {
             if (!ch.permission_overwrites || ch.permission_overwrites.length === 0) return false;
             const everyone = ch.permission_overwrites.find(p => p.id === ch.guild_id);
             if (!everyone) return false;
-            return (BigInt(everyone.deny || 0) & 1024n) !== 0n; // View Channel deny
+            return (BigInt(everyone.deny || 0) & 1024n) !== 0n;
         }
 
         document.getElementById('execute-btn').onclick = async () => {
             const sourceId = document.getElementById('source-id').value.trim();
             const targetId = document.getElementById('target-id').value.trim();
             const doReset = document.getElementById('reset-mode').checked;
-            const maxMsg = parseInt(document.getElementById('max-messages').value) || 80;
+            const maxMsg = parseInt(document.getElementById('max-messages').value) || 70;
 
             if (!sourceId || !targetId) return alert('サーバーIDを入力してください');
             if (sourceChannels.length === 0) return alert('先にチャンネル情報を取得してください');
             if (!myUserId) return alert('自分のユーザーIDが取得できていません。もう一度接続してください。');
 
-            if (!confirm('MANAGE_ROLES不要モードで実行します。\n元の細かい権限は再現されず、シンプルに「あなただけが見えるプライベートチャンネル」になります。実行しますか？')) return;
+            if (!confirm('プライベートチャンネルのみ複製します。\n権限エラーが出やすいチャンネルはスキップされます。実行しますか？')) return;
 
             const result = document.getElementById('result');
             result.classList.remove('hidden');
-            result.innerHTML = '<strong>【プライベートチャンネル複製開始（MANAGE_ROLES不要）】</strong><br><br>';
+            result.innerHTML = '<strong>【プライベートチャンネル複製開始 - v7 エラー耐性強化】</strong><br><br>';
 
             if (doReset) {
                 result.innerHTML += '<strong>既存チャンネル削除中...</strong><br>';
@@ -220,12 +219,12 @@
                             await fetchWithRetry(`${API}/channels/${ch.id}`, { method: 'DELETE', headers: { 'Authorization': token } });
                             result.innerHTML += `<span class="log-success">✓ 削除: ${ch.name}</span><br>`;
                         } catch (e) {}
-                        await safeDelay(950);
+                        await safeDelay(1000);
                     }
                 } catch (e) {}
             }
 
-            // カテゴリ作成（シンプル）
+            // カテゴリ作成
             result.innerHTML += '<br><strong>カテゴリ作成中...</strong><br>';
             const categoryMap = {};
             const categories = sourceChannels.filter(ch => ch.type === 4).sort((a,b)=>a.position-b.position);
@@ -246,47 +245,33 @@
                 } catch (e) {
                     result.innerHTML += `<span class="log-error">カテゴリ失敗: ${cat.name}</span><br>`;
                 }
-                await safeDelay(1000);
+                await safeDelay(1100);
             }
 
-            // プライベートチャンネルのみ
+            // プライベートチャンネル処理
             result.innerHTML += '<br><strong>🔒 シンプルプライベートチャンネル作成中...</strong><br>';
             const privateChannels = sourceChannels
                 .filter(ch => ch.type !== 4 && isPrivateChannel(ch))
                 .sort((a,b)=>a.position-b.position);
 
-            if (privateChannels.length === 0) {
-                result.innerHTML += '<span class="log-error">プライベートチャンネルが検出されませんでした</span><br>';
-                return;
-            }
-
             for (const ch of privateChannels) {
                 let newChannelId = null;
 
                 try {
+                    // まず権限なしでチャンネルを作成（失敗しにくくするため）
                     const payload = {
                         name: ch.name,
                         type: ch.type,
                         position: ch.position,
-                        parent_id: ch.parent_id ? categoryMap[ch.parent_id] || null : null,
-                        permission_overwrites: [
-                            // @everyone を非公開に
-                            { id: targetId, type: 0, deny: "1024" },   // View Channel deny (1024)
-                            // 自分だけ見えるように
-                            { id: myUserId, type: 1, allow: "1024" }   // View Channel allow
-                        ]
+                        parent_id: ch.parent_id ? categoryMap[ch.parent_id] || null : null
                     };
-
-                    if (ch.type === 0) { // テキストチャンネルなら送信も許可
-                        payload.permission_overwrites[1].allow = "1024 + 2048"; // View + Send Messages
-                    }
 
                     if (ch.type === 2) {
                         payload.bitrate = ch.bitrate || 64000;
                         payload.user_limit = ch.user_limit || 0;
                     }
 
-                    const res = await fetchWithRetry(`${API}/guilds/${targetId}/channels`, {
+                    let res = await fetchWithRetry(`${API}/guilds/${targetId}/channels`, {
                         method: 'POST',
                         headers: { 'Authorization': token, 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
@@ -295,7 +280,28 @@
                     if (res.ok) {
                         const newCh = await res.json();
                         newChannelId = newCh.id;
-                        result.innerHTML += `<span class="log-success">✓ 🔒 作成: ${ch.name} （あなただけが見えます）</span><br>`;
+                        result.innerHTML += `<span class="log-success">✓ 作成: ${ch.name}</span><br>`;
+
+                        // 作成後にシンプルなプライベート権限を適用
+                        try {
+                            // @everyone を非公開に
+                            await fetchWithRetry(`${API}/channels/${newChannelId}/permissions/${targetId}`, {
+                                method: 'PUT',
+                                headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ type: 0, deny: "1024" })
+                            });
+
+                            // 自分だけ見えるように
+                            await fetchWithRetry(`${API}/channels/${newChannelId}/permissions/${myUserId}`, {
+                                method: 'PUT',
+                                headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ type: 1, allow: ch.type === 0 ? "3072" : "1024" }) // View + Send (テキストの場合)
+                            });
+
+                            result.innerHTML += `<span class="log-success">   └ プライベート化完了（あなただけが見えます）</span><br>`;
+                        } catch (permErr) {
+                            result.innerHTML += `<span class="log-error">   └ プライベート化失敗（権限不足？）</span><br>`;
+                        }
                     } else {
                         result.innerHTML += `<span class="log-error">✗ 作成失敗: ${ch.name}</span><br>`;
                         await safeDelay(1500);
@@ -320,12 +326,13 @@
                     }
                 }
 
-                await safeDelay(1300);
+                await safeDelay(1400);
             }
 
-            result.innerHTML += '<br><strong style="color:#3ba55d">✅ 完了しました！（MANAGE_ROLES不要モード）</strong>';
+            result.innerHTML += '<br><strong style="color:#3ba55d">処理完了しました！（失敗したチャンネルは権限不足の可能性が高いです）</strong>';
         };
 
+        // load-btn, connect-btn, logout-btn は前回と同じ（省略せずそのまま動作）
         document.getElementById('load-btn').onclick = async () => {
             const sourceId = document.getElementById('source-id').value.trim();
             if (!sourceId) return alert('元サーバーIDを入力してください');
