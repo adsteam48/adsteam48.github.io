@@ -3,34 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord メッセージのみ復元ツール - 名前緩和版</title>
+    <title>Discord メッセージ復元ツール - リセット＋ID入力版</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body { background:#202225; color:#dcddde; font-family:'Whitney',sans-serif; padding:20px; margin:0; }
-        .container { max-width:950px; margin:0 auto; }
-        header { text-align:center; padding:20px; border-bottom:1px solid #36393f; }
-        h1, h2 { color:white; }
+        .container { max-width:980px; margin:0 auto; }
+        header { text-align:center; padding:25px; border-bottom:1px solid #36393f; }
+        h1 { color:white; }
         .card { background:#2f3136; border-radius:8px; padding:20px; margin:20px 0; }
-        .section { background:#36393f; border-radius:8px; padding:15px; margin-bottom:20px; }
-        .section-title { font-size:1.2em; font-weight:bold; margin-bottom:10px; color:#5865F2; }
-        input, select { width:100%; padding:12px; background:#202225; border:none; color:white; border-radius:4px; margin-bottom:10px; }
-        button { padding:12px 20px; background:#5865F2; color:white; border:none; cursor:pointer; border-radius:4px; width:100%; font-size:1.1em; margin-top:10px; }
+        .section { background:#36393f; border-radius:8px; padding:18px; margin-bottom:20px; }
+        .section-title { font-size:1.25em; font-weight:bold; margin-bottom:12px; color:#5865F2; }
+        input, select { width:100%; padding:12px; background:#202225; border:none; color:white; border-radius:4px; margin-bottom:10px; font-size:1em; }
+        button { padding:14px 20px; background:#5865F2; color:white; border:none; cursor:pointer; border-radius:4px; width:100%; font-size:1.1em; margin-top:10px; }
         button:hover { background:#4752C4; }
         button.danger { background:#ed4245; }
-        .result { padding:15px; border-radius:8px; margin-top:20px; max-height:700px; overflow-y:auto; background:#1e1f22; white-space:pre-line; font-size:0.9em; line-height:1.5; }
+        button.danger:hover { background:#c03537; }
+        .result { padding:18px; border-radius:8px; margin-top:20px; max-height:720px; overflow-y:auto; background:#1e1f22; white-space:pre-line; font-size:0.92em; line-height:1.55; }
         .hidden { display:none; }
-        .warning { color:#faa81a; font-size:0.95em; margin:10px 0; line-height:1.5; }
+        .warning { color:#faa81a; font-size:0.95em; margin:12px 0; line-height:1.6; }
         .log-success { color:#3ba55d; }
         .log-error { color:#ed4245; }
         .log-info { color:#faa81a; }
-        .preview { background:#1e1f22; padding:15px; border-radius:8px; margin-top:10px; font-size:0.9em; }
+        .preview { background:#1e1f22; padding:15px; border-radius:8px; margin-top:10px; }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1><i class="fab fa-discord"></i> Discord メッセージのみ復元ツール（名前緩和版）</h1>
-            <p>絵文字付きチャンネルにも対応 • 自己責任で使用</p>
+            <h1><i class="fab fa-discord"></i> Discord メッセージ復元ツール（リセット対応）</h1>
+            <p>コピー元 → 対象サーバーID直接指定 • 実行前に全リセット可能</p>
         </header>
 
         <div id="token-card" class="card">
@@ -40,34 +41,49 @@
         </div>
 
         <div id="main-card" class="card hidden">
-            <h2>メッセージ復元設定</h2>
+            <h2>復元設定</h2>
 
+            <!-- コピー元 -->
             <div class="section">
                 <div class="section-title">コピー元サーバーID</div>
-                <input type="text" id="source-id" placeholder="元サーバーID">
+                <input type="text" id="source-id" placeholder="メッセージをコピーしたい元のサーバーID">
                 <button id="load-btn">チャンネル一覧を取得</button>
                 <div id="preview" class="preview hidden"></div>
             </div>
 
+            <!-- 対象サーバー（ID直接入力に変更） -->
             <div class="section">
-                <div class="section-title">対象サーバー</div>
-                <select id="target-select"></select>
+                <div class="section-title">対象サーバーID（直接入力）</div>
+                <input type="text" id="target-id" placeholder="複製先のサーバーIDを貼り付け">
+            </div>
+
+            <!-- リセットオプション -->
+            <div class="section">
+                <div class="toggle-label" style="display:flex; align-items:center; justify-content:space-between;">
+                    <span>実行前に対象サーバーを全部リセットする（おすすめ）</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="reset-mode" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="warning" id="reset-warning">
+                    ⚠️ リセットをONにすると、対象サーバーの<br>
+                    ・既存の全テキストチャンネル<br>
+                    ・全ボイスチャンネル<br>
+                    ・全カテゴリ<br>
+                    が削除されます（ロール・絵文字は残ります）
+                </div>
             </div>
 
             <div class="section">
                 <div class="toggle-label">
                     <span>1チャンネルあたりの最大復元メッセージ数</span>
-                    <input type="number" id="max-messages" value="300" style="width:130px; margin-left:15px; background:#202225; color:white; padding:8px; border-radius:4px;">
-                </div>
-                <div class="warning">
-                    ⚠️ 注意<br>
-                    ・復元は時間がかかります<br>
-                    ・絵文字を除去して名前を比較します（よりマッチしやすくなりました）
+                    <input type="number" id="max-messages" value="350" style="width:140px; margin-left:15px; background:#202225; color:white; padding:8px; border-radius:4px;">
                 </div>
             </div>
 
             <div class="section">
-                <button id="execute-btn">メッセージ復元開始</button>
+                <button id="execute-btn" style="background:#ed4245; font-size:1.15em;">メッセージ復元開始（リセット含む）</button>
             </div>
 
             <div id="result" class="result hidden"></div>
@@ -85,21 +101,16 @@
     <script>
         const API = 'https://discord.com/api/v9';
         let token = null;
-        let myGuilds = [];
         let sourceChannels = [];
 
         const delay = ms => new Promise(r => setTimeout(r, ms));
 
-        // 絵文字や特殊文字を除去してクリーンな名前を返す
         function cleanChannelName(name) {
-            return name.replace(/[\u{1F000}-\u{1FFFF}]|[\u{2600}-\u{27BF}]|[\u{1F300}-\u{1F5FF}]|[\u{1F600}-\u{1F64F}]|[\u{1F680}-\u{1F6FF}]|┃|🧰|📗|📚|❓|🗣️|📢|🔞|📞|ℹ️|✅|🔔|⬇|🦙|🤝|🎫|🏆|🎥|🤖|🎉|🎁|🔄|👋|🌎|📊|😤|💀|🎮|🎧|⚔️|🔒|👑|🌀|🕶|🕳|🌐|🔑|⚙|❔|✔|🚫|⭕|❌|⬆️|🐈|🥇|🔫|📷|⌨️|🌍| /gu, '')
+            return name.replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{1F300}-\u{1F5FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}┃🧰📗📚❓🗣️📢🔞📞ℹ️✅🔔⬇🦙🤝🎫🏆🎥🤖🎉🎁🔄👋🌎📊😤💀🎮🎧⚔️🔒👑🌀🕶🕳🌐🔑⚙❔✔🚫⭕❌⬆️🐈🥇🔫📷⌨️🌍]/gu, '')
                        .trim()
                        .toLowerCase()
-                       .replace(/[^a-z0-9\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/g, '');
+                       .replace(/[^a-z0-9\u3040-\u30FF\u4E00-\u9FFF]/g, '');
         }
-
-        // 以前の関数（getAllMessages, restoreChannelMessages）は変更なしで省略（前のコードからコピーして貼り付けてください）
-        // ※ ここに前のバージョンの getAllMessages と restoreChannelMessages をそのまま入れてください
 
         async function getAllMessages(channelId, limit = 100) {
             let messages = [];
@@ -115,30 +126,27 @@
                     messages.unshift(...batch);
                     lastId = batch[0].id;
                     if (batch.length < limit) break;
-                    await delay(600);
+                    await delay(650);
                 } catch { break; }
             }
             return messages;
         }
 
         async function restoreChannelMessages(targetChannelId, messages, result, channelName) {
-            if (messages.length === 0) {
-                result.innerHTML += `<span class="log-info">メッセージなし: #${channelName}</span><br>`;
-                return;
-            }
+            if (messages.length === 0) return;
 
             let webhook = null;
             try {
-                const whRes = await fetch(`${API}/channels/${targetChannelId}/webhooks`, {
+                const wh = await fetch(`${API}/channels/${targetChannelId}/webhooks`, {
                     method: 'POST',
                     headers: { 'Authorization': token, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name: "Restore" })
                 });
-                if (whRes.ok) webhook = await whRes.json();
+                if (wh.ok) webhook = await wh.json();
             } catch {}
 
             if (!webhook) {
-                result.innerHTML += `<span class="log-error">Webhook失敗: #${channelName}</span><br>`;
+                result.innerHTML += `<span class="log-error">Webhook作成失敗: #${channelName}</span><br>`;
                 return;
             }
 
@@ -159,18 +167,42 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
                     });
-                    const short = msg.content ? msg.content.substring(0, 50) + (msg.content.length > 50 ? "..." : "") : "(埋め込み)";
+                    const short = msg.content ? msg.content.substring(0, 55) + (msg.content.length > 55 ? "..." : "") : "(埋め込み)";
                     result.innerHTML += `<span class="log-success">✓ ${msg.author.username}: ${short}</span><br>`;
                 } catch {
-                    result.innerHTML += `<span class="log-error">✗ 失敗</span><br>`;
+                    result.innerHTML += `<span class="log-error">✗ 送信失敗</span><br>`;
                 }
-                await delay(1350);
+                await delay(1400);
             }
 
             try { await fetch(`${API}/webhooks/${webhook.id}`, { method: 'DELETE', headers: { 'Authorization': token } }); } catch {}
         }
 
-        // 接続・ロード・実行部分（変更あり）
+        // リセット関数（全チャンネル削除）
+        async function resetTargetServer(targetId, result) {
+            result.innerHTML += '<strong>【対象サーバーを全リセット中...】</strong><br>';
+            try {
+                const channels = await (await fetch(`${API}/guilds/${targetId}/channels`, { headers: { 'Authorization': token } })).json();
+                
+                for (const ch of channels) {
+                    try {
+                        await fetch(`${API}/channels/${ch.id}`, { 
+                            method: 'DELETE', 
+                            headers: { 'Authorization': token } 
+                        });
+                        result.innerHTML += `<span class="log-success">✓ 削除: #${ch.name}</span><br>`;
+                    } catch (e) {
+                        result.innerHTML += `<span class="log-error">✗ 削除失敗: #${ch.name}</span><br>`;
+                    }
+                    await delay(800);
+                }
+                result.innerHTML += '<strong>リセット完了</strong><br><br>';
+            } catch (e) {
+                result.innerHTML += '<span class="log-error">リセット中にエラーが発生しました</span><br>';
+            }
+        }
+
+        // 接続
         document.getElementById('connect-btn').onclick = async () => {
             token = document.getElementById('token-input').value.trim();
             if (!token) return alert('トークンを入力してください');
@@ -179,32 +211,20 @@
             try {
                 const me = await (await fetch(`${API}/users/@me`, { headers: { 'Authorization': token } })).json();
                 document.getElementById('username').textContent = me.global_name || me.username;
-                document.getElementById('avatar').src = me.avatar 
-                    ? `https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.png?size=128` 
-                    : 'https://cdn.discordapp.com/embed/avatars/0.png';
-
-                myGuilds = await (await fetch(`${API}/users/@me/guilds`, { headers: { 'Authorization': token } })).json();
-
-                const select = document.getElementById('target-select');
-                select.innerHTML = '';
-                myGuilds.forEach(g => {
-                    const opt = document.createElement('option');
-                    opt.value = g.id;
-                    opt.textContent = g.name;
-                    select.appendChild(opt);
-                });
+                document.getElementById('avatar').src = me.avatar ? `https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.png?size=128` : 'https://cdn.discordapp.com/embed/avatars/0.png';
 
                 document.getElementById('token-card').classList.add('hidden');
                 document.getElementById('main-card').classList.remove('hidden');
                 document.getElementById('user-card').classList.remove('hidden');
             } catch (e) {
-                alert('接続失敗: ' + (e.message || 'トークン無効'));
+                alert('接続失敗: トークンが無効です');
             }
         };
 
+        // チャンネル取得
         document.getElementById('load-btn').onclick = async () => {
             const sourceId = document.getElementById('source-id').value.trim();
-            if (!sourceId) return alert('元サーバーIDを入力してください');
+            if (!sourceId) return alert('コピー元サーバーIDを入力してください');
 
             try {
                 const channels = await (await fetch(`${API}/guilds/${sourceId}/channels`, { headers: { 'Authorization': token } })).json();
@@ -212,59 +232,59 @@
 
                 const preview = document.getElementById('preview');
                 preview.classList.remove('hidden');
-                preview.innerHTML = `<strong>取得完了</strong><br>テキストチャンネル: ${sourceChannels.length}個`;
+                preview.innerHTML = `<strong>取得完了</strong><br>テキストチャンネル数: ${sourceChannels.length}個`;
                 alert(`テキストチャンネル ${sourceChannels.length}個 を取得しました`);
             } catch (e) {
-                alert('取得失敗: IDまたは権限を確認してください');
+                alert('取得失敗: サーバーIDまたは権限を確認してください');
             }
         };
 
+        // 実行
         document.getElementById('execute-btn').onclick = async () => {
-            const targetId = document.getElementById('target-select').value;
-            const maxMsg = parseInt(document.getElementById('max-messages').value) || 300;
+            const sourceId = document.getElementById('source-id').value.trim();
+            const targetId = document.getElementById('target-id').value.trim();
+            const maxMsg = parseInt(document.getElementById('max-messages').value) || 350;
+            const doReset = document.getElementById('reset-mode').checked;
 
-            if (!targetId) return alert('対象サーバーを選択してください');
-            if (sourceChannels.length === 0) return alert('先にチャンネル一覧を取得してください');
+            if (!sourceId || !targetId) return alert('コピー元と対象のサーバーIDを両方入力してください');
+            if (sourceChannels.length === 0) return alert('先に「チャンネル一覧を取得」ボタンを押してください');
 
-            if (!confirm(`復元を開始しますか？\n最大 ${maxMsg}件/チャンネル`)) return;
+            if (!confirm(`本当に実行しますか？\n対象サーバーID: ${targetId}\nリセット: ${doReset ? 'ON（全チャンネル削除）' : 'OFF'}\n最大 ${maxMsg}件/チャンネル`)) return;
 
             const result = document.getElementById('result');
             result.classList.remove('hidden');
-            result.innerHTML = '<strong>【メッセージ復元開始】</strong><br><br>';
+            result.innerHTML = '<strong>【処理開始】</strong><br><br>';
 
+            // リセット実行
+            if (doReset) {
+                await resetTargetServer(targetId, result);
+            }
+
+            // 対象サーバーの現在のチャンネルを取得
             let targetChannels = [];
             try {
                 targetChannels = await (await fetch(`${API}/guilds/${targetId}/channels`, { headers: { 'Authorization': token } })).json();
             } catch (e) {
-                result.innerHTML += '<span class="log-error">対象サーバーのチャンネル取得失敗</span><br>';
+                result.innerHTML += '<span class="log-error">対象サーバーのチャンネル取得に失敗</span><br>';
                 return;
             }
 
+            // 復元処理
             for (const srcCh of sourceChannels) {
                 const srcClean = cleanChannelName(srcCh.name);
-
-                // 対象チャンネルから最も近い名前を探す
                 let bestMatch = null;
-                let bestScore = 0;
 
                 for (const tc of targetChannels) {
                     if (tc.type !== 0) continue;
                     const tcClean = cleanChannelName(tc.name);
-                    if (tcClean === srcClean) {
+                    if (tcClean === srcClean || tcClean.includes(srcClean) || srcClean.includes(tcClean)) {
                         bestMatch = tc;
-                        break; // 完全一致なら即決定
-                    }
-                    // 部分一致スコア（簡易）
-                    if (tcClean.includes(srcClean) || srcClean.includes(tcClean)) {
-                        if (tcClean.length > bestScore) {
-                            bestScore = tcClean.length;
-                            bestMatch = tc;
-                        }
+                        break;
                     }
                 }
 
                 if (!bestMatch) {
-                    result.innerHTML += `<span class="log-error">マッチなし: #${srcCh.name} (クリーン名: ${srcClean})</span><br>`;
+                    result.innerHTML += `<span class="log-error">マッチなし: #${srcCh.name} (${srcClean})</span><br>`;
                     continue;
                 }
 
@@ -272,17 +292,16 @@
 
                 try {
                     let messages = await getAllMessages(srcCh.id, 100);
-                    messages = messages.slice(-maxMsg);
-
+                    messages = messages.slice(-maxMsg);   // 最新N件
                     await restoreChannelMessages(bestMatch.id, messages, result, srcCh.name);
                 } catch (e) {
-                    result.innerHTML += `<span class="log-error">エラー: #${srcCh.name}</span><br>`;
+                    result.innerHTML += `<span class="log-error">復元エラー: #${srcCh.name}</span><br>`;
                 }
 
-                await delay(1000);
+                await delay(1200);
             }
 
-            result.innerHTML += '<br><strong style="color:#3ba55d">復元処理完了！</strong>';
+            result.innerHTML += '<br><strong style="color:#3ba55d">すべての処理が完了しました！</strong>';
         };
 
         document.getElementById('logout-btn').onclick = () => {
@@ -292,6 +311,7 @@
             }
         };
 
+        // 自動ログイン
         const savedToken = localStorage.getItem('discord_token');
         if (savedToken) {
             document.getElementById('token-input').value = savedToken;
