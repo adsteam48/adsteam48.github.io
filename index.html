@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord メッセージ復元ツール 完全版</title>
+    <title>Discord 完全クローン + メッセージ復元ツール</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body { background:#202225; color:#dcddde; font-family:'Whitney',sans-serif; padding:20px; margin:0; }
-        .container { max-width:980px; margin:0 auto; }
+        .container { max-width:1000px; margin:0 auto; }
         header { text-align:center; padding:25px; border-bottom:1px solid #36393f; }
         h1 { color:white; margin:0; }
         .card { background:#2f3136; border-radius:8px; padding:20px; margin:20px 0; }
         .section { background:#36393f; border-radius:8px; padding:18px; margin-bottom:20px; }
         .section-title { font-size:1.25em; font-weight:bold; margin-bottom:12px; color:#5865F2; }
-        input, select { width:100%; padding:12px; background:#202225; border:none; color:white; border-radius:4px; margin-bottom:10px; font-size:1em; }
+        input { width:100%; padding:12px; background:#202225; border:none; color:white; border-radius:4px; margin-bottom:10px; font-size:1em; }
         button { padding:14px 20px; background:#5865F2; color:white; border:none; cursor:pointer; border-radius:4px; width:100%; font-size:1.1em; margin-top:10px; }
         button:hover { background:#4752C4; }
         button.danger { background:#ed4245; }
         button.danger:hover { background:#c03537; }
-        .result { padding:18px; border-radius:8px; margin-top:20px; max-height:720px; overflow-y:auto; background:#1e1f22; white-space:pre-line; font-size:0.92em; line-height:1.55; }
+        .result { padding:18px; border-radius:8px; margin-top:20px; max-height:750px; overflow-y:auto; background:#1e1f22; white-space:pre-line; font-size:0.9em; line-height:1.5; }
         .hidden { display:none; }
         .warning { color:#faa81a; font-size:0.95em; margin:12px 0; line-height:1.6; }
         .log-success { color:#3ba55d; }
@@ -37,61 +37,55 @@
 <body>
     <div class="container">
         <header>
-            <h1><i class="fab fa-discord"></i> Discord メッセージ復元ツール 完全版</h1>
-            <p>対象サーバーID直接指定 • 実行前に全チャンネルリセット • 絵文字対応強化</p>
+            <h1><i class="fab fa-discord"></i> Discord 完全クローン + メッセージ復元ツール</h1>
+            <p>カテゴリ作成 → チャンネル作成 → メッセージ復元 • 自己責任使用</p>
         </header>
 
         <div id="token-card" class="card">
             <h2>トークンを入力</h2>
             <input type="password" id="token-input" placeholder="ユーザー・トークン（mfa.も可）">
             <button id="connect-btn">接続</button>
+            <div class="warning">※ GitHub Pagesではトークンを毎回入力してください</div>
         </div>
 
         <div id="main-card" class="card hidden">
-            <h2>復元設定</h2>
+            <h2>完全クローン設定</h2>
 
             <div class="section">
                 <div class="section-title">コピー元サーバーID</div>
-                <input type="text" id="source-id" placeholder="メッセージを復元したい元のサーバーID">
-                <button id="load-btn">チャンネル一覧を取得</button>
+                <input type="text" id="source-id" placeholder="元のサーバーID">
+                <button id="load-btn">サーバー情報を取得</button>
                 <div id="preview" class="preview hidden"></div>
             </div>
 
             <div class="section">
                 <div class="section-title">対象サーバーID（直接入力）</div>
-                <input type="text" id="target-id" placeholder="複製先のサーバーIDを貼り付け">
+                <input type="text" id="target-id" placeholder="複製先サーバーID">
             </div>
 
             <div class="section">
                 <div class="toggle-label">
-                    <span>実行前に対象サーバーを全部リセットする（全チャンネル削除）</span>
+                    <span>実行前に対象サーバーの全チャンネルをリセット</span>
                     <label class="toggle-switch">
                         <input type="checkbox" id="reset-mode" checked>
                         <span class="slider"></span>
                     </label>
                 </div>
                 <div class="warning">
-                    ⚠️ リセットONにすると対象サーバーの<br>
-                    ・すべてのテキストチャンネル<br>
-                    ・すべてのボイスチャンネル<br>
-                    ・すべてのカテゴリ<br>
-                    が完全に削除されます（ロール・絵文字は残ります）
+                    ⚠️ リセットONで対象サーバーの全チャンネル（カテゴリ含む）が削除されます<br>
+                    これにより完全なクローンが可能になります
                 </div>
             </div>
 
             <div class="section">
                 <div class="toggle-label">
                     <span>1チャンネルあたりの最大復元メッセージ数</span>
-                    <input type="number" id="max-messages" value="350" style="width:140px; margin-left:15px; background:#202225; color:white; padding:8px; border-radius:4px;">
-                </div>
-                <div class="warning">
-                    ⚠️ 復元は時間がかかります（350件で約12〜25分程度）<br>
-                    レートリミット回避のため遅延を入れています
+                    <input type="number" id="max-messages" value="300" style="width:140px; margin-left:15px; background:#202225; color:white; padding:8px; border-radius:4px;">
                 </div>
             </div>
 
             <div class="section">
-                <button id="execute-btn" class="danger">メッセージ復元開始（リセット含む）</button>
+                <button id="execute-btn" class="danger">完全クローン実行（チャンネル作成 + メッセージ復元）</button>
             </div>
 
             <div id="result" class="result hidden"></div>
@@ -101,7 +95,7 @@
             <div style="display:flex; align-items:center; justify-content:space-between;">
                 <img id="avatar" src="" width="64" height="64" style="border-radius:50%;">
                 <h3 id="username">接続済みユーザー</h3>
-                <button id="logout-btn" class="danger">ログアウト＆全データ削除</button>
+                <button id="logout-btn" class="danger">ログアウト</button>
             </div>
         </div>
     </div>
@@ -109,16 +103,12 @@
     <script>
         const API = 'https://discord.com/api/v9';
         let token = null;
-        let sourceChannels = [];
+        let source = { channels: [] };
 
         const delay = ms => new Promise(r => setTimeout(r, ms));
 
-        // 絵文字・特殊文字を完全に除去して名前を正規化
-        function cleanChannelName(name) {
-            return name.replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{1F300}-\u{1F5FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}┃🧰📗📚❓🗣️📢🔞📞ℹ️✅🔔⬇🦙🤝🎫🏆🎥🤖🎉🎁🔄👋🌎📊😤💀🎮🎧⚔️🔒👑🌀🕶🕳🌐🔑⚙❔✔🚫⭕❌⬆️🐈🥇🔫📷⌨️🌍]/gu, '')
-                       .trim()
-                       .toLowerCase()
-                       .replace(/[^a-z0-9\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/g, '');
+        function cleanName(name) {
+            return name.replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{1F300}-\u{1F5FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}]/gu, '').trim();
         }
 
         async function getAllMessages(channelId, limit = 100) {
@@ -135,34 +125,32 @@
                     messages.unshift(...batch);
                     lastId = batch[0].id;
                     if (batch.length < limit) break;
-                    await delay(650);
+                    await delay(600);
                 } catch { break; }
             }
             return messages;
         }
 
-        async function restoreChannelMessages(targetChannelId, messages, result, channelName) {
-            if (messages.length === 0) {
-                result.innerHTML += `<span class="log-info">メッセージなし: #${channelName}</span><br>`;
-                return;
-            }
-
-            let webhook = null;
+        async function createWebhook(channelId) {
             try {
-                const whRes = await fetch(`${API}/channels/${targetChannelId}/webhooks`, {
+                const res = await fetch(`${API}/channels/${channelId}/webhooks`, {
                     method: 'POST',
                     headers: { 'Authorization': token, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: "Message Restore" })
+                    body: JSON.stringify({ name: "Clone Restore" })
                 });
-                if (whRes.ok) webhook = await whRes.json();
-            } catch {}
+                return res.ok ? await res.json() : null;
+            } catch { return null; }
+        }
 
+        async function restoreMessages(targetChannelId, messages, result, channelName) {
+            if (messages.length === 0) return;
+            const webhook = await createWebhook(targetChannelId);
             if (!webhook) {
                 result.innerHTML += `<span class="log-error">Webhook作成失敗: #${channelName}</span><br>`;
                 return;
             }
 
-            result.innerHTML += `<span class="log-info">復元開始 → #${channelName} (${messages.length}件)</span><br>`;
+            result.innerHTML += `<span class="log-info">メッセージ復元開始 → #${channelName} (${messages.length}件)</span><br>`;
 
             for (const msg of messages) {
                 if (!msg.content && (!msg.embeds || msg.embeds.length === 0)) continue;
@@ -179,152 +167,153 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
                     });
-                    const short = msg.content ? msg.content.substring(0, 55) + (msg.content.length > 55 ? "..." : "") : "(埋め込み)";
+                    const short = msg.content ? msg.content.substring(0, 60) + "..." : "(埋め込み)";
                     result.innerHTML += `<span class="log-success">✓ ${msg.author.username}: ${short}</span><br>`;
                 } catch {
                     result.innerHTML += `<span class="log-error">✗ 送信失敗</span><br>`;
                 }
-                await delay(1400);
+                await delay(1350);
             }
-
             try { await fetch(`${API}/webhooks/${webhook.id}`, { method: 'DELETE', headers: { 'Authorization': token } }); } catch {}
         }
 
-        // 対象サーバー全チャンネルリセット
-        async function resetTargetServer(targetId, result) {
-            result.innerHTML += '<strong>【対象サーバーを全リセット中...】</strong><br>';
-            try {
-                const channels = await (await fetch(`${API}/guilds/${targetId}/channels`, { headers: { 'Authorization': token } })).json();
-                for (const ch of channels) {
-                    try {
-                        await fetch(`${API}/channels/${ch.id}`, { method: 'DELETE', headers: { 'Authorization': token } });
-                        result.innerHTML += `<span class="log-success">✓ 削除: #${ch.name}</span><br>`;
-                    } catch {
-                        result.innerHTML += `<span class="log-error">✗ 削除失敗: #${ch.name}</span><br>`;
-                    }
-                    await delay(800);
-                }
-                result.innerHTML += '<strong>リセット完了</strong><br><br>';
-            } catch (e) {
-                result.innerHTML += '<span class="log-error">リセット中にエラーが発生しました</span><br>';
-            }
-        }
+        // 完全クローン実行
+        document.getElementById('execute-btn').onclick = async () => {
+            const sourceId = document.getElementById('source-id').value.trim();
+            const targetId = document.getElementById('target-id').value.trim();
+            const maxMsg = parseInt(document.getElementById('max-messages').value) || 300;
+            const doReset = document.getElementById('reset-mode').checked;
 
-        // 接続
+            if (!sourceId || !targetId) return alert('元サーバーIDと対象サーバーIDを入力してください');
+            if (source.channels.length === 0) return alert('先に「サーバー情報を取得」ボタンを押してください');
+
+            if (!confirm(`完全クローンを実行しますか？\n対象ID: ${targetId}\nリセット: ${doReset ? 'ON' : 'OFF'}\nチャンネル作成 + メッセージ復元`)) return;
+
+            const result = document.getElementById('result');
+            result.classList.remove('hidden');
+            result.innerHTML = '<strong>【完全クローン開始】</strong><br><br>';
+
+            // リセット
+            if (doReset) {
+                result.innerHTML += '<strong>対象サーバーの全チャンネルを削除中...</strong><br>';
+                try {
+                    const channels = await (await fetch(`${API}/guilds/${targetId}/channels`, { headers: { 'Authorization': token } })).json();
+                    for (const ch of channels) {
+                        await fetch(`${API}/channels/${ch.id}`, { method: 'DELETE', headers: { 'Authorization': token } });
+                        result.innerHTML += `<span class="log-success">✓ 削除: ${ch.name}</span><br>`;
+                        await delay(800);
+                    }
+                } catch (e) {
+                    result.innerHTML += '<span class="log-error">リセット中にエラー</span><br>';
+                }
+            }
+
+            // カテゴリ作成
+            result.innerHTML += '<strong>カテゴリを作成中...</strong><br>';
+            const categoryMap = {};
+            const categories = source.channels.filter(ch => ch.type === 4).sort((a, b) => a.position - b.position);
+
+            for (const cat of categories) {
+                try {
+                    const payload = { name: cat.name, type: 4, position: cat.position };
+                    const res = await fetch(`${API}/guilds/${targetId}/channels`, {
+                        method: 'POST',
+                        headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (res.ok) {
+                        const newCat = await res.json();
+                        categoryMap[cat.id] = newCat.id;
+                        result.innerHTML += `<span class="log-success">✓ カテゴリ作成: ${cat.name}</span><br>`;
+                    }
+                    await delay(700);
+                } catch (e) {
+                    result.innerHTML += `<span class="log-error">✗ カテゴリ失敗: ${cat.name}</span><br>`;
+                }
+            }
+
+            // 通常チャンネル作成 + メッセージ復元
+            result.innerHTML += '<strong>チャンネルを作成 + メッセージ復元中...</strong><br>';
+            const normalChannels = source.channels.filter(ch => ch.type !== 4).sort((a, b) => a.position - b.position);
+
+            for (const ch of normalChannels) {
+                try {
+                    const payload = {
+                        name: ch.name,
+                        type: ch.type,
+                        position: ch.position,
+                        parent_id: ch.parent_id ? categoryMap[ch.parent_id] || null : null,
+                        permission_overwrites: ch.permission_overwrites || []
+                    };
+                    if (ch.type === 2) { // ボイスチャンネル
+                        payload.bitrate = ch.bitrate;
+                        payload.user_limit = ch.user_limit;
+                    }
+
+                    const res = await fetch(`${API}/guilds/${targetId}/channels`, {
+                        method: 'POST',
+                        headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (res.ok) {
+                        const newCh = await res.json();
+                        result.innerHTML += `<span class="log-success">✓ チャンネル作成: ${ch.name}</span><br>`;
+
+                        // テキストチャンネルのみメッセージ復元
+                        if (ch.type === 0) {
+                            const messages = await getAllMessages(ch.id, 100);
+                            const limited = messages.slice(-maxMsg);
+                            await restoreMessages(newCh.id, limited, result, ch.name);
+                        }
+                    } else {
+                        result.innerHTML += `<span class="log-error">✗ チャンネル作成失敗: ${ch.name}</span><br>`;
+                    }
+                    await delay(900);
+                } catch (e) {
+                    result.innerHTML += `<span class="log-error">例外発生: ${ch.name}</span><br>`;
+                }
+            }
+
+            result.innerHTML += '<br><strong style="color:#3ba55d">完全クローンが完了しました！</strong>';
+        };
+
+        // 接続・情報取得部分（前回と同じ）
         document.getElementById('connect-btn').onclick = async () => {
             token = document.getElementById('token-input').value.trim();
             if (!token) return alert('トークンを入力してください');
-            localStorage.setItem('discord_token', token);
 
             try {
                 const me = await (await fetch(`${API}/users/@me`, { headers: { 'Authorization': token } })).json();
                 document.getElementById('username').textContent = me.global_name || me.username;
-                document.getElementById('avatar').src = me.avatar 
-                    ? `https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.png?size=128` 
-                    : 'https://cdn.discordapp.com/embed/avatars/0.png';
+                document.getElementById('avatar').src = me.avatar ? `https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.png?size=128` : 'https://cdn.discordapp.com/embed/avatars/0.png';
 
                 document.getElementById('token-card').classList.add('hidden');
                 document.getElementById('main-card').classList.remove('hidden');
                 document.getElementById('user-card').classList.remove('hidden');
             } catch (e) {
-                alert('接続失敗: トークンが無効か期限切れです');
+                alert('接続失敗: トークンが無効です');
             }
         };
 
-        // チャンネル取得
         document.getElementById('load-btn').onclick = async () => {
             const sourceId = document.getElementById('source-id').value.trim();
-            if (!sourceId) return alert('コピー元サーバーIDを入力してください');
+            if (!sourceId) return alert('元サーバーIDを入力してください');
 
             try {
-                const channels = await (await fetch(`${API}/guilds/${sourceId}/channels`, { headers: { 'Authorization': token } })).json();
-                sourceChannels = channels.filter(ch => ch.type === 0);
-
+                source.channels = await (await fetch(`${API}/guilds/${sourceId}/channels`, { headers: { 'Authorization': token } })).json();
                 const preview = document.getElementById('preview');
                 preview.classList.remove('hidden');
-                preview.innerHTML = `<strong>取得完了</strong><br>テキストチャンネル数: ${sourceChannels.length}個`;
-                alert(`テキストチャンネル ${sourceChannels.length}個 を取得しました`);
+                preview.innerHTML = `<strong>取得完了</strong><br>総チャンネル数: ${source.channels.length}個<br>（カテゴリ含む）`;
+                alert('サーバー情報取得完了！ カテゴリとチャンネルが準備されました');
             } catch (e) {
-                alert('取得失敗: サーバーIDまたは権限を確認してください');
+                alert('取得失敗: IDまたは権限を確認してください');
             }
-        };
-
-        // 実行
-        document.getElementById('execute-btn').onclick = async () => {
-            const sourceId = document.getElementById('source-id').value.trim();
-            const targetId = document.getElementById('target-id').value.trim();
-            const maxMsg = parseInt(document.getElementById('max-messages').value) || 350;
-            const doReset = document.getElementById('reset-mode').checked;
-
-            if (!sourceId || !targetId) return alert('コピー元と対象のサーバーIDを両方入力してください');
-            if (sourceChannels.length === 0) return alert('先に「チャンネル一覧を取得」ボタンを押してください');
-
-            if (!confirm(`【最終確認】本当に実行しますか？\n対象サーバーID: ${targetId}\nリセット: ${doReset ? 'ON（全チャンネル削除）' : 'OFF'}\n最大 ${maxMsg}件/チャンネル`)) return;
-
-            const result = document.getElementById('result');
-            result.classList.remove('hidden');
-            result.innerHTML = '<strong>【処理開始】</strong><br><br>';
-
-            // リセット
-            if (doReset) await resetTargetServer(targetId, result);
-
-            // 対象サーバーの現在のチャンネル取得
-            let targetChannels = [];
-            try {
-                targetChannels = await (await fetch(`${API}/guilds/${targetId}/channels`, { headers: { 'Authorization': token } })).json();
-            } catch (e) {
-                result.innerHTML += '<span class="log-error">対象サーバーのチャンネル取得に失敗しました</span><br>';
-                return;
-            }
-
-            // 復元ループ
-            for (const srcCh of sourceChannels) {
-                const srcClean = cleanChannelName(srcCh.name);
-                let bestMatch = null;
-
-                for (const tc of targetChannels) {
-                    if (tc.type !== 0) continue;
-                    const tcClean = cleanChannelName(tc.name);
-                    if (tcClean === srcClean || tcClean.includes(srcClean) || srcClean.includes(tcClean)) {
-                        bestMatch = tc;
-                        break;
-                    }
-                }
-
-                if (!bestMatch) {
-                    result.innerHTML += `<span class="log-error">マッチなし: #${srcCh.name} (クリーン名: ${srcClean})</span><br>`;
-                    continue;
-                }
-
-                result.innerHTML += `<span class="log-info">処理中 → #${srcCh.name} → #${bestMatch.name}</span><br>`;
-
-                try {
-                    let messages = await getAllMessages(srcCh.id, 100);
-                    messages = messages.slice(-maxMsg);
-                    await restoreChannelMessages(bestMatch.id, messages, result, srcCh.name);
-                } catch (e) {
-                    result.innerHTML += `<span class="log-error">復元エラー: #${srcCh.name}</span><br>`;
-                }
-
-                await delay(1200);
-            }
-
-            result.innerHTML += '<br><strong style="color:#3ba55d">すべての処理が完了しました！</strong>';
         };
 
         document.getElementById('logout-btn').onclick = () => {
-            if (confirm('本当にログアウトして全データを削除しますか？')) {
-                localStorage.clear();
-                location.reload();
-            }
+            if (confirm('ログアウトしますか？')) location.reload();
         };
-
-        // 自動ログイン
-        const savedToken = localStorage.getItem('discord_token');
-        if (savedToken) {
-            document.getElementById('token-input').value = savedToken;
-            document.getElementById('connect-btn').click();
-        }
     </script>
 </body>
 </html>
