@@ -1,142 +1,300 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Discord Mirror Selfbot Dashboard</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body { font-family: system-ui, sans-serif; }
-    #logContainer { font-family: monospace; line-height: 1.6; }
-    .status-dot { animation: pulse 2s infinite; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord メッセージのみ復元ツール</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body { background:#202225; color:#dcddde; font-family:'Whitney',sans-serif; padding:20px; margin:0; }
+        .container { max-width:900px; margin:0 auto; }
+        header { text-align:center; padding:20px; border-bottom:1px solid #36393f; }
+        h1, h2 { color:white; }
+        .card { background:#2f3136; border-radius:8px; padding:20px; margin:20px 0; }
+        .section { background:#36393f; border-radius:8px; padding:15px; margin-bottom:20px; }
+        .section-title { font-size:1.2em; font-weight:bold; margin-bottom:10px; color:#5865F2; }
+        input, select { width:100%; padding:12px; background:#202225; border:none; color:white; border-radius:4px; margin-bottom:10px; }
+        button { padding:12px 20px; background:#5865F2; color:white; border:none; cursor:pointer; border-radius:4px; width:100%; font-size:1.1em; margin-top:10px; }
+        button:hover { background:#4752C4; }
+        button.danger { background:#ed4245; }
+        .result { padding:15px; border-radius:8px; margin-top:20px; max-height:650px; overflow-y:auto; background:#1e1f22; white-space:pre-line; font-size:0.9em; line-height:1.5; }
+        .hidden { display:none; }
+        .warning { color:#faa81a; font-size:0.95em; margin:10px 0; line-height:1.5; }
+        .log-success { color:#3ba55d; }
+        .log-error { color:#ed4245; }
+        .log-info { color:#faa81a; }
+        .preview { background:#1e1f22; padding:15px; border-radius:8px; margin-top:10px; font-size:0.9em; }
+    </style>
 </head>
-<body class="bg-zinc-950 text-zinc-100 min-h-screen p-6">
-  <div class="max-w-5xl mx-auto">
-    <h1 class="text-4xl font-bold mb-2">Discord Mirror Selfbot</h1>
-    <p class="text-zinc-400 mb-8">トークン入力で即使用可能</p>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fab fa-discord"></i> Discord メッセージのみ復元ツール</h1>
+            <p>プライベートチャンネル含む過去メッセージを復元 • 自己責任使用</p>
+        </header>
 
-    <!-- トークン入力 -->
-    <div id="tokenPanel" class="bg-zinc-900 rounded-3xl p-8 mb-8">
-      <h2 class="text-xl font-semibold mb-4">Discord Token</h2>
-      <input id="tokenInput" type="password" placeholder="mfa.XXXXXXXXXXXXXXXXXXXXXXXXXXXX" 
-             class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 text-sm mb-4 focus:outline-none focus:border-blue-500">
-      <button onclick="saveTokenAndStart()" 
-              class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-medium">
-        ✅ Tokenを保存してボット起動
-      </button>
-      <p class="text-xs text-zinc-500 mt-3">※ Tokenはブラウザに一時保存されます（ページを閉じると消えます）</p>
-    </div>
-
-    <div id="mainPanel" class="hidden">
-      <div id="status" class="flex items-center gap-3 bg-zinc-900 px-6 py-3 rounded-2xl mb-8 w-fit">
-        <div class="w-3 h-3 bg-red-500 rounded-full status-dot"></div>
-        <span class="font-medium text-lg">停止中</span>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="bg-zinc-900 rounded-3xl p-8">
-          <h2 class="text-2xl font-semibold mb-6">コントロール</h2>
-          <div class="flex gap-4">
-            <button onclick="startBot()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 py-5 rounded-2xl text-xl font-medium">🚀 起動</button>
-            <button onclick="stopBot()" class="flex-1 bg-red-600 hover:bg-red-500 py-5 rounded-2xl text-xl font-medium">⏹ 停止</button>
-          </div>
+        <div id="token-card" class="card">
+            <h2>トークンを入力</h2>
+            <input type="password" id="token-input" placeholder="ユーザー・トークン（mfa.も可）">
+            <button id="connect-btn">接続</button>
         </div>
 
-        <div class="bg-zinc-900 rounded-3xl p-8">
-          <h2 class="text-2xl font-semibold mb-4">リアルタイムログ</h2>
-          <div id="logContainer" class="h-80 overflow-y-auto p-5 rounded-2xl bg-black text-emerald-300 text-sm"></div>
+        <div id="main-card" class="card hidden">
+            <h2>メッセージ復元設定</h2>
+
+            <div class="section">
+                <div class="section-title">コピー元サーバーID</div>
+                <input type="text" id="source-id" placeholder="メッセージを復元したい元サーバーのID">
+                <button id="load-btn">チャンネル一覧を取得</button>
+                <div id="preview" class="preview hidden"></div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">対象サーバー</div>
+                <select id="target-select"></select>
+            </div>
+
+            <div class="section">
+                <div class="toggle-label">
+                    <span>復元するメッセージの最大数（1チャンネルあたり）</span>
+                    <input type="number" id="max-messages" value="500" style="width:120px; margin-left:10px;">
+                </div>
+                <div class="warning">
+                    ⚠️ 注意<br>
+                    ・復元は非常に時間がかかります（1チャンネル500件で約10〜20分程度）<br>
+                    ・プライベートチャンネルも、あなたが見られる範囲で復元されます<br>
+                    ・添付ファイルは一部しか復元できません
+                </div>
+            </div>
+
+            <div class="section">
+                <button id="execute-btn">メッセージ復元開始</button>
+            </div>
+
+            <div id="result" class="result hidden"></div>
         </div>
-      </div>
 
-      <div class="mt-8 bg-zinc-900 rounded-3xl p-8">
-        <h2 class="text-2xl font-semibold mb-4">config.json エディタ</h2>
-        <textarea id="configEditor" rows="14" class="w-full bg-zinc-950 border border-zinc-700 rounded-3xl p-6 font-mono text-sm"></textarea>
-        <button onclick="saveConfig()" class="mt-6 px-10 py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl font-medium">💾 保存して適用</button>
-      </div>
+        <div id="user-card" class="card hidden">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+                <img id="avatar" src="" width="64" height="64" style="border-radius:50%;">
+                <h3 id="username">接続済み</h3>
+                <button id="logout-btn" class="danger">ログアウト</button>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <script>
-    let currentToken = "";
+    <script>
+        const API = 'https://discord.com/api/v9';
+        let token = null;
+        let myGuilds = [];
+        let sourceChannels = [];
 
-    function addLog(msg, color = "emerald") {
-      const log = document.getElementById("logContainer");
-      const time = new Date().toLocaleTimeString("ja-JP");
-      log.innerHTML += `<div class="text-${color}-400">[${time}] ${msg}</div>`;
-      log.scrollTop = log.scrollHeight;
-    }
+        const delay = ms => new Promise(r => setTimeout(r, ms));
 
-    function saveTokenAndStart() {
-      const token = document.getElementById("tokenInput").value.trim();
-      if (!token) {
-        alert("Tokenを入力してください");
-        return;
-      }
-      currentToken = token;
-      localStorage.setItem("discordToken", token);
+        // すべてのメッセージを取得（古い順）
+        async function getAllMessages(channelId, limit = 100) {
+            let messages = [];
+            let lastId = null;
+            let count = 0;
 
-      document.getElementById("tokenPanel").classList.add("hidden");
-      document.getElementById("mainPanel").classList.remove("hidden");
+            while (true) {
+                let url = `${API}/channels/${channelId}/messages?limit=${limit}`;
+                if (lastId) url += `&before=${lastId}`;
 
-      addLog("✅ Tokenを保存しました", "blue");
-      addLog("サーバー起動準備完了。起動ボタンを押してください", "zinc");
-    }
+                try {
+                    const res = await fetch(url, { headers: { 'Authorization': token } });
+                    if (!res.ok) break;
+                    const batch = await res.json();
+                    if (batch.length === 0) break;
 
-    async function startBot() {
-      if (!currentToken) {
-        addLog("Tokenが設定されていません", "red");
-        return;
-      }
-      try {
-        const res = await fetch("http://localhost:3000/api/start", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token: currentToken })
-        });
-        const data = await res.json();
-        addLog(data.success ? "🚀 Selfbotを起動しました" : "起動失敗", data.success ? "emerald" : "red");
-      } catch (e) {
-        addLog("サーバーに接続できません。server.jsを起動していますか？", "red");
-      }
-    }
+                    messages.unshift(...batch); // 古い順に並べる
+                    lastId = batch[0].id;
+                    count += batch.length;
 
-    async function stopBot() {
-      try {
-        await fetch("http://localhost:3000/api/stop", { method: "POST" });
-        addLog("🛑 Selfbotを停止しました", "amber");
-      } catch (e) {
-        addLog("サーバー接続エラー", "red");
-      }
-    }
+                    if (batch.length < limit) break;
+                    await delay(550);
+                } catch (e) {
+                    break;
+                }
+            }
+            return messages;
+        }
 
-    async function saveConfig() {
-      try {
-        const config = JSON.parse(document.getElementById("configEditor").value);
-        await fetch("http://localhost:3000/api/config", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(config)
-        });
-        addLog("💾 config.json を保存しました", "blue");
-      } catch (e) {
-        addLog("JSONエラー: " + e.message, "red");
-      }
-    }
+        // Webhookを使ってメッセージを復元
+        async function restoreChannelMessages(targetChannelId, messages, result, channelName) {
+            if (messages.length === 0) {
+                result.innerHTML += `<span class="log-info">メッセージなし: ${channelName}</span><br>`;
+                return;
+            }
 
-    // ページロード時
-    window.onload = () => {
-      const savedToken = localStorage.getItem("discordToken");
-      if (savedToken) {
-        currentToken = savedToken;
-        document.getElementById("tokenPanel").classList.add("hidden");
-        document.getElementById("mainPanel").classList.remove("hidden");
-        addLog("以前のTokenを読み込みました", "blue");
-      } else {
-        addLog("Tokenを入力して開始してください", "zinc");
-      }
-    };
-  </script>
+            // Webhook作成
+            let webhook = null;
+            try {
+                const wh = await fetch(`${API}/channels/${targetChannelId}/webhooks`, {
+                    method: 'POST',
+                    headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: "Restore Bot" })
+                });
+                if (wh.ok) webhook = await wh.json();
+            } catch {}
+
+            if (!webhook) {
+                result.innerHTML += `<span class="log-error">Webhook作成失敗: ${channelName}</span><br>`;
+                return;
+            }
+
+            result.innerHTML += `<span class="log-info">復元開始 → ${channelName} (${messages.length}件)</span><br>`;
+
+            for (const msg of messages) {
+                if (!msg.content && (!msg.embeds || msg.embeds.length === 0)) continue;
+
+                try {
+                    const payload = {
+                        content: msg.content || "",
+                        username: msg.author.global_name || msg.author.username,
+                        avatar_url: msg.author.avatar 
+                            ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
+                            : null,
+                        embeds: msg.embeds || [],
+                        allowed_mentions: { parse: [] }
+                    };
+
+                    await fetch(`https://discord.com/api/webhooks/${webhook.id}/${webhook.token}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    result.innerHTML += `<span class="log-success">✓ ${msg.author.username}: ${msg.content ? msg.content.substring(0, 60) : "(埋め込み)"}</span><br>`;
+                } catch (e) {
+                    result.innerHTML += `<span class="log-error">✗ 失敗: ${msg.id}</span><br>`;
+                }
+
+                await delay(1350); // レートリミット対策（調整可能）
+            }
+
+            // Webhook削除
+            try {
+                await fetch(`${API}/webhooks/${webhook.id}`, { method: 'DELETE', headers: { 'Authorization': token } });
+            } catch {}
+        }
+
+        // 接続
+        document.getElementById('connect-btn').onclick = async () => {
+            token = document.getElementById('token-input').value.trim();
+            if (!token) return alert('トークンを入力してください');
+
+            localStorage.setItem('discord_token', token);
+
+            try {
+                const me = await (await fetch(`${API}/users/@me`, { headers: { 'Authorization': token } })).json();
+                document.getElementById('username').textContent = me.global_name || me.username;
+                document.getElementById('avatar').src = me.avatar 
+                    ? `https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.png?size=128` 
+                    : 'https://cdn.discordapp.com/embed/avatars/0.png';
+
+                myGuilds = await (await fetch(`${API}/users/@me/guilds`, { headers: { 'Authorization': token } })).json();
+
+                const select = document.getElementById('target-select');
+                select.innerHTML = myGuilds.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
+
+                document.getElementById('token-card').classList.add('hidden');
+                document.getElementById('main-card').classList.remove('hidden');
+                document.getElementById('user-card').classList.remove('hidden');
+            } catch (e) {
+                alert('接続失敗: ' + (e.message || 'トークンが無効です'));
+            }
+        };
+
+        // 元サーバーのチャンネル一覧取得
+        document.getElementById('load-btn').onclick = async () => {
+            const sourceId = document.getElementById('source-id').value.trim();
+            if (!sourceId) return alert('元サーバーIDを入力してください');
+
+            try {
+                const channels = await (await fetch(`${API}/guilds/${sourceId}/channels`, {
+                    headers: { 'Authorization': token }
+                })).json();
+
+                sourceChannels = channels.filter(ch => ch.type === 0); // テキストチャンネルのみ
+
+                const preview = document.getElementById('preview');
+                preview.classList.remove('hidden');
+                preview.innerHTML = `
+                    <strong>取得完了</strong><br>
+                    テキストチャンネル数: ${sourceChannels.length}個<br>
+                    <small>復元対象: ${sourceChannels.map(c => c.name).join(', ')}</small>
+                `;
+                alert(`テキストチャンネル ${sourceChannels.length}個 を取得しました`);
+            } catch (e) {
+                alert('チャンネル取得失敗: サーバーIDが正しいか、権限を確認してください');
+            }
+        };
+
+        // 実行
+        document.getElementById('execute-btn').onclick = async () => {
+            const targetId = document.getElementById('target-select').value;
+            const maxMsg = parseInt(document.getElementById('max-messages').value) || 300;
+
+            if (!targetId) return alert('対象サーバーを選択してください');
+            if (sourceChannels.length === 0) return alert('先に「チャンネル一覧を取得」ボタンを押してください');
+
+            if (!confirm(`本当にメッセージを復元しますか？\n対象サーバー: ${document.getElementById('target-select').options[document.getElementById('target-select').selectedIndex].text}\n最大 ${maxMsg}件/チャンネル`)) return;
+
+            const result = document.getElementById('result');
+            result.classList.remove('hidden');
+            result.innerHTML = '<strong>【メッセージ復元開始】</strong><br><br>';
+
+            // 対象サーバーのチャンネル一覧を取得（名前でマッチング）
+            let targetChannels = [];
+            try {
+                targetChannels = await (await fetch(`${API}/guilds/${targetId}/channels`, {
+                    headers: { 'Authorization': token }
+                })).json();
+            } catch (e) {
+                result.innerHTML += '<span class="log-error">対象サーバーのチャンネル取得に失敗</span><br>';
+                return;
+            }
+
+            for (const srcCh of sourceChannels) {
+                // 名前が同じチャンネルを探す
+                const targetCh = targetChannels.find(tc => tc.type === 0 && tc.name === srcCh.name);
+
+                if (!targetCh) {
+                    result.innerHTML += `<span class="log-error">対象に同名チャンネルなし: #${srcCh.name}</span><br>`;
+                    continue;
+                }
+
+                result.innerHTML += `<span class="log-info">処理中 → #${srcCh.name}</span><br>`;
+
+                try {
+                    const messages = await getAllMessages(srcCh.id, 100);
+                    const limitedMessages = messages.slice(-maxMsg); // 最新のmaxMsg件を取得（古い順に並んでいるので末尾が最新）
+
+                    await restoreChannelMessages(targetCh.id, limitedMessages, result, srcCh.name);
+                } catch (e) {
+                    result.innerHTML += `<span class="log-error">エラー: #${srcCh.name}</span><br>`;
+                }
+
+                await delay(1000);
+            }
+
+            result.innerHTML += '<br><strong style="color:#3ba55d">すべての復元処理が完了しました！</strong>';
+        };
+
+        document.getElementById('logout-btn').onclick = () => {
+            if (confirm('ログアウトしますか？')) {
+                localStorage.clear();
+                location.reload();
+            }
+        };
+
+        // 自動ログイン
+        const savedToken = localStorage.getItem('discord_token');
+        if (savedToken) {
+            document.getElementById('token-input').value = savedToken;
+            document.getElementById('connect-btn').click();
+        }
+    </script>
 </body>
 </html>
