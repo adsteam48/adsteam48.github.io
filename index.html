@@ -1,1 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discord Mirror Selfbot Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; }
+    #logContainer { font-family: monospace; line-height: 1.6; background: #111; }
+    .status-dot { animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen p-8">
+  <div class="max-w-5xl mx-auto">
+    <h1 class="text-4xl font-bold mb-2">Discord Mirror Selfbot</h1>
+    <p class="text-zinc-400 mb-8">プライベートチャンネル自動Webhookミラーリング</p>
 
+    <div id="status" class="flex items-center gap-3 bg-zinc-900 px-6 py-3 rounded-2xl mb-8 w-fit">
+      <div class="w-3 h-3 bg-red-500 rounded-full status-dot"></div>
+      <span class="font-medium text-lg">停止中</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-zinc-900 rounded-3xl p-8">
+        <h2 class="text-2xl font-semibold mb-6">コントロール</h2>
+        <div class="flex gap-4">
+          <button onclick="startBot()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 py-5 rounded-2xl text-xl font-medium">🚀 起動</button>
+          <button onclick="stopBot()" class="flex-1 bg-red-600 hover:bg-red-500 py-5 rounded-2xl text-xl font-medium">⏹ 停止</button>
+        </div>
+      </div>
+
+      <div class="bg-zinc-900 rounded-3xl p-8">
+        <h2 class="text-2xl font-semibold mb-4">リアルタイムログ</h2>
+        <div id="logContainer" class="h-80 overflow-y-auto p-5 rounded-2xl text-emerald-300 text-sm"></div>
+      </div>
+    </div>
+
+    <div class="mt-10 bg-zinc-900 rounded-3xl p-8">
+      <h2 class="text-2xl font-semibold mb-4">config.json エディタ</h2>
+      <textarea id="configEditor" rows="16" class="w-full bg-zinc-950 border border-zinc-700 rounded-3xl p-6 font-mono text-sm"></textarea>
+      <button onclick="saveConfig()" class="mt-6 px-10 py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl font-medium">💾 保存して適用</button>
+    </div>
+  </div>
+
+  <script>
+    const SERVER_URL = "http://localhost:3000";
+
+    function addLog(msg, color = "emerald") {
+      const log = document.getElementById("logContainer");
+      const time = new Date().toLocaleTimeString("ja-JP");
+      log.innerHTML += `<div class="text-${color}-400">[${time}] ${msg}</div>`;
+      log.scrollTop = log.scrollHeight;
+    }
+
+    async function startBot() {
+      try {
+        await fetch(`${SERVER_URL}/api/start`, { method: "POST" });
+        addLog("🚀 ボットを起動しました", "emerald");
+      } catch (e) { addLog("サーバーに接続できません。server.jsを起動していますか？", "red"); }
+    }
+
+    async function stopBot() {
+      try {
+        await fetch(`${SERVER_URL}/api/stop`, { method: "POST" });
+        addLog("🛑 ボットを停止しました", "amber");
+      } catch (e) { addLog("サーバー接続エラー", "red"); }
+    }
+
+    async function saveConfig() {
+      try {
+        const config = JSON.parse(document.getElementById("configEditor").value);
+        await fetch(`${SERVER_URL}/api/config`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(config)
+        });
+        addLog("💾 設定を保存しました", "blue");
+      } catch (e) {
+        addLog("JSON形式が間違っています: " + e.message, "red");
+      }
+    }
+
+    window.onload = () => {
+      addLog("ダッシュボードを起動しました", "blue");
+      addLog("ターミナルで「node server.js」を実行してから操作してください", "zinc");
+    };
+  </script>
+</body>
+</html>
